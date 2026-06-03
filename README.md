@@ -1,5 +1,3 @@
-# Front de unPicadito - React
-
 # app.unPicadito
 
 **app.unPicadito** es una plataforma web desarrollada en React y Vite diseñada para la gestión de partidos de fútbol 5 y otras disciplinas recreativas. Permite a los organizadores crear salas de juego públicas o privadas, facilitando la organización de los equipos.
@@ -9,6 +7,37 @@
 * **Salas Públicas**: Cualquier usuario de la plataforma puede ver la sala y unirse libremente.
 * **Salas Privadas**: Acceso restringido. Los jugadores solo pueden ingresar mediante invitación directa del organizador.
 * **Flexibilidad de Medidas**: Configuración adaptable para fútbol 5, 7 o 11 según el complejo deportivo.
+
+## Estructura del Proyecto
+
+El frontend del proyecto sigue una arquitectura modular basada en características (`features`):
+
+```text
+UNPICADITO-FRONT/
+├── node_modules/
+├── public/
+└── src/
+    ├── assets/          # Imágenes, fuentes y archivos estáticos
+    ├── components/      # Componentes globales y reutilizables
+    ├── features/        # Módulos específicos de la aplicación
+    │   ├── auth/        # Módulo de Autenticación (Login/Registro)
+    │   │   ├── components/
+    │   │   ├── hooks/
+    │   │   ├── services/
+    │   │   └── authPage.jsx
+    │   └── profile/     # Módulo de Perfil de Usuario
+    │       ├── components/
+    │       └── profilePagr.jsx
+    ├── App.jsx          # Componente raíz de la aplicación
+    ├── main.jsx         # Punto de entrada de React
+    ├── .gitignore
+    ├── eslint.config.js
+    ├── index.html
+    ├── package-lock.json
+    ├── package.json
+    ├── README.md
+    └── vite.config.js
+```
 
 ## Instalación
 
@@ -51,3 +80,4 @@ Una vez ejecutado, abre [http://localhost:5173](http://localhost:5173) en tu nav
 ## Licencia
 
 Este proyecto es de uso interno y privado para el equipo de desarrollo.
+
