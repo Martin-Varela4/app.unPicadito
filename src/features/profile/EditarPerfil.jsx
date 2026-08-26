@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Camera, Save, ArrowLeft } from "lucide-react";
 import Navbar from "../../components/Navbar";
+import axios from "axios"
 
 // Datos de ejemplo, luego los agregamos desde el array de objetos de
-// los usuarios con la función .map
+// los usuarios con la función .get
 
 const initialData = {
   name: "Juan Antonio Iturrigaray",
@@ -43,10 +44,54 @@ export default function EditProfileForm({ onCancel, onSave }) {
     }
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (onSave) onSave(formData);
+  // 1. Asegúrate de importar axios arriba de todo en tu archivo:
+// import axios from "axios";
+
+async function handleSubmit(e) {
+  e.preventDefault(); // Evita que la página se recargue
+
+  // 2. Creamos el contenedor FormData obligatorio para enviar archivos binarios e inputs
+  const dataToSend = new FormData();
+
+  // 3. Adjuntamos los campos de texto individuales desde tu estado formData
+  dataToSend.append("name", formData.name);
+  dataToSend.append("username", formData.username);
+  dataToSend.append("about", formData.about);
+  dataToSend.append("age", formData.age);
+  dataToSend.append("location", formData.location);
+  dataToSend.append("playingSince", formData.playingSince);
+  dataToSend.append("position", formData.position);
+
+  // 4. Si el usuario seleccionó una imagen nueva, la adjuntamos
+  // El nombre 'avatarFile' debe coincidir exactamente con el de Multer en tu Express
+  if (formData.avatarFile) {
+    dataToSend.append("avatarFile", formData.avatarFile);
   }
+
+  try {
+    // Supongamos que tienes el ID del usuario actual. Ejemplo: "65f81234..."
+    const usuarioId = "ID_DEL_USUARIO_ACTUAL"; 
+
+    // 5. Hacemos la petición PUT a Express enviando el FormData
+    const respuesta = await axios.put(`http://localhost:5000/api/profile/${usuarioId}`, dataToSend, {
+      headers: {
+        "Content-Type": "multipart/form-data", // Le avisa al servidor que viaja una imagen
+      },
+    });
+
+    console.log("¡Perfil actualizado con éxito en la base de datos!", respuesta.data);
+
+    // 6. Ejecutamos la función onSave que pasaste por props para avisarle al componente padre
+    if (onSave) {
+      onSave(respuesta.data); // Le pasas los datos nuevos que devolvió el backend
+    }
+
+  } catch (error) {
+    console.error("Error al guardar los cambios con Axios:", error.response?.data || error.message);
+    alert("Hubo un error al guardar los cambios");
+  }
+}
+
 
   return (
     
