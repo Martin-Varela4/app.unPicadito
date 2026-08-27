@@ -1,49 +1,70 @@
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import Button from '../../../components/Button';
+import api from "../../../api/axiosInstance"; // 👈 Tu instancia de Axios
+import PerfilUsuario from "../../profile/PerfilUsuario"; // 👈 Tu componente de visualización
+import EditarPerfil from "../../profile/EditarPerfil"; // 👈 Tu formulario de edición
 
 export default function ProfilePage() {
-    const user = useAuthStore((state) => state.user);
     const logout = useAuthStore((state) => state.logout);
     const navigate = useNavigate();
 
+    const [editing, setEditing] = useState(false);
+    const [usuario, setUsuario] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    // 1. Cargar datos reales del jugador desde Express al montar la pantalla
+    useEffect(() => {
+        const obtenerPerfil = async () => {
+            try {
+                setLoading(true);
+                const respuesta = await api.get("/auth/profile");
+                setUsuario(respuesta.data); // Guarda { nombre, posicion, avatar, partidos, victorias, etc. }
+            } catch (error) {
+                console.error("Error al obtener el perfil:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        obtenerPerfil();
+    }, []);
+
+    // 2. Función que se ejecuta cuando el formulario PUT responde con éxito
+    const handleGuardarDatos = (datosActualizados) => {
+        setUsuario(datosActualizados); // Actualiza la tarjeta en caliente
+        setEditing(false); // Vuelve a la vista normal de perfil
+    };
+
+    // 3. Función para el botón de Cerrar Sesión (mantiene la lógica de tu compañero)
     const handleLogout = () => {
         logout();
         navigate('/login', { replace: true });
     };
 
-    return (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-white rounded-2xl shadow-md border border-slate-200 p-8">
-                <div className="flex items-center space-x-4 border-b border-slate-100 pb-6 mb-6">
-                    <div className="h-16 w-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-2xl font-bold uppercase shadow-inner">
-                        {user?.name ? user.name.charAt(0) : 'U'}
-                    </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-slate-800">
-                            {user?.name || 'Usuario'}
-                        </h1>
-                        <p className="text-sm text-slate-500">{user?.email || 'Sin correo asociado'}</p>
-                    </div>
-                </div>
-
-                <div className="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-100 space-y-2 text-sm text-slate-700">
-                    <p>
-                        <span className="font-semibold text-slate-900">Estado de sesión:</span>{' '}
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Activo
-                        </span>
-                    </p>
-                    <p>
-                        <span className="font-semibold text-slate-900">Identificador:</span>{' '}
-                        {user?.id || user?._id || 'N/A'}
-                    </p>
-                </div>
-
-                <Button variant="danger" fullWidth onClick={handleLogout}>
-                    Cerrar Sesión
-                </Button>
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <p className="text-slate-500 animate-pulse text-sm font-semibold">Cargando datos del jugador...</p>
             </div>
-        </div>
+        );
+    }
+
+    // 4. El "árbitro" decide qué pantalla renderizar de forma fluida
+    if (editing) {
+        return (
+            <EditarPerfil
+                usuarioActual={usuario}
+                onCancel={() => setEditing(false)}
+                onSave={handleGuardarDatos}
+            />
+        );
+    }
+
+    return (
+        <PerfilUsuario 
+            usuario={usuario} 
+            onEditClick={() => setEditing(true)} 
+            onLogoutClick={handleLogout} // Le pasamos la función por si quieres agregar un botón de salir en tu diseño
+        />
     );
 }

@@ -1,4 +1,5 @@
 import axios from 'axios';
+// 🚀 CORREGIDO: Cambiado de '../' a '../' para salir correctamente a la raíz de src
 import { useAuthStore } from '../features/auth/store/useAuthStore';
 
 const api = axios.create({
