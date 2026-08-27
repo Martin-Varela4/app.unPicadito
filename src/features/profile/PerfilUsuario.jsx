@@ -16,6 +16,7 @@ import {
   MapPin,
 } from "lucide-react";
 
+
 import Navbar from "../../components/Navbar";
 
 // Datos de ejemplo, luego los agregamos desde el array de usuarios 

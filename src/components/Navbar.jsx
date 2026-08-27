@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; // 👈 1. Importamos el navegador
 import {
   Home,
   Search,
@@ -9,11 +10,14 @@ import {
 } from "lucide-react";
 
 export default function NavBar() {
+  const navigate = useNavigate(); // 👈 2. Inicializamos el hook
+
+  // 👈 3. Agregamos la propiedad 'path' a cada elemento del menú
   const navItems = [
-    { icon: Home, label: "Inicio" },
-    { icon: Search, label: "Buscar Partidos" },
-    { icon: Users, label: "Comunidad" },
-    { icon: MessageCircle, label: "Mensajes" },
+    { icon: Home, label: "Inicio", path: "/" }, 
+    { icon: Search, label: "Buscar Partidos", path: "/buscar" },
+    { icon: Users, label: "Comunidad", path: "/comunidad" },
+    { icon: MessageCircle, label: "Mensajes", path: "/mensajes" },
   ];
 
   return (
@@ -28,8 +32,12 @@ export default function NavBar() {
         </div>
 
         <div className="navbar__links">
-          {navItems.map(({ icon: Icon, label }) => (
-            <button key={label} className="navbar__link">
+          {navItems.map(({ icon: Icon, label, path }) => ( // 👈 Recibimos el 'path'
+            <button 
+              key={label} 
+              className="navbar__link"
+              onClick={() => navigate(path)} // 👈 4. Disparamos la redirección al hacer clic
+            >
               <Icon size={18} />
               {label}
             </button>

@@ -1,280 +1,133 @@
-import { useState } from "react";
-import { Camera, Save, ArrowLeft } from "lucide-react";
-import Navbar from "../../components/Navbar";
-import axios from "axios"
+import React, { useState } from "react";
+import api from "../../api/axiosInstance"; // 👈 1. Importa tu instancia de Axios
+import { X, Save, Shield, Calendar, Award } from "lucide-react";
 
-// Datos de ejemplo, luego los agregamos desde el array de objetos de
-// los usuarios con la función .get
+export default function EditarPerfil({ onCancel, onSave, usuarioActual }) {
+  // Inicializamos los estados con los datos que ya tiene el usuario actualmente
+  const [formData, setFormData] = useState({
+    nombre: usuarioActual?.nombre || "",
+    posicion: usuarioActual?.posicion || "Delantero",
+    avatar: usuarioActual?.avatar || "",
+  });
+  
+  const [loading, setLoading] = useState(false); // Estado para controlar el botón de envío
+  const [errorMsg, setErrorMsg] = useState("");
 
-const initialData = {
-  name: "Juan Antonio Iturrigaray",
-  username: "Antonito10armando",
-  avatar:
-    "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&h=400&fit=crop",
-  about:
-    "fut fut futbooollllll.",
-  age: 50,
-  location: "Cerro Porteño, Paraguay",
-  playingSince: 7,
-  position: "Delantero",
-};
-
-const positions = [
-  "Arquero",
-  "Defensor",
-  "Mediocampista",
-  "Delantero",
-];
-
-export default function EditProfileForm({ onCancel, onSave }) {
-  const [formData, setFormData] = useState(initialData);
-  const [avatarPreview, setAvatarPreview] = useState(initialData.avatar);
-
-  function handleChange(e) {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  }
+  };
 
-  function handleAvatarChange(e) {
-    const file = e.target.files?.[0];
-    if (file) {
-      const previewUrl = URL.createObjectURL(file);
-      setAvatarPreview(previewUrl);
-      setFormData((prev) => ({ ...prev, avatarFile: file }));
+  // 🚀 2. Función modificada para conectarse a tu API de Express
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg("");
+
+    try {
+      // Enviamos el objeto modificado mediante PUT a tu endpoint /api/auth/profile
+      const respuesta = await api.put("/auth/profile", formData);
+      
+      console.log("Servidor responde:", respuesta.data.message);
+      
+      // Enviamos los datos actualizados de vuelta a la vista padre para refrescar la interfaz
+      onSave(respuesta.data.user); 
+    } catch (error) {
+      console.error("Error al actualizar el perfil:", error);
+      setErrorMsg(error.message || "No se pudo actualizar el perfil. Revisa tu conexión.");
+    } finally {
+      setLoading(false);
     }
-  }
-
-  // 1. Asegúrate de importar axios arriba de todo en tu archivo:
-// import axios from "axios";
-
-async function handleSubmit(e) {
-  e.preventDefault(); // Evita que la página se recargue
-
-  // 2. Creamos el contenedor FormData obligatorio para enviar archivos binarios e inputs
-  const dataToSend = new FormData();
-
-  // 3. Adjuntamos los campos de texto individuales desde tu estado formData
-  dataToSend.append("name", formData.name);
-  dataToSend.append("username", formData.username);
-  dataToSend.append("about", formData.about);
-  dataToSend.append("age", formData.age);
-  dataToSend.append("location", formData.location);
-  dataToSend.append("playingSince", formData.playingSince);
-  dataToSend.append("position", formData.position);
-
-  // 4. Si el usuario seleccionó una imagen nueva, la adjuntamos
-  // El nombre 'avatarFile' debe coincidir exactamente con el de Multer en tu Express
-  if (formData.avatarFile) {
-    dataToSend.append("avatarFile", formData.avatarFile);
-  }
-
-  try {
-    // Supongamos que tienes el ID del usuario actual. Ejemplo: "65f81234..."
-    const usuarioId = "ID_DEL_USUARIO_ACTUAL"; 
-
-    // 5. Hacemos la petición PUT a Express enviando el FormData
-    const respuesta = await axios.put(`http://localhost:5000/api/profile/${usuarioId}`, dataToSend, {
-      headers: {
-        "Content-Type": "multipart/form-data", // Le avisa al servidor que viaja una imagen
-      },
-    });
-
-    console.log("¡Perfil actualizado con éxito en la base de datos!", respuesta.data);
-
-    // 6. Ejecutamos la función onSave que pasaste por props para avisarle al componente padre
-    if (onSave) {
-      onSave(respuesta.data); // Le pasas los datos nuevos que devolvió el backend
-    }
-
-  } catch (error) {
-    console.error("Error al guardar los cambios con Axios:", error.response?.data || error.message);
-    alert("Hubo un error al guardar los cambios");
-  }
-}
-
+  };
 
   return (
-    
-    <div className="edit-profile-page">
-      <Navbar />
-      <div className="edit-profile__topbar">
-        <button
-          type="button"
-          className="icon-button"
-          onClick={onCancel}
-          aria-label="Volver"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <h1 className="edit-profile__title">Editar Perfil</h1>
-      </div>
-
-      <form className="section-wrapper" onSubmit={handleSubmit}>
-        <div className="card">
-          {/* Avatar */}
-          <div className="edit-profile__avatar-section">
-            <div className="edit-profile__avatar-wrapper">
-              <img
-                src={avatarPreview}
-                alt="Vista previa de foto de perfil"
-                style={{ width: 120, height: 120, objectFit: "cover" }}
-                className="edit-profile__avatar"
-                
-              />
-              <p> </p>
-              <label
-                htmlFor="avatar-upload"
-                className="edit-profile__avatar-edit"
-                aria-label="Cambiar foto de perfil"
-              >
-                <Camera size={13} />
-              </label>
-              <input
-                id="avatar-upload"
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarChange}
-                className="visually-hidden"
-              />
-            </div>
-            <p className="edit-profile__avatar-hint">
-              Tocá el ícono para cambiar tu foto
-            </p>
+    <div className="min-h-screen w-full bg-slate-50 p-4 md:p-8 flex justify-center items-start">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+        
+        {/* Cabecera */}
+        <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-900 text-white">
+          <div>
+            <h2 className="text-xl font-bold">Editar Perfil</h2>
+            <p className="text-xs text-slate-400 mt-1">Actualiza tu información de jugador</p>
           </div>
+          <button onClick={onCancel} className="p-2 hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-white">
+            <X size={20} />
+          </button>
+        </div>
 
-          {/* Datos personales */}
-          <div className="form-group">
-            <label htmlFor="name" className="form-label">
-              Nombre completo
-            </label>
+        {/* Formulario */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {errorMsg && (
+            <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
+              {errorMsg}
+            </div>
+          )}
+
+          {/* Campo Nombre */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700 block">Nombre Completo</label>
             <input
-              id="name"
-              name="name"
               type="text"
-              className="form-input"
-              value={formData.name}
+              name="nombre"
+              value={formData.nombre}
               onChange={handleChange}
-              placeholder="Tu nombre completo"
               required
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm transition-all"
+              placeholder="Ej. Juan Pérez"
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="username" className="form-label">
-              Nombre de usuario
-            </label>
-            <div className="form-input-prefix">
-              <span>@</span>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                className="form-input form-input--prefixed"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="usuario10"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="about" className="form-label">
-              Sobre mí
-            </label>
-            <textarea
-              id="about"
-              name="about"
-              className="form-textarea"
-              value={formData.about}
-              onChange={handleChange}
-              placeholder="Contales a los demás jugadores algo sobre vos"
-              rows={4}
-            />
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="age" className="form-label">
-                Edad
-              </label>
-              <input
-                id="age"
-                name="age"
-                type="number"
-                min="1"
-                className="form-input"
-                value={formData.age}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="playingSince" className="form-label">
-                Jugando desde los (años)
-              </label>
-              <input
-                id="playingSince"
-                name="playingSince"
-                type="number"
-                min="1"
-                className="form-input"
-                value={formData.playingSince}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="location" className="form-label">
-              Ubicación
-            </label>
-            <input
-              id="location"
-              name="location"
-              type="text"
-              className="form-input"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="Ciudad, País"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="position" className="form-label">
-              Posición favorita
-            </label>
+          {/* Campo Posición Favorita */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700 block">Posición Favorita</label>
             <select
-              id="position"
-              name="position"
-              className="form-select"
-              value={formData.position}
+              name="posicion"
+              value={formData.posicion}
               onChange={handleChange}
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white transition-all"
             >
-              {positions.map((pos) => (
-                <option key={pos} value={pos}>
-                  {pos}
-                </option>
-              ))}
+              <option value="Arquero">Arquero</option>
+              <option value="Defensor">Defensor</option>
+              <option value="Mediocampista">Mediocampista</option>
+              <option value="Delantero">Delantero</option>
             </select>
           </div>
-        </div>
 
-        {/* Acciones */}
-        <div className="edit-profile__actions">
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={onCancel}
-          >
-            Cancelar
-          </button>
-          <button type="submit" className="btn-primary">
-            <Save size={18} />
-            Guardar cambios
-          </button>
-        </div>
-      </form>
+          {/* Campo URL de Imagen de Perfil */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700 block">URL de la Foto de Perfil</label>
+            <input
+              type="url"
+              name="avatar"
+              value={formData.avatar}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm transition-all"
+              placeholder="https://ejemplo.com"
+            />
+          </div>
+
+          {/* Botones de acción */}
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={loading}
+              className="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-50 text-sm font-medium transition-colors disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium flex items-center gap-2 shadow-sm shadow-emerald-600/10 transition-colors disabled:opacity-50"
+            >
+              <Save size={16} />
+              {loading ? "Guardando..." : "Guardar Cambios"}
+            </button>
+          </div>
+        </form>
+
+      </div>
     </div>
   );
 }
