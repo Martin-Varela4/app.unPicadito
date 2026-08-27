@@ -8,6 +8,7 @@ export default function Input({
     error = null,
     disabled = false,
     required = false,
+    className = '',
     ...props
 }) {
     return (
@@ -32,7 +33,7 @@ export default function Input({
           ${error
                         ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100'
                         : 'border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100'
-                    }`}
+                    } ${className}`}
                 {...props}
             />
 
