@@ -26,8 +26,8 @@ export default function MatchFilters({
     ];
 
     return (
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 flex flex-col gap-4">
-            <div className="flex flex-wrap items-end gap-4">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 items-end">
                 <ToggleGroup
                     label="Modalidad"
                     options={modalityOptions}
@@ -59,13 +59,20 @@ export default function MatchFilters({
                     value={filters.date}
                     onChange={(e) => onFilterChange('date', e.target.value)}
                 />
-            </div>
+                <Input
+                    label="Hora"
+                    name="time"
+                    type="time"
+                    value={filters.time}
+                    onChange={(e) => onFilterChange('time', e.target.value)}
+                />
 
-            <Switch
-                label="Solo con lugares disponibles"
-                checked={filters.onlyAvailable}
-                onChange={(e) => onFilterChange('onlyAvailable', e.target.checked)}
-            />
+                <Switch
+                    label="Solo con lugares disponibles"
+                    checked={filters.onlyAvailable}
+                    onChange={(e) => onFilterChange('onlyAvailable', e.target.checked)}
+                />
+            </div>
         </div>
     );
 }

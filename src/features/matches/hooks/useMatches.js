@@ -7,10 +7,12 @@ import {
 } from '../services/matchService';
 
 const initialFilters = {
+    search: '',
     modality: '',
     zone: '',
     level: '',
     date: '',
+    time: '',
     onlyAvailable: false,
 };
 
