@@ -15,11 +15,11 @@ import {
   Calendar,
   MapPin,
 } from "lucide-react";
-
 import Navbar from "../../components/Navbar";
+import api from "../../config/axios.js";
 
 // Datos de ejemplo, luego los agregamos desde el array de usuarios 
-// con la funcion .map
+// con la funcion fetchUserData() del archivo UserProfile.jsx
 const player = {
   name: "Antonio De la Casita",
   username: "@MediaEstrella",
@@ -193,6 +193,20 @@ function AboutSection({ player }) {
   );
 }
 
+//conecta al axios para traer los datos del perfil desde el backend
+export const getProfile = async () => {
+  try {
+    // Llamada al endpoint del backend para obtener el perfil del usuario
+    const response = await api.get('/users/profile'); 
+    
+    // Axios guarda la respuesta del servidor directamente en .data
+    return response.data; 
+  } catch (error) {
+    console.error('Error al obtener el perfil en el servicio:', error);
+    // Reenviamos el error con el mensaje que venga del backend
+    throw new Error(error.response?.data?.error || 'Error al cargar el perfil');
+  }
+};
 
 export default function PerfilUsuario({ onEditClick }) {
   return (
