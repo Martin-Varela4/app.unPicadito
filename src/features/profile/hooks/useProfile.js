@@ -1,4 +1,3 @@
-// src/features/profile/hooks/useProfile.js
 import { useState, useEffect } from 'react';
 import { getProfileData } from '../services/profileService';
 
