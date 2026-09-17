@@ -18,7 +18,7 @@ import {
 import Navbar from "../../components/Navbar";
 import api from "../../config/axios.js";
 import ProfileEdit from "./ProfileEdit.jsx";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 // Datos de ejemplo, luego los agregamos desde el array de usuarios 
 // con la funcion fetchUserData() del archivo UserProfile.jsx
@@ -109,10 +109,10 @@ function ProfileHeader({ player, onEditClick }) {
             <span>Conexiones</span>
           </div>
 
-          <button className="btn-primary" onClick={onEditClick}>
+          <Link to="/profile/edit" className="btn-primary inline-flex gap-2 items-center">
             <Pencil size={18} />
             Editar Perfil
-          </button>
+          </Link>
         </div>
       </div>
     </div>
