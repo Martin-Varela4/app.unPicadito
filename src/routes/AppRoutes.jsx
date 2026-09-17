@@ -20,7 +20,7 @@ export default function AppRoutes() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/profile" element={<ProfilePage />} />
             </Route>
-
+            
             {/* Comodín: cualquier ruta no existente redirige a /login */}
             <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

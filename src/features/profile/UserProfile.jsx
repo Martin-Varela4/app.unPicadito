@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import api from "../../config/axios.js";
+import ProfileEdit from "./ProfileEdit.jsx";
+import { useNavigate } from "react-router-dom";
 
 // Datos de ejemplo, luego los agregamos desde el array de usuarios 
 // con la funcion fetchUserData() del archivo UserProfile.jsx
@@ -208,7 +210,7 @@ export const getProfile = async () => {
   }
 };
 
-export default function PerfilUsuario({ onEditClick }) {
+export default function UserProfile({ onEditClick }) {
   return (
     <div className="perfil-usuario-page">
       <Navbar />
