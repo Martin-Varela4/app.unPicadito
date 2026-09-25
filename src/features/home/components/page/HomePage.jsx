@@ -1,56 +1,48 @@
-import React from "react";
+import { Link } from "react-router-dom";
 
-import Navbar from "../../../components/Navbar";
-import Sidebar from "../../../components/Sidebar";
-import Footer from "../../../components/Footer";
+import Navbar from '../../../../components/Navbar';
+import Sidebar from '../../../../components/Sidebar';
+import Footer from '../../../../components/Footer';
 
-import Conections from "../../../components/Conections";
+import Conections from '../../../../components/Conections';
 
-import WelcomeBanner from "../components/WelcomeBanner";
-import HomeStats from "../components/HomeStats";
-import CurrentMatches from "../components/CurrentMatches";
-import RecentActivity from "../components/RecentActivity";
+import WelcomeBanner from '../../components/WelcomeBanner';
+import HomeStats from "../../components/HomeStats";
+import CurrentMatches from "../../../../components/CurrentMatches";
+import RecentActivity from '../RecentActivity';
 
 const HomePage = () => {
   return (
-    <div className="home-page">
+    <div className="flex flex-col min-h-screen bg-gray-50 text-gray-800">
 
         <Navbar />
 
-        <Sidebar />
+        <div className="flex flex-1 w-full pt-16">
+            <Sidebar />
 
-        <main className="home-content">
+         <main className="flex-1 p-6 md:p-8 space-y-6 overflow-y-auto">
 
-          <WelcomeBanner />
+              <WelcomeBanner />
+              <HomeStats />
 
-          <HomeStats />
+          <section className="bg-blue-600 text-white rounded-2xl p-6 shadow-md">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-          <section className="home-section home-match-search">
-
-
-            <div className="home-match-search-content">
-
-                <div className="home-match-search-info">
-                    <h2> Busca una sala para jugar </h2>
-
-                    <p> Ingresa a una sala para empezar. </p>
+                <div> 
+                   <h2 className="text-2xl font-bold">Busca una sala para jugar</h2>
+                    <p className="text-blue-100 mt-1">Ingresa a una sala para empezar.</p>
                 </div>
-
-                <a href="/partidos" className="home-match-search-button">
-                    Buscar sala
-                </a>
-
-
+                    <Link to="/partidos" className="bg-white text-blue-600 font-semibold px-6 py-3 rounded-xl shadow hover:bg-blue-50 transition-all text-center">
+                        Buscar sala
+                    </Link>
             </div>
           </section>
 
             <CurrentMatches />
 
-            <div className="home-two-columns">
-                <div className="home-column">
-                
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <div className="space-y-6">
                 <RecentActivity />
-
                 <Conections />
                 
                 </div>
@@ -58,7 +50,7 @@ const HomePage = () => {
             </div>
         </main>
 
-
+      </div>
       <Footer />
 
     </div>
