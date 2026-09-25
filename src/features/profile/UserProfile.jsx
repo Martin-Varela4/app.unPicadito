@@ -17,18 +17,20 @@ import {
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import api from "../../config/axios.js";
+import ProfileEdit from "./ProfileEdit.jsx";
+import { Link } from "react-router-dom";
 
 // Datos de ejemplo, luego los agregamos desde el array de usuarios 
 // con la funcion fetchUserData() del archivo UserProfile.jsx
-const player = {
+export const player = {
   name: "Antonio De la Casita",
   username: "@MediaEstrella",
   rating: 4.8,
   connectionsCount: 156,
   avatar:
-    "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&h=400&fit=crop",
+    "https://pbs.twimg.com/profile_images/1258471085986787329/JbIZXOND_400x400.jpg",
   coverImage:
-    "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1600&h=500&fit=crop",
+    "https://i0.wp.com/www.canal12misiones.com/wp-content/uploads/2023/06/fisdufiodsusdoif.jpg?resize=1089%2C730&ssl=1",
   stats: [
     { icon: Circle, label: "Partidos jugados", value: 300 },
     { icon: Trophy, label: "Victorias", value: 150 },
@@ -107,10 +109,10 @@ function ProfileHeader({ player, onEditClick }) {
             <span>Conexiones</span>
           </div>
 
-          <button className="btn-primary" onClick={onEditClick}>
+          <Link to="/profile/edit" className="btn-primary inline-flex gap-2 items-center">
             <Pencil size={18} />
             Editar Perfil
-          </button>
+          </Link>
         </div>
       </div>
     </div>
@@ -208,7 +210,7 @@ export const getProfile = async () => {
   }
 };
 
-export default function PerfilUsuario({ onEditClick }) {
+export default function UserProfile({ onEditClick }) {
   return (
     <div className="perfil-usuario-page">
       <Navbar />
