@@ -1,10 +1,10 @@
-function App() {
+import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes';
+
+export default function App() {
   return (
-    <div>
-      <h1>unPicadito</h1>
-    </div>
-  )
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  );
 }
-
-export default App
-
