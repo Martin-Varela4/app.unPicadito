@@ -1,16 +1,16 @@
-export default function Input({
+import { forwardRef } from 'react';
+
+const Input = forwardRef(({
     label,
     name,
     type = 'text',
     placeholder = '',
-    value,
-    onChange,
     error = null,
     disabled = false,
     required = false,
     className = '',
     ...props
-}) {
+}, ref) => { // <-- Recibimos la ref aquí
     return (
         <div className="flex flex-col gap-1.5 w-full">
             {label && (
@@ -20,12 +20,11 @@ export default function Input({
             )}
 
             <input
+                ref={ref} // <-- Pasamos la ref al input
                 id={name}
                 name={name}
                 type={type}
                 placeholder={placeholder}
-                value={value}
-                onChange={onChange}
                 disabled={disabled}
                 className={`w-full px-3.5 py-2 text-sm bg-white border rounded-lg transition-colors outline-none
           placeholder:text-slate-400
@@ -42,4 +41,7 @@ export default function Input({
             )}
         </div>
     );
-}
+});
+
+Input.displayName = 'Input';
+export default Input;
