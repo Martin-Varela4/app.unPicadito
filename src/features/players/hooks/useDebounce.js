@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 /**
  * @param {string} value
- * @param {number} delay - milisegundos de espera
+ * @param {number} delay 
  */
 export const useDebounce = (value, delay = 400) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
