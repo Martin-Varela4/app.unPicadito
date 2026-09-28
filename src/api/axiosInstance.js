@@ -28,14 +28,15 @@ api.interceptors.response.use(
         let customErrorMessage = 'Ocurrió un error en la conexión con el servidor.';
 
         if (error.response) {
-            // El servidor respondió con un status fuera de 2xx
+            
             customErrorMessage =
                 error.response.data?.message ||
                 error.response.data?.error ||
                 `Error del servidor (${error.response.status})`;
 
-            if (error.response.status === 401) {
+            if (error.response.status === 401 || error.response.status === 403) {
                 useAuthStore.getState().logout();
+                
             }
         } else if (error.request) {
             // La petición se envió pero no hubo respuesta
