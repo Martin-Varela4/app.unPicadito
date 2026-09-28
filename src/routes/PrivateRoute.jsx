@@ -15,7 +15,7 @@ import { useAuthStore } from '../features/auth/store/useAuthStore';
  */
 const PrivateRoute = () => {
   const token = useAuthStore((state) => state.token);
-
+{
   if (!token) {
     return <Navigate to="/auth?mode=login" replace />;
   }

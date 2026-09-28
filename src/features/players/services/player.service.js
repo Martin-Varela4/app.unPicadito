@@ -41,7 +41,7 @@ import { api } from "../../../api/axiosInstance";
  */
 export const getAvailablePlayers = async (search = "") => {
   const response = await api.get("/users", { //Por el momento se usa "users" del back como jugadores 
-    params: search ? { nombre : search } : {},
+    params: search ? { q : search } : {},
   });
   return response.data;
 };

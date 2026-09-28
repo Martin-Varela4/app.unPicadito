@@ -1,16 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-
-import HomePage from '../features/home/components/page/HomePage';
 import AuthPage from '../features/auth/pages/AuthPage';
-import ProfilePage from '../features/auth/pages/ProfilePage';
-
-import UserProfile from '../features/profile/UserProfile';
-import ProfileEdit from '../features/profile/ProfileEdit';
-
 import MatchesPage from '../features/matches/pages/MatchesPage';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
 import { PlayersPage } from "../features/players/pages/PlayersPage";
+import PerfilUsuario from '../features/profile/pages/ProfileView';
 
 
 
@@ -20,11 +14,12 @@ export default function AppRoutes() {
         <Routes>
             {/* Rutas Públicas (Solo para invitados) */}
             <Route element={<PublicRoute />}>
-                <Route path="/login" element={<Authpage />} />
+                <Route path="/login" element={<AuthPage />} />
                 <Route path="/registro" element={<AuthPage />} />
-                <Route path="/players" element={<PlayersPage />} />
 
             </Route>
+            <Route path="/players" element={<PlayersPage />} />
+            <Route path="/users/:id" element={<PerfilUsuario />} />
 
             <Route element={<ProtectedRoute />}>
                 <Route path="/home" element={<HomePage />} />

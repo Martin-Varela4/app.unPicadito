@@ -10,7 +10,6 @@ export const PlayersPage = () => {
   const [validationError, setValidationError] = useState(null);
   const debouncedSearch = useDebounce(searchInput, 400);
 
-  // Selectores optimizados de Zustand
   const players = usePlayerStore((state) => state.players);
   const loading = usePlayerStore((state) => state.loading);
   const error = usePlayerStore((state) => state.error);
@@ -39,7 +38,6 @@ export const PlayersPage = () => {
 
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto", padding: "2rem 1rem", fontFamily: "system-ui, sans-serif" }}>
-      {/* Encabezado Principal */}
       <header style={{ marginBottom: "2rem", textAlign: "center" }}>
         <h1 style={{ fontSize: "2.5rem", fontWeight: "800", color: "#1a202c", marginBottom: "0.5rem" }}>
            Buscar Jugadores
@@ -49,7 +47,6 @@ export const PlayersPage = () => {
         </p>
       </header>
 
-      {/* Barra de Búsqueda y Validación */}
       <section style={{ marginBottom: "2rem", position: "relative" }}>
         <SearchBar value={searchInput} onChange={setSearchInput} />
         
@@ -68,9 +65,7 @@ export const PlayersPage = () => {
         )}
       </section>
 
-      {/* Contenedor Principal de Resultados */}
       <main style={{ minHeight: "300px" }}>
-        {/* 1. Estado de Carga Simulado (Skeleton / Spinner) */}
         {loading && (
           <div style={{ textAlign: "center", padding: "3rem 0", color: "#4a5568" }}>
             <div className="spinner" style={{
@@ -87,7 +82,6 @@ export const PlayersPage = () => {
           </div>
         )}
 
-        {/* 2. Estado de Error de Red */}
         {error && !loading && (
           <div style={{ 
             textAlign: "center", 

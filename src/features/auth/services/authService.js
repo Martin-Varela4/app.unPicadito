@@ -1,8 +1,8 @@
 import api from '../../../api/axiosInstance';
 
 // Endpoints configurables por variable de entorno o rutas por defecto
-const ENDPOINT_LOGIN = import.meta.env.VITE_AUTH_LOGIN_ENDPOINT || '/auth/login';
-const ENDPOINT_REGISTER = import.meta.env.VITE_AUTH_REGISTER_ENDPOINT || '/auth/register';
+const ENDPOINT_LOGIN = import.meta.env.VITE_AUTH_LOGIN_ENDPOINT || '/users/login';
+const ENDPOINT_REGISTER = import.meta.env.VITE_AUTH_REGISTER_ENDPOINT || '/users/register';
 
 /**
  * Servicio para iniciar sesión

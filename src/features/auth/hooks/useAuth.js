@@ -11,7 +11,6 @@ export const useAuth = () => {
     const [apiError, setApiError] = useState(null);
 
     const navigate = useNavigate();
-    // Usa la acción `login` del store (no `setAuth`, que no existe)
     const storeLogin = useAuthStore((state) => state.login);
 
     const clearErrors = () => {
@@ -28,25 +27,49 @@ export const useAuth = () => {
         const activeService = isLogin ? loginService : registerService;
 
         try {
-            // 1. Validar esquema con Yup
+            // 1. Validar esquema local con Yup
             await activeSchema.validate(formData, { abortEarly: false });
 
-            // 2. Ejecutar servicio de Axios
-            const response = await activeService(formData);
+            // 2. Preparar el payload adaptado para el backend (Zod)
+            let payload = { ...formData };
 
-            // 3. Adaptabilidad del backend (soporta diferentes estructuras de respuesta)
+            if (!isLogin) {
+                payload.nombreUsuario = payload.username;
+                payload.passwordConfirm = payload.confirmPassword;
+                payload.nombre = payload.username; 
+                payload.apellido = "Sin apellido"; 
+                delete payload.username;
+                delete payload.confirmPassword;
+            }
+
+            console.log("🚀 [DEBUG] Enviando payload:", payload);
+
+            // 3. Ejecutar servicio de Axios
+            const response = await activeService(payload);
+            console.log("📥 [DEBUG] Respuesta cruda del backend:", response);
+
+            // 4. Extracción de datos
             const user = response.user ?? response.data?.user ?? response;
             const token = response.token ?? response.data?.token;
             const refreshToken = response.refreshToken ?? response.data?.refreshToken ?? null;
 
-            // 4. Guardar en Zustand usando la acción `login` del store
-            storeLogin({ user, token, refreshToken });
+            console.log("🔑 [DEBUG] Token extraído:", token);
+            console.log("👤 [DEBUG] Usuario extraído:", user);
 
-            // 5. Redireccionar al home
-            navigate('/', { replace: true });
+            if (!token) {
+                console.warn("⚠️ [DEBUG] ¡Cuidado! El token llegó como undefined o null.");
+            }
+
+            // 5. Guardar en Zustand
+            storeLogin({ user, token, refreshToken });
+            console.log("🔄 [DEBUG] Intentando navegar a /profile...");
+
+            // 6. Redireccionar
+            navigate('/profile', { replace: true });
+
         } catch (error) {
+            console.error("❌ [DEBUG] Error atrapado en authenticate:", error);
             if (error instanceof yup.ValidationError) {
-                // Errores de validación de Yup: mapeamos path → mensaje
                 const formattedErrors = {};
                 error.inner.forEach((err) => {
                     if (!formattedErrors[err.path]) {
@@ -55,7 +78,6 @@ export const useAuth = () => {
                 });
                 setValidationErrors(formattedErrors);
             } else {
-                // Errores de red/servidor: axiosInstance ya normalizó el mensaje en error.message
                 setApiError(error.message ?? 'Ocurrió un error en el servidor. Por favor intentá más tarde.');
             }
         } finally {
