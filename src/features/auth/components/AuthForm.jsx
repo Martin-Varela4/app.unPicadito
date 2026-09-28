@@ -29,6 +29,7 @@ export default function AuthForm({ mode = 'login', onToggleMode }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     await authenticate(mode, formData);
   };
 

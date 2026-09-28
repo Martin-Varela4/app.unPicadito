@@ -4,6 +4,7 @@ import {
     getModalities,
     getZones,
     getLevels,
+    leaveMatch as leaveMatchService,
 } from '../services/matchService';
 
 const initialFilters = {
@@ -28,6 +29,10 @@ export const useMatches = () => {
     const [levels, setLevels] = useState([]);
     const [isLoadingOptions, setIsLoadingOptions] = useState(false);
     const [optionsError, setOptionsError] = useState(null);
+
+    const [isLeaving, setIsLeaving] = useState(false);
+    const [leaveError, setLeaveError] = useState(null);
+
 
     useEffect(() => {
         const fetchOptions = async () => {
@@ -80,6 +85,23 @@ export const useMatches = () => {
         setFilters(initialFilters);
     };
 
+    const leaveMatch = async (matchId, reason) => {
+        setIsLeaving(true);
+        setLeaveError(null);
+
+        try {
+            const data = await leaveMatchService(matchId, reason);
+            setMatches((prevMatches) => prevMatches.filter((match) => match.id !== matchId));
+            return data;
+        } catch (error) {
+            const message = error.response?.data?.message || error.message || 'Error al salir de la sala';
+            setLeaveError(message);
+            throw new Error(message);
+        } finally {
+            setIsLeaving(false);
+        }
+    };
+
     return {
         filters,
         setFilter,
@@ -94,5 +116,9 @@ export const useMatches = () => {
         levels,
         isLoadingOptions,
         optionsError,
+
+        leaveMatch,
+        isLeaving,
+        leaveError,
     };
 };

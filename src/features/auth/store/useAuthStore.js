@@ -9,32 +9,25 @@ export const useAuthStore = create(
       token: null,
       refreshToken: null,
       isAuthenticated: false,
+      _hasHydrated: false, 
+
+      // Setter para la hidratación
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
 
       // --- Acciones ---
-
-      /**
-       * Inicia sesión guardando usuario y tokens
-       */
       login: ({ user, token, refreshToken = null }) =>
         set({
           user,
           token,
           refreshToken,
-          isAuthenticated: true,
+          isAuthenticated: Boolean(token), 
         }),
 
-      /**
-       * Actualiza datos puntuales del usuario (ej. editar perfil, cambiar avatar)
-       * sin invalidar el token ni la sesión
-       */
       updateUser: (updatedData) =>
         set((state) => ({
           user: state.user ? { ...state.user, ...updatedData } : updatedData,
         })),
 
-      /**
-       * Cierra sesión y limpia completamente el estado y el storage
-       */
       logout: () =>
         set({
           user: null,
@@ -43,21 +36,23 @@ export const useAuthStore = create(
           isAuthenticated: false,
         }),
 
-      /**
-       * Helper para verificar si hay sesión activa (lectura imperativa)
-       */
       checkAuth: () => Boolean(get().token && get().isAuthenticated),
     }),
     {
-      name: 'unpicadito_auth_session', // Nombre de la clave en localStorage
+      name: 'unpicadito_auth_session',
       storage: createJSONStorage(() => localStorage),
-      // Opcional: Solo persistir campos necesarios si se requiere
       partialize: (state) => ({
         user: state.user,
         token: state.token,
         refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
       }),
+      
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.setHasHydrated(true);
+        }
+      },
     }
   )
 );
