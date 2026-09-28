@@ -15,6 +15,13 @@ export const getMatchById = async (id) => {
     return response.data;
 };
 
+export const leaveMatch = async (matchId, reason) => {
+    const response = await api.delete(`${ENDPOINT_MATCHES}/${matchId}/leave`, {
+        data: { reason }
+    });
+    return response.data;
+}
+
 export const getModalities = async () => {
     const response = await api.get(ENDPOINT_MODALITIES);
     return response.data;
