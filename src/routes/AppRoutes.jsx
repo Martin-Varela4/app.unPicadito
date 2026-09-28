@@ -1,8 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 
-import HomePage from '../fratures/home/pages/HomePage';
+import HomePage from '../features/home/components/page/HomePage';
 import AuthPage from '../features/auth/pages/AuthPage';
-//import ProfilePage from '../features/auth/pages/ProfilePage';
+import ProfilePage from '../features/auth/pages/ProfilePage';
 
 import UserProfile from '../features/profile/UserProfile';
 import ProfileEdit from '../features/profile/ProfileEdit';
@@ -20,7 +20,7 @@ export default function AppRoutes() {
         <Routes>
             {/* Rutas Públicas (Solo para invitados) */}
             <Route element={<PublicRoute />}>
-                <Route path="/login" element={<AuthPage />} />
+                <Route path="/login" element={<Authpage />} />
                 <Route path="/registro" element={<AuthPage />} />
                 <Route path="/players" element={<PlayersPage />} />
 
@@ -34,7 +34,7 @@ export default function AppRoutes() {
             </Route>
 
             {/* Ruta pordefecto */}
-            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="/" element={<Navigate to="/" replace />} />
             
             {/*Cualquier ruta no existente va redirigido al login */}
             <Route path="*" element={<Navigate to="/login" replace />} />

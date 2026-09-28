@@ -22,8 +22,8 @@ import { Link } from "react-router-dom";
 
 // Datos de ejemplo, luego los agregamos desde el array de usuarios 
 // con la funcion fetchUserData() del archivo UserProfile.jsx
-export const player = {
-  name: "Antonio De la Casita",
+const player = {
+  name: "Antonio De la casita",
   username: "@MediaEstrella",
   rating: 4.8,
   connectionsCount: 156,
