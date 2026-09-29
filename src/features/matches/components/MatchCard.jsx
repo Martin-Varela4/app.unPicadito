@@ -1,15 +1,13 @@
 import Badge from "../../../components/Badge";
 import ProgressBar from "../../../components/ProgressBar";
 import Button from "../../../components/Button";
-import { useMatches } from "../hooks/useMatches";
 
-export default function MatchCard({ match, onMatchLeft }) {
-  const isComplete = match.status === "completo";
-  const { leaveMatch, isLeaving, leaveError } = useMatches();
+export default function MatchCard({ match, leaveMatch, isLeaving, leaveError, onMatchLeft }) {
+  const isComplete = match.estado === "COMPLETA";
 
   const isWithin24Hours = () => {
-    if (!match.date || !match.time) return false;
-    const matchDateTime = new Date(`${match.date}T${match.time}`);
+    if (!match.fechaHoraPartido) return false;
+    const matchDateTime = new Date(match.fechaHoraPartido);
     const now = new Date();
     const diffHours = (matchDateTime - now) / (1000 * 60 * 60);
     return diffHours < 24;
@@ -32,47 +30,56 @@ export default function MatchCard({ match, onMatchLeft }) {
     }
   };
 
+  // Formatear fechas para mostrar en pantalla
+  const fechaStr = match.fechaHoraPartido 
+    ? new Date(match.fechaHoraPartido).toLocaleDateString('es-AR') 
+    : '—';
+    
+  const horaStr = match.fechaHoraPartido 
+    ? new Date(match.fechaHoraPartido).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) 
+    : '—';
+
+  const currentPlayers = match.participantes?.length || 0;
+  const organizerName = match.creador?.nombre || "Organizador";
+
   return (
     <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 flex flex-col gap-3">
       <div className="flex items-center gap-2 flex-wrap">
-        <Badge
-          label={match.modality}
-          variant="modality"
-          value={match.modality}
-        />
-        <Badge label={match.status} variant="status" value={match.status} />
+        {/* Usamos el estado real que viene de la base de datos */}
+        <Badge label={match.estado} variant="status" value={match.estado} />
+        {match.esPublica ? (
+            <Badge label="Pública" variant="modality" value="public" />
+        ) : (
+            <Badge label="Privada" variant="modality" value="private" />
+        )}
       </div>
 
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h3 className="text-base font-bold text-slate-900">{match.title}</h3>
+          <h3 className="text-base font-bold text-slate-900">{match.nombre}</h3>
           <p className="text-sm text-slate-500">
-            {match.venue} · {match.zone}
+            {match.nombreCancha} · {match.direccion || "Sin dirección"}
           </p>
         </div>
-        <span className="text-base font-bold text-slate-900 whitespace-nowrap">
-          ${match.price?.toLocaleString()}
-        </span>
       </div>
 
       <div className="flex items-center justify-between text-sm text-slate-500">
         <span>
-          📅 {match.date} · 🕐 {match.time}
+          📅 {fechaStr} · 🕐 {horaStr}
         </span>
-        <Badge label={match.level} variant="level" value={match.level} />
       </div>
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between text-sm">
           <span className="text-slate-600 font-medium">Jugadores</span>
           <span className="text-slate-900 font-semibold">
-            {match.currentPlayers}/{match.maxPlayers}
+            {currentPlayers}/{match.cuposTotales}
           </span>
         </div>
-        <ProgressBar current={match.currentPlayers} max={match.maxPlayers} />
+        <ProgressBar current={currentPlayers} max={match.cuposTotales} />
       </div>
       {leaveError && <p className="text-red-500 text-xs">{leaveError}</p>}
       <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-        <span className="text-xs text-slate-400">por {match.organizer}</span>
+        <span className="text-xs text-slate-400">por {organizerName}</span>
         <Button
           variant={isComplete ? "outline" : "primary"}
           disabled={isComplete}
