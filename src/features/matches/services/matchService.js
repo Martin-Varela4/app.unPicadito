@@ -1,13 +1,25 @@
 import api from '../../../api/axiosInstance';
 
 const ENDPOINT_MATCHES = import.meta.env.VITE_MATCHES_ENDPOINT || '/matches';
-const ENDPOINT_MODALITIES = import.meta.env.VITE_MODALITIES_ENDPOINT || '/modalities';
-const ENDPOINT_ZONES = import.meta.env.VITE_ZONES_ENDPOINT || '/zones';
-const ENDPOINT_LEVELS = import.meta.env.VITE_LEVELS_ENDPOINT || '/levels';
+const ENDPOINT_MATCHES_SEARCH = import.meta.env.VITE_MATCHES_SEARCH_ENDPOINT || '/salas/buscar';
 
 export const getMatches = async (filters = {}) => {
-    const response = await api.get(ENDPOINT_MATCHES, { params: filters });
-    return response.data;
+    const params = {};
+    if (filters.date) {
+        const time = filters.time || '00:00';
+        params.fechaInicio = `${filters.date}T${time}:00`;
+    }
+    if (filters.onlyAvailable) {
+        params.estadoDisponibilidad = 'DISPONIBLES';
+    }
+    if (filters.search) params.nombre = filters.search;
+    if (filters.nombreCancha) params.nombreCancha = filters.nombreCancha;
+    
+    // Solo se envían si el usuario eligió "Sí(true)" o "No(false)", si está vacío manda todas
+    if (filters.esPublica !== '') params.esPublica = filters.esPublica;
+    if (filters.permiteSuplentes !== '') params.permiteSuplentes = filters.permiteSuplentes;
+    const response = await api.get(ENDPOINT_MATCHES_SEARCH, { params });
+    return response.data?.data ?? [];
 };
 
 export const getMatchById = async (id) => {
@@ -20,21 +32,5 @@ export const leaveMatch = async (matchId, reason) => {
         data: { reason }
     });
     return response.data;
-}
-
-export const getModalities = async () => {
-    const response = await api.get(ENDPOINT_MODALITIES);
-    return response.data;
 };
 
-
-export const getZones = async () => {
-    const response = await api.get(ENDPOINT_ZONES);
-    return response.data;
-};
-
-
-export const getLevels = async () => {
-    const response = await api.get(ENDPOINT_LEVELS);
-    return response.data;
-};

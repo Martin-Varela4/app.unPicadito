@@ -1,20 +1,14 @@
 import { useState, useEffect } from 'react';
-import {
-    getMatches,
-    getModalities,
-    getZones,
-    getLevels,
-    leaveMatch as leaveMatchService,
-} from '../services/matchService';
+import { getMatches, leaveMatch as leaveMatchService } from '../services/matchService';
 
 const initialFilters = {
-    search: '',
-    modality: '',
-    zone: '',
-    level: '',
+    search: '', // Se usa para el nombre de la sala
     date: '',
     time: '',
     onlyAvailable: false,
+    nombreCancha: '',
+    esPublica: '', // string vacío significa "Todas"
+    permiteSuplentes: '',
 };
 
 export const useMatches = () => {
@@ -24,40 +18,8 @@ export const useMatches = () => {
     const [isLoadingMatches, setIsLoadingMatches] = useState(false);
     const [matchesError, setMatchesError] = useState(null);
 
-    const [modalities, setModalities] = useState([]);
-    const [zones, setZones] = useState([]);
-    const [levels, setLevels] = useState([]);
-    const [isLoadingOptions, setIsLoadingOptions] = useState(false);
-    const [optionsError, setOptionsError] = useState(null);
-
     const [isLeaving, setIsLeaving] = useState(false);
     const [leaveError, setLeaveError] = useState(null);
-
-
-    useEffect(() => {
-        const fetchOptions = async () => {
-            setIsLoadingOptions(true);
-            setOptionsError(null);
-
-            try {
-                const [modalitiesData, zonesData, levelsData] = await Promise.all([
-                    getModalities(),
-                    getZones(),
-                    getLevels(),
-                ]);
-
-                setModalities(modalitiesData);
-                setZones(zonesData);
-                setLevels(levelsData);
-            } catch (error) {
-                setOptionsError(error.message ?? 'Error al cargar las opciones de filtros.');
-            } finally {
-                setIsLoadingOptions(false);
-            }
-        };
-
-        fetchOptions();
-    }, []);
 
     useEffect(() => {
         const fetchMatches = async () => {
@@ -106,17 +68,9 @@ export const useMatches = () => {
         filters,
         setFilter,
         resetFilters,
-
         matches,
         isLoadingMatches,
         matchesError,
-
-        modalities,
-        zones,
-        levels,
-        isLoadingOptions,
-        optionsError,
-
         leaveMatch,
         isLeaving,
         leaveError,
