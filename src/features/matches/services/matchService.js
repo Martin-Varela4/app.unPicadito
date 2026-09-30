@@ -1,6 +1,6 @@
 import api from '../../../api/axiosInstance';
 
-const ENDPOINT_MATCHES = import.meta.env.VITE_MATCHES_ENDPOINT || '/matches';
+const ENDPOINT_MATCHES = import.meta.env.VITE_MATCHES_ENDPOINT || '/salas';
 const ENDPOINT_MATCHES_SEARCH = import.meta.env.VITE_MATCHES_SEARCH_ENDPOINT || '/salas/buscar';
 
 export const getMatches = async (filters = {}) => {
@@ -28,9 +28,20 @@ export const getMatchById = async (id) => {
 };
 
 export const leaveMatch = async (matchId, reason) => {
-    const response = await api.delete(`${ENDPOINT_MATCHES}/${matchId}/leave`, {
+    const response = await api.delete(`${ENDPOINT_MATCHES}/${matchId}/salir`, {
         data: { reason }
     });
     return response.data;
 };
 
+export const joinMatch = async (matchId) => {
+    const response = await api.post(`${ENDPOINT_MATCHES}/${matchId}/unirse`);
+    return response.data;
+};
+
+export const cancelarSala = async (roomId, motivoCancelacion) => {
+    const response = await api.patch(`${ENDPOINT_MATCHES}/${roomId}/cancelar`, {
+        motivoCancelacion
+    });
+    return response.data;
+};
