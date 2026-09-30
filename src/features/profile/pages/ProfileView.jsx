@@ -14,19 +14,14 @@ export default function ProfileView() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
-        
         <ProfileHeader 
           player={profile} 
           isOwnProfile={isOwnProfile} 
           onEditClick={() => console.log("Editar perfil")} 
         />
-        
         <AboutSection player={profile} />
-        
         <ProfileRanking ranking={profile.reputacion} />
-        
         <ProfileReviews reviews={reviews} />
-
       </div>
     </div>
   );
