@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import AuthPage from '../features/auth/pages/AuthPage';
 import MatchesPage from '../features/matches/pages/MatchesPage';
+import { RoomDetail } from '../features/matches/pages/RoomDetail';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
 import { PlayersPage } from "../features/players/pages/PlayersPage";
@@ -14,12 +15,12 @@ export default function AppRoutes() {
                 <Route path="/registro" element={<AuthPage />} />
             </Route>
 
-            <Route path="/players" element={<PlayersPage />} />
-            <Route path="/users/:id" element={<PerfilUsuario />} />
-
             <Route element={<ProtectedRoute />}>
                 <Route path="/profile" element={<PerfilUsuario />} />
                 <Route path="/partidos" element={<MatchesPage />} />
+                <Route path="/players" element={<PlayersPage />} />
+                <Route path="/users/:id" element={<PerfilUsuario />} />
+                <Route path='/salas/:id' element={<RoomDetail />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/login" replace />} />

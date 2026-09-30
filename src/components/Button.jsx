@@ -15,6 +15,7 @@ export default function Button({
         secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-800 focus:ring-slate-300',
         outline: 'border border-slate-300 hover:bg-slate-50 text-slate-700 focus:ring-slate-200',
         danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 shadow-sm',
+        ghost: 'hover:bg-slate-100 text-slate-600 focus:ring-slate-200',
     };
 
     return (
