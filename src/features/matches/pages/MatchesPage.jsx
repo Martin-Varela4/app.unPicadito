@@ -12,10 +12,9 @@ export default function MatchesPage() {
         matches,
         isLoadingMatches,
         matchesError,
-        modalities,
-        zones,
-        levels,
-        isLoadingOptions,
+        leaveMatch,
+        isLeaving,
+        leaveError
     } = useMatches();
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -60,16 +59,15 @@ export default function MatchesPage() {
             <MatchFilters
                 filters={filters}
                 onFilterChange={setFilter}
-                modalities={modalities}
-                zones={zones}
-                levels={levels}
-                isLoadingOptions={isLoadingOptions}
             />
 
             <MatchGrid
                 matches={matches}
                 isLoading={isLoadingMatches}
                 error={matchesError}
+                leaveMatch={leaveMatch}
+                isLeaving={isLeaving}
+                leaveError={leaveError}
             />
         </div>
     );

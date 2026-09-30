@@ -1,7 +1,7 @@
 import Spinner from '../../../components/Spinner';
 import MatchCard from './MatchCard';
 
-export default function MatchGrid({ matches, isLoading, error }) {
+export default function MatchGrid({ matches, isLoading, error, leaveMatch, isLeaving, leaveError }) {
     if (isLoading) {
         return (
             <div className="flex justify-center py-12">
@@ -33,12 +33,18 @@ export default function MatchGrid({ matches, isLoading, error }) {
         <div className="flex flex-col gap-4">
             <p className="text-sm text-slate-500">
                 <span className="font-semibold text-blue-600">{matches.length}</span>{' '}
-                partidos encontrados
+                {matches.length === 1 ? 'partido encontrado' : 'partidos encontrados'}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {matches.map((match) => (
-                    <MatchCard key={match.id} match={match} />
+                    <MatchCard 
+                        key={match.id} 
+                        match={match} 
+                        leaveMatch={leaveMatch}
+                        isLeaving={isLeaving}
+                        leaveError={leaveError}
+                    />
                 ))}
             </div>
         </div>
