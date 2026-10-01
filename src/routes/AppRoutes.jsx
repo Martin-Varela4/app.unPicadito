@@ -14,6 +14,12 @@ export default function AppRoutes() {
                 <Route path="/login" element={<AuthPage />} />
                 <Route path="/registro" element={<AuthPage />} />
             </Route>
+<<<<<<< HEAD
+=======
+
+            <Route path="/players" element={<PlayersPage />} />
+            <Route path="/users/:id" element={<PerfilUsuario />} />
+>>>>>>> abb1b25df84a10e506b1f4793dcff3c7a98b9402
 
             <Route element={<ProtectedRoute />}>
                 <Route path="/profile" element={<PerfilUsuario />} />
