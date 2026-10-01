@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getMatches, leaveMatch as leaveMatchService } from '../services/matchService';
+import { getMatches, leaveMatch as leaveMatchService, joinMatch as joinMatchService } from '../services/matchService';
 
 const initialFilters = {
     search: '', // Se usa para el nombre de la sala
@@ -17,6 +17,8 @@ export const useMatches = () => {
     const [matches, setMatches] = useState([]);
     const [isLoadingMatches, setIsLoadingMatches] = useState(false);
     const [matchesError, setMatchesError] = useState(null);
+    const [joiningMatchId, setJoiningMatchId] = useState(null);
+    const [joinError, setJoinError] = useState(null);
 
     const [isLeaving, setIsLeaving] = useState(false);
     const [leaveError, setLeaveError] = useState(null);
@@ -56,11 +58,25 @@ export const useMatches = () => {
             setMatches((prevMatches) => prevMatches.filter((match) => match.id !== matchId));
             return data;
         } catch (error) {
-            const message = error.response?.data?.message || error.message || 'Error al salir de la sala';
+            const message = error.message || 'Error al salir de la sala';
             setLeaveError(message);
             throw new Error(message);
         } finally {
             setIsLeaving(false);
+        }
+    };
+
+    const joinMatch = async (matchId) => {
+        setJoiningMatchId(matchId);
+        setJoinError(null);
+
+        try {
+            await joinMatchService(matchId);
+            setMatches(await getMatches(filters));
+        } catch (error) {
+            setJoinError(error.message || 'No se pudo unir al partido.');
+        } finally {
+            setJoiningMatchId(null);
         }
     };
 
@@ -74,5 +90,8 @@ export const useMatches = () => {
         leaveMatch,
         isLeaving,
         leaveError,
+        joinMatch,
+        joiningMatchId,
+        joinError,
     };
 };

@@ -14,7 +14,10 @@ export default function MatchesPage() {
         matchesError,
         leaveMatch,
         isLeaving,
-        leaveError
+        leaveError,
+        joinMatch,
+        joiningMatchId,
+        joinError,
     } = useMatches();
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -68,6 +71,9 @@ export default function MatchesPage() {
                 leaveMatch={leaveMatch}
                 isLeaving={isLeaving}
                 leaveError={leaveError}
+                joinMatch={joinMatch}
+                joiningMatchId={joiningMatchId}
+                joinError={joinError}
             />
         </div>
     );
