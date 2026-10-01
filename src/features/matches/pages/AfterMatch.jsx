@@ -67,7 +67,7 @@ const PostMatchRating = () => {
                                 </div>
                             </div>
 
-                            {/* COMENTARIO */}
+                            {/* COMENTARIOS */}
                             <div className="mb-6">
                                 <label 
                                 htmlFor="comentario"
