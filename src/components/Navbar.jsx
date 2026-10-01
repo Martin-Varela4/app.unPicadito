@@ -1,38 +1,58 @@
-import React, { useState } from "react";
-import { Link, NavLink } from "react-router-dom"; // Usamos NavLink e hilos de navegación SPA
-import { player } from '../features/profile/UserProfile';
+import React, { useEffect, useState } from "react";
+import { Link, NavLink } from "react-router";
+import { getMyProfile } from "../features/profile/services/profile.service";
+import { mapUserToProfile } from "../features/profile/services/profile.mapper";
+import { useAuthStore } from "../features/auth/store/useAuthStore";
 import {
-  Home,
   Search,
   Users,
-  MessageCircle,
   Bell,
   ChevronDown,
   UserPen,
-  LogOut
+  LogOut,
+  UserRound
 } from "lucide-react";
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [profile, setProfile] = useState(null);
+  const token = useAuthStore((state) => state.token);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    if (!token) {
+      setProfile(null);
+      return () => {
+        isCurrent = false;
+      };
+    }
+
+    getMyProfile()
+      .then((rawUser) => {
+        if (isCurrent) setProfile(mapUserToProfile(rawUser));
+      })
+      .catch(() => {
+        if (isCurrent) setProfile(null);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [token]);
 
   // Clases base reutilizables para mantener la consistencia visual con el Sidebar
   const baseNavLinkClass = "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ease-in-out";
 
   const navItems = [
-    { icon: Home, label: "Inicio", path: "/login" },
     { icon: Search, label: "Buscar Partidos", path: "/partidos" },
     { icon: Users, label: "Comunidad", path: "/conexiones" },
-    { icon: MessageCircle, label: "Mensajes", path: "/mensajes" },
   ];
 
   return (
-    // Reemplaza .navbar (h-16 equivale a 64px, se alinea con el top-[70px] aproximado del layout)
     <nav className="fixed top-0 left-0 right-0 h-[70px] bg-white border-b border-gray-200 z-50 px-4 md:px-6">
       
-      {/* Reemplaza .navbar__inner */}
       <div className="flex items-center justify-between h-full max-w-[1400px] mx-auto">
-        
-        {/* Reemplaza .navbar__brand */}
         <div className="flex items-center gap-2 select-none">
           <div className="text-2xl">⚽</div>
           <div className="flex flex-col leading-none font-bold text-gray-900">
@@ -41,7 +61,6 @@ export default function NavBar() {
           </div>
         </div>
 
-        {/* Reemplaza .navbar__links (Se ocultan en móvil para que el Sidebar tome el control en pantallas grandes) */}
         <div className="hidden lg:flex items-center gap-1">
           {navItems.map(({ icon: Icon, label, path }) => (
             <NavLink 
@@ -61,42 +80,40 @@ export default function NavBar() {
           ))}
         </div>
 
-        {/* Reemplaza .navbar__actions */}
         <div className="flex items-center gap-4">
-          
-          {/* Icono de notificaciones con efecto hover */}
           <button className="p-2 text-gray-500 hover:bg-gray-50 hover:text-gray-700 rounded-full transition-colors relative cursor-pointer">
             <Bell size={20} />
-            {/* Indicador rojo de notificación (opcional) */}
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
           
-          {/* Contenedor relativo del usuario y su menú */}
           <div className="relative">
-            
-            {/* Botón de Perfil interactivo */}
             <button 
               onClick={() => setIsOpen(!isOpen)}
               className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none cursor-pointer group"
+              aria-label="Abrir menú de usuario"
             >
-              <img
-                src={player.avatar}
-                alt={`Foto de perfil de ${player.nombre}`}
-                className="w-8 h-8 rounded-full border border-gray-200 object-cover"
-              />
+              {profile?.avatar ? (
+                <img
+                  src={profile.avatar}
+                  alt={`Foto de perfil de ${profile.name}`}
+                  className="w-8 h-8 rounded-full border border-gray-200 object-cover"
+                />
+              ) : (
+                <span className="flex items-center justify-center w-8 h-8 rounded-full border border-gray-200 bg-gray-50 text-gray-500">
+                  <UserRound size={18} />
+                </span>
+              )}
               <ChevronDown 
                 size={16} 
                 className={`text-gray-500 group-hover:text-gray-700 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
               />
             </button>
 
-            {/* Menú Desplegable (Estilo idéntico a las tarjetas dinámicas de Tailwind) */}
             {isOpen && (
               <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                 
-                {/* Cabecera pequeña de contexto dentro del menú */}
                 <div className="px-4 py-1.5 text-xs text-gray-400 font-medium uppercase tracking-wider">
-                  {player.name}
+                  {profile?.name || "Usuario"}
                 </div>
 
                 <Link
@@ -109,7 +126,6 @@ export default function NavBar() {
                 </Link>
 
                 <hr className="border-gray-100 my-1" />
-
                 <button
                   onClick={() => {
                     setIsOpen(false);
@@ -120,7 +136,6 @@ export default function NavBar() {
                   <LogOut size={16} />
                   Cerrar Sesión
                 </button>
-
               </div>
             )}
           </div>
