@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import api from "../../../api/axios";
+import api from "../../../api/axiosInstance";
 import { RoomHeader } from "../components/RoomHeader";
 import { RoomInfoCard } from "../components/RoomInfoCard";
 import { RoomSlotsSummary } from "../components/RoomSlotsSummary";
 import { RoomParticipantsList } from "../components/RoomParticipantsList";
 import TacticalBoard from "../components/TacticalBoard";
+import { CancelRoomManager } from "../components/CancelRoomManager";
+import { LeaveRoomManager } from "../components/LeaveRoomManager";
 
 export const RoomDetail = () => {
   const { roomId } = useParams();
@@ -17,8 +19,26 @@ export const RoomDetail = () => {
   useEffect(() => {
     const fetchRoomDetail = async () => {
       try {
-        const response = await api.get(`/rooms/${roomId}`);
-        setRoom(response.data);
+        const response = await api.get(`/salas/${roomId}`);
+        const rawMatch = response.data;
+        
+        // Mapear los campos del backend (español) a los esperados por el componente (inglés)
+        const mappedRoom = {
+          ...rawMatch,
+          title: rawMatch.nombre,
+          description: rawMatch.direccion, // o rawMatch.descripcion si existe
+          maxPlayers: rawMatch.cuposTotales,
+          status: rawMatch.estado,
+          modality: 'F5', // TODO: mapear modalidad real si viene del backend
+          creadorId: rawMatch.creador?.id || rawMatch.creadorId,
+          participants: (rawMatch.participantes || []).map(p => ({
+            ...p,
+            id: p.id || p.usuario?.id, // Asegurar que tenga ID
+            status: "CONFIRMED" // Asumimos que todos son confirmados por ahora si no hay estado específico
+          }))
+        };
+        
+        setRoom(mappedRoom);
       } catch (err) {
         setError("No se pudo cargar la información de la sala.");
       } finally {
@@ -46,6 +66,10 @@ export const RoomDetail = () => {
   const substitutes =
     room.participants?.filter((p) => p.status === "SUBSTITUTE") || [];
   const availableSlots = Math.max(0, room.maxPlayers - confirmedPlayers.length);
+
+  const handleRoomCanceled = () => {
+    setRoom(prev => ({ ...prev, status: 'CANCELADA' }));
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
@@ -75,6 +99,17 @@ export const RoomDetail = () => {
         confirmedPlayers={confirmedPlayers}
         substitutes={substitutes}
         maxPlayers={room.maxPlayers}
+      />
+
+      <CancelRoomManager
+        room={room}
+        roomId={roomId}
+        onCancelSuccess={handleRoomCanceled}
+      />
+
+      <LeaveRoomManager
+        room={room}
+        roomId={roomId}
       />
     </div>
   );
