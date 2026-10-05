@@ -12,7 +12,7 @@ import {
   LogOut,
   UserRound
 } from "lucide-react";
-
+  
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [profile, setProfile] = useState(null);
