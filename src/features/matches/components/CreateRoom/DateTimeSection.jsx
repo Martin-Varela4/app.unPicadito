@@ -1,9 +1,6 @@
-import React from 'react';
-import { useFormContext } from 'react-hook-form';
 import Input from '../../../../components/Input';
 
-export const DateTimeSection = () => {
-    const { register, formState: { errors } } = useFormContext();
+export const DateTimeSection = ({ values, errors, onChange }) => {
 
     return (
         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
@@ -12,14 +9,18 @@ export const DateTimeSection = () => {
                 <Input
                     type="date"
                     label="Fecha del Partido"
-                    error={errors.date?.message}
-                    {...register('date')}
+                    name="date"
+                    value={values.date}
+                    onChange={(event) => onChange('date', event.target.value)}
+                    error={errors.date}
                 />
                 <Input
                     type="time"
                     label="Horario"
-                    error={errors.time?.message}
-                    {...register('time')}
+                    name="time"
+                    value={values.time}
+                    onChange={(event) => onChange('time', event.target.value)}
+                    error={errors.time}
                 />
             </div>
         </div>

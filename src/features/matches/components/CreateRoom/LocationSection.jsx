@@ -1,5 +1,3 @@
-import React from 'react';
-import { useFormContext } from 'react-hook-form';
 import Select from '../../../../components/Select';
 
 const mockLocations = [
@@ -8,8 +6,7 @@ const mockLocations = [
     { value: '3', label: 'Predio Los Álamos (Fútbol 7)' }
 ];
 
-export const LocationSection = () => {
-    const { register, formState: { errors } } = useFormContext();
+export const LocationSection = ({ values, errors, onChange }) => {
 
     return (
         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
@@ -17,8 +14,10 @@ export const LocationSection = () => {
             <Select
                 label="Predio o Cancha"
                 options={mockLocations}
-                error={errors.locationId?.message}
-                {...register('locationId')}
+                name="locationId"
+                value={values.locationId}
+                onChange={(event) => onChange('locationId', event.target.value)}
+                error={errors.locationId}
             />
         </div>
     );

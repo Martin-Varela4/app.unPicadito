@@ -1,5 +1,3 @@
-import React from 'react';
-import { useFormContext } from 'react-hook-form';
 import Select from '../../../../components/Select';
 
 const privacyOptions = [
@@ -13,8 +11,7 @@ const entryRequirementOptions = [
     { value: 'AMATEUR', label: 'Solo nivel amateur / mixto' }
 ];
 
-export const PrivacySection = () => {
-    const { register, formState: { errors } } = useFormContext();
+export const PrivacySection = ({ values, errors, onChange }) => {
 
     return (
         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
@@ -23,14 +20,18 @@ export const PrivacySection = () => {
                 <Select
                     label="Visibilidad de la Sala"
                     options={privacyOptions}
-                    error={errors.privacy?.message}
-                    {...register('privacy')}
+                    name="privacy"
+                    value={values.privacy}
+                    onChange={(event) => onChange('privacy', event.target.value)}
+                    error={errors.privacy}
                 />
                 <Select
                     label="Parámetro de Ingreso"
                     options={entryRequirementOptions}
-                    error={errors.entryRequirement?.message}
-                    {...register('entryRequirement')}
+                    name="entryRequirement"
+                    value={values.entryRequirement}
+                    onChange={(event) => onChange('entryRequirement', event.target.value)}
+                    error={errors.entryRequirement}
                 />
             </div>
         </div>

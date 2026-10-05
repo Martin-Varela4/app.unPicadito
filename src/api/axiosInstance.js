@@ -25,11 +25,14 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        let customErrorMessage = 'Ocurrió un error en la conexión con el servidor.';
+        let customErrorMessage;
 
         if (error.response) {
-            
+            const validationMessages = error.response.data?.errors
+                ?.map((validationError) => validationError.message)
+                .filter(Boolean);
             customErrorMessage =
+                validationMessages?.join(' ') ||
                 error.response.data?.message ||
                 error.response.data?.error ||
                 `Error del servidor (${error.response.status})`;
@@ -42,7 +45,7 @@ api.interceptors.response.use(
             // La petición se envió pero no hubo respuesta
             customErrorMessage = 'No se pudo conectar con el servidor. Revisa tu conexión a internet.';
         } else {
-            customErrorMessage = error.message;
+            customErrorMessage = error.message || 'Ocurrió un error en la conexión con el servidor.';
         }
 
         return Promise.reject(new Error(customErrorMessage));

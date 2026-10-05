@@ -1,9 +1,6 @@
-import React from 'react';
-import { useFormContext } from 'react-hook-form';
 import Input from '../../../../components/Input';
 
-export const CapacitySection = () => {
-    const { register, formState: { errors } } = useFormContext();
+export const CapacitySection = ({ values, errors, onChange }) => {
 
     return (
         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
@@ -12,8 +9,10 @@ export const CapacitySection = () => {
                 type="number"
                 label="Límite de Jugadores"
                 placeholder="Ej: 10"
-                error={errors.maxPlayers?.message}
-                {...register('maxPlayers')}
+                name="maxPlayers"
+                value={values.maxPlayers}
+                onChange={(event) => onChange('maxPlayers', event.target.value)}
+                error={errors.maxPlayers}
             />
             <p className="text-xs text-gray-500">Mínimo 10 (Fútbol 5) - Máximo 22 (Fútbol 11)</p>
         </div>

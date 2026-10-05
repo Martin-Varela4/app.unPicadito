@@ -1,4 +1,5 @@
 import api from '../../../api/axiosInstance';
+import { mapRoomFromApi } from './matchMapper';
 
 const ENDPOINT_MATCHES = import.meta.env.VITE_MATCHES_ENDPOINT || '/salas';
 const ENDPOINT_MATCHES_SEARCH = import.meta.env.VITE_MATCHES_SEARCH_ENDPOINT || '/salas/buscar';
@@ -24,7 +25,8 @@ export const getMatches = async (filters = {}) => {
 
 export const getMatchById = async (id) => {
     const response = await api.get(`${ENDPOINT_MATCHES}/${id}`);
-    return response.data;
+    const rawData = response.data?.data || response.data;
+    return mapRoomFromApi(rawData);
 };
 
 export const leaveMatch = async (matchId, reason) => {
@@ -44,4 +46,10 @@ export const cancelarSala = async (roomId, motivoCancelacion) => {
         motivoCancelacion
     });
     return response.data;
+};
+
+export const updateMatch = async (id, data) => {
+    const response = await api.patch(`${ENDPOINT_MATCHES}/${id}`, data);
+    const updatedData = response.data?.data || response.data;
+    return mapRoomFromApi(updatedData);
 };
