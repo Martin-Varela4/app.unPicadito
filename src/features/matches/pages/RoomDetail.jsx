@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import api from "../../../api/axiosInstance";
+import { getMatchById } from "../services/matchService";
 import { RoomHeader } from "../components/RoomHeader";
 import { RoomInfoCard } from "../components/RoomInfoCard";
 import { RoomSlotsSummary } from "../components/RoomSlotsSummary";
@@ -10,7 +10,7 @@ import { CancelRoomManager } from "../components/CancelRoomManager";
 import { LeaveRoomManager } from "../components/LeaveRoomManager";
 
 export const RoomDetail = () => {
-  const { roomId } = useParams();
+  const { id: roomId } = useParams();
 
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,25 +19,7 @@ export const RoomDetail = () => {
   useEffect(() => {
     const fetchRoomDetail = async () => {
       try {
-        const response = await api.get(`/salas/${roomId}`);
-        const rawMatch = response.data;
-        
-        // Mapear los campos del backend (español) a los esperados por el componente (inglés)
-        const mappedRoom = {
-          ...rawMatch,
-          title: rawMatch.nombre,
-          description: rawMatch.direccion, // o rawMatch.descripcion si existe
-          maxPlayers: rawMatch.cuposTotales,
-          status: rawMatch.estado,
-          modality: 'F5', // TODO: mapear modalidad real si viene del backend
-          creadorId: rawMatch.creador?.id || rawMatch.creadorId,
-          participants: (rawMatch.participantes || []).map(p => ({
-            ...p,
-            id: p.id || p.usuario?.id, // Asegurar que tenga ID
-            status: "CONFIRMED" // Asumimos que todos son confirmados por ahora si no hay estado específico
-          }))
-        };
-        
+        const mappedRoom = await getMatchById(roomId);
         setRoom(mappedRoom);
       } catch (err) {
         setError("No se pudo cargar la información de la sala.");

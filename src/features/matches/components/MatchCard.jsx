@@ -103,7 +103,7 @@ export default function MatchCard({ match, leaveMatch, isLeaving, leaveError, on
           variant={isJoined ? "outline" : "primary"}
           onClick={
             isJoined
-              ? () => navigate(`/rooms/${match.id}`)
+              ? () => navigate(`/salas/${match.id}`)
               : handleJoin
           }
           disabled={
