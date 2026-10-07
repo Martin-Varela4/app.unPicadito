@@ -5,7 +5,7 @@ export default function PublicRoute() {
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
     if (isAuthenticated) {
-        return <Navigate to="/profile" replace />; // temporal, hasta que exista Home
+        return <Navigate to="/" replace />;
     }
 
     return <Outlet />;

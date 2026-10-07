@@ -11,11 +11,11 @@ export const CancelRoomManager = ({ room, roomId, onCancelSuccess }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [motivo, setMotivo] = useState('');
 
-    const isCreator = currentUser?.id === room.creadorId;
+    const isOrganizer = Boolean(currentUser?.id) && currentUser.id === room.organizerId;
     const isCancelable = room.status !== 'CANCELADA' && room.status !== 'FINALIZADA';
 
-    if (!isCreator || !isCancelable) return null;
-
+    if (!isOrganizer || !isCancelable) return null;
+    
     const handleCancelar = async () => {
         if (motivo.length < 10) {
             setError('El motivo debe tener al menos 10 caracteres.');
