@@ -27,10 +27,8 @@ export const useAuth = () => {
         const activeService = isLogin ? loginService : registerService;
 
         try {
-            // 1. Validar esquema local con Yup
             await activeSchema.validate(formData, { abortEarly: false });
 
-            // 2. Preparar el payload adaptado para el backend (Zod)
             let payload = { ...formData };
 
             if (!isLogin) {
@@ -42,33 +40,18 @@ export const useAuth = () => {
                 delete payload.confirmPassword;
             }
 
-            console.log("🚀 [DEBUG] Enviando payload:", payload);
-
-            // 3. Ejecutar servicio de Axios
             const response = await activeService(payload);
-            console.log("📥 [DEBUG] Respuesta cruda del backend:", response);
 
-            // 4. Extracción de datos
             const user = response.user ?? response.data?.user ?? response;
             const token = response.token ?? response.data?.token;
             const refreshToken = response.refreshToken ?? response.data?.refreshToken ?? null;
 
-            console.log("🔑 [DEBUG] Token extraído:", token);
-            console.log("👤 [DEBUG] Usuario extraído:", user);
 
-            if (!token) {
-                console.warn("⚠️ [DEBUG] ¡Cuidado! El token llegó como undefined o null.");
-            }
-
-            // 5. Guardar en Zustand
             storeLogin({ user, token, refreshToken });
-            console.log("🔄 [DEBUG] Intentando navegar a /profile...");
 
-            // 6. Redireccionar
-            navigate('/profile', { replace: true });
+            navigate('/', { replace: true });
 
         } catch (error) {
-            console.error("❌ [DEBUG] Error atrapado en authenticate:", error);
             if (error instanceof yup.ValidationError) {
                 const formattedErrors = {};
                 error.inner.forEach((err) => {

@@ -12,17 +12,25 @@ export const LeaveRoomManager = ({ room, roomId, onLeaveSuccess }) => {
 
     const [isOpen, setIsOpen] = useState(false);
 
-    const isCreator = currentUser?.id === room.creadorId;
+    const isOrganizer = Boolean(currentUser?.id) && currentUser.id === room.organizerId;
 
-    // Check if current user is a participant
     const isParticipant = room.participants?.some(
-        (p) => p.userId === currentUser?.id || p.id === currentUser?.id
+        (p) => p.userId === currentUser?.id && ['CONFIRMED', 'SUBSTITUTE', 'PENDING'].includes(p.status)
     );
 
     const isLeavable = room.status !== 'CANCELADA' && room.status !== 'FINALIZADA';
 
-    // Only show for non-creator participants in an active room
-    if (isCreator || !isParticipant || !isLeavable) return null;
+    if (!isParticipant || !isLeavable) return null;
+
+    if (isOrganizer) {
+        return (
+            <div className="border-t border-slate-200 mt-6 pt-4 text-center">
+                <p id="room-leave-organizer-hint" className="text-sm text-slate-500">
+                    Para salir de la sala, transferí la organización a otro jugador o cancelá la sala.
+                </p>
+            </div>
+        );
+    }
 
     const handleLeave = async () => {
         const { success } = await executeLeave(roomId);
@@ -32,7 +40,7 @@ export const LeaveRoomManager = ({ room, roomId, onLeaveSuccess }) => {
             if (onLeaveSuccess) {
                 onLeaveSuccess();
             } else {
-                navigate('/matches');
+                navigate('/partidos');
             }
         }
     };
@@ -58,10 +66,10 @@ export const LeaveRoomManager = ({ room, roomId, onLeaveSuccess }) => {
 
                     <div className="flex justify-end gap-2 mt-4">
                         <Button variant="ghost" onClick={() => setIsOpen(false)} disabled={isLeaving}>
-                            Volver
+                            Cancelar
                         </Button>
-                        <Button variant="danger" onClick={handleLeave} disabled={isLeaving}>
-                            {isLeaving ? 'Saliendo...' : 'Confirmar salida'}
+                        <Button variant="danger" onClick={handleLeave} isLoading={isLeaving}>
+                            Confirmar Salida
                         </Button>
                     </div>
                 </div>

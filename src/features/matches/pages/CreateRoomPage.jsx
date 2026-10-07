@@ -1,45 +1,60 @@
-import { useState } from 'react';
-import { CapacitySection } from '../components/CreateRoom/CapacitySection';
-import { DateTimeSection } from '../components/CreateRoom/DateTimeSection';
-import { LocationSection } from '../components/CreateRoom/LocationSection';
-import { PrivacySection } from '../components/CreateRoom/PrivacySection';
-
-const initialValues = {
-    locationId: '',
-    date: '',
-    time: '',
-    maxPlayers: '10',
-    privacy: 'PUBLIC',
-    entryRequirement: 'NONE',
-};
+import Button from '../../../components/Button';
+import Switch from '../../../components/Switch';
+import { EditRoomFields } from '../components/EditRoom/EditRoomFields';
+import { LocationPickerMap } from '../components/LocationPickerMap';
+import { useCreateRoom } from '../hooks/useCreateRoom';
 
 export default function CreateRoomPage() {
-    const [values, setValues] = useState(initialValues);
-    const [message, setMessage] = useState('');
-
-    const handleChange = (name, value) => {
-        setValues((current) => ({ ...current, [name]: value }));
-        setMessage('');
-    };
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        setMessage('La creación de salas todavía no está conectada al servicio de la API.');
-    };
+    const create = useCreateRoom();
 
     return (
-        <main className="max-w-2xl mx-auto p-6 space-y-6">
-            <h1 className="text-2xl font-bold text-slate-900">Crear sala</h1>
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <LocationSection values={values} errors={{}} onChange={handleChange} />
-                <DateTimeSection values={values} errors={{}} onChange={handleChange} />
-                <CapacitySection values={values} errors={{}} onChange={handleChange} />
-                <PrivacySection values={values} errors={{}} onChange={handleChange} />
-                {message && <p role="alert" className="text-sm text-amber-700">{message}</p>}
-                <div className="flex justify-end">
-                    <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
+        <main className="max-w-2xl mx-auto p-6 bg-white rounded-2xl shadow-sm border border-slate-200 mt-6 mb-12">
+            <h1 className="text-2xl font-bold text-slate-900 mb-1">Crear sala</h1>
+            <p className="text-sm text-slate-500 mb-6">Completá los datos y armá tu picadito.</p>
+
+            {create.errorMessage && (
+                <div role="alert" className="p-3 mb-4 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
+                    {create.errorMessage}
+                </div>
+            )}
+
+            <form id="create-room-form" onSubmit={create.handleSubmit} className="space-y-5">
+                <EditRoomFields
+                    values={create.formData}
+                    errors={create.fieldErrors}
+                    onChange={create.handleChange}
+                />
+
+                <div className="pt-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Ubicación en el mapa
+                    </label>
+                    <LocationPickerMap
+                        value={create.formData.ubicacion}
+                        onChange={(coords) => create.handleChange('ubicacion', coords)}
+                    />
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 pt-2 border-t border-slate-100">
+                    <Switch
+                        label="Sala pública (cualquiera puede unirse)"
+                        checked={create.formData.esPublica}
+                        onChange={(e) => create.handleChange('esPublica', e.target.checked)}
+                    />
+                    <Switch
+                        label="Permitir suplentes"
+                        checked={create.formData.permiteSuplentes}
+                        onChange={(e) => create.handleChange('permiteSuplentes', e.target.checked)}
+                    />
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <Button type="button" variant="secondary" onClick={create.cancel}>
+                        Cancelar
+                    </Button>
+                    <Button id="create-room-submit" type="submit" isLoading={create.isSubmitting}>
                         Crear Sala
-                    </button>
+                    </Button>
                 </div>
             </form>
         </main>

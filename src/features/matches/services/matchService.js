@@ -29,10 +29,8 @@ export const getMatchById = async (id) => {
     return mapRoomFromApi(rawData);
 };
 
-export const leaveMatch = async (matchId, reason) => {
-    const response = await api.delete(`${ENDPOINT_MATCHES}/${matchId}/salir`, {
-        data: { reason }
-    });
+export const leaveMatch = async (matchId) => {
+    const response = await api.delete(`${ENDPOINT_MATCHES}/${matchId}/salir`);
     return response.data;
 };
 
@@ -52,4 +50,22 @@ export const updateMatch = async (id, data) => {
     const response = await api.patch(`${ENDPOINT_MATCHES}/${id}`, data);
     const updatedData = response.data?.data || response.data;
     return mapRoomFromApi(updatedData);
+};
+
+export const createMatch = async (data) => {
+    const response = await api.post(ENDPOINT_MATCHES, data);
+    const createdData = response.data?.data || response.data;
+    return mapRoomFromApi(createdData);
+};
+
+export const expelPlayer = async (matchId, userId) => {
+    const response = await api.delete(`${ENDPOINT_MATCHES}/${matchId}/expulsar/${userId}`);
+    return response.data;
+};
+
+export const transferOrganizer = async (matchId, nuevoOrganizadorUserId) => {
+    const response = await api.patch(`${ENDPOINT_MATCHES}/${matchId}/transferir-organizador`, {
+        nuevoOrganizadorUserId: Number(nuevoOrganizadorUserId),
+    });
+    return response.data;
 };

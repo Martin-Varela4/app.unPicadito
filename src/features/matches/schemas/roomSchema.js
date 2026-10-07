@@ -34,3 +34,11 @@ export const roomSchema = yup.object().shape({
         .max(200, 'Máximo 200 caracteres')
         .optional(),
 });
+
+export const createRoomSchema = roomSchema.test('fecha-futura', 'La fecha y hora del partido deben ser futuras', 
+    function ({ fecha, hora }) {
+        if (!fecha || !hora) return true; // los required ya informan si falta alguno
+        const isFuture = new Date(`${fecha}T${hora}:00`) > new Date();
+        return isFuture || this.createError({ path: 'fecha', message: 'La fecha y hora del partido deben ser futuras' });
+    }
+);

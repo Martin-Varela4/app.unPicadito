@@ -1,10 +1,19 @@
-import React from 'react';
 import { PlayerCard } from './PlayerCard';
 
-export const RoomParticipantsList = ({ confirmedPlayers, substitutes, maxPlayers }) => {
+export const RoomParticipantsList = ({
+    confirmedPlayers = [],
+    substitutes = [],
+    maxPlayers = 10,
+    currentUserId,
+    isCurrentOrganizer = false,
+    onExpelPlayer,
+    onTransferOrganizer,
+}) => {
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">Participantes Inscriptos</h2>
+            <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">
+                Participantes Inscriptos
+            </h2>
 
             {/* Titulares Confirmados */}
             <div>
@@ -16,7 +25,15 @@ export const RoomParticipantsList = ({ confirmedPlayers, substitutes, maxPlayers
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                         {confirmedPlayers.map((player) => (
-                            <PlayerCard key={player.id} player={player} type="confirmed" />
+                            <PlayerCard
+                                key={player.id ?? player.userId}
+                                player={player}
+                                type="confirmed"
+                                isOrganizer={player.isOrganizer}
+                                canManage={isCurrentOrganizer && player.userId !== currentUserId}
+                                onExpel={onExpelPlayer}
+                                onTransfer={onTransferOrganizer}
+                            />
                         ))}
                     </div>
                 )}
@@ -32,7 +49,15 @@ export const RoomParticipantsList = ({ confirmedPlayers, substitutes, maxPlayers
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                         {substitutes.map((player) => (
-                            <PlayerCard key={player.id} player={player} type="substitute" />
+                            <PlayerCard
+                                key={player.id ?? player.userId}
+                                player={player}
+                                type="substitute"
+                                isOrganizer={player.isOrganizer}
+                                canManage={isCurrentOrganizer && player.userId !== currentUserId}
+                                onExpel={onExpelPlayer}
+                                onTransfer={onTransferOrganizer}
+                            />
                         ))}
                     </div>
                 )}
