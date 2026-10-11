@@ -10,6 +10,7 @@ import MainLayout from '../components/MainLayout';
 import { PlayersPage } from '../features/players/pages/PlayersPage';
 import PerfilUsuario from '../features/profile/pages/ProfileView';
 import HomePage from '../features/home/components/page/HomePage';
+import ProfileEdit from '../features/players/pages/ProfileEdit';
 
 export default function AppRoutes() {
     return (
@@ -23,6 +24,7 @@ export default function AppRoutes() {
                 <Route element={<MainLayout />}>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/profile" element={<PerfilUsuario />} />
+                    <Route path="/profileEdit" element={<ProfileEdit />} />
                     <Route path="/partidos" element={<MatchesPage />} />
                     <Route path="/players" element={<PlayersPage />} />
                     <Route path="/users/:id" element={<PerfilUsuario />} />
