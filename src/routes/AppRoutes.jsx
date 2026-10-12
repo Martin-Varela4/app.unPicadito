@@ -9,6 +9,7 @@ import PublicRoute from './PublicRoute';
 import MainLayout from '../components/MainLayout';
 import { PlayersPage } from '../features/players/pages/PlayersPage';
 import PerfilUsuario from '../features/profile/pages/ProfileView';
+import EditProfileForm from '../features/profile/pages/ProfileEdit';
 import HomePage from '../features/home/components/page/HomePage';
 
 export default function AppRoutes() {
@@ -23,6 +24,7 @@ export default function AppRoutes() {
                 <Route element={<MainLayout />}>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/profile" element={<PerfilUsuario />} />
+                    <Route path="/profile/edit" element={<EditProfileForm />} />
                     <Route path="/partidos" element={<MatchesPage />} />
                     <Route path="/players" element={<PlayersPage />} />
                     <Route path="/users/:id" element={<PerfilUsuario />} />
