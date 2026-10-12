@@ -6,9 +6,10 @@ export default function Spinner({ size = 'md', label }) {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center gap-2">
+        <div role="status" aria-label={label || 'Cargando'} className="flex flex-col items-center justify-center gap-2">
             <svg
-                className={`animate-spin text-blue-600 ${sizes[size] || sizes.md}`}
+                aria-hidden="true"
+                className={`animate-spin text-[var(--color-brand-primary)] ${sizes[size] || sizes.md}`}
                 fill="none"
                 viewBox="0 0 24 24"
             >
@@ -27,7 +28,7 @@ export default function Spinner({ size = 'md', label }) {
                 />
             </svg>
             {label && (
-                <span className="text-sm text-slate-500">{label}</span>
+                <span className="text-sm text-slate-300">{label}</span>
             )}
         </div>
     );

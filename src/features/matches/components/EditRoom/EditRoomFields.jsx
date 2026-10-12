@@ -1,8 +1,8 @@
-import Input from '../../../../components/Input';
+import Input from '../../../../components/ui/Input';
 
 export const EditRoomFields = ({ values, errors = {}, isTimeLocked = false, onChange }) => {
     const handleChange = (event) => onChange(event.target.name, event.target.value);
-    const lockedClass = isTimeLocked ? 'bg-slate-100 text-slate-400 border-slate-200' : '';
+    const lockedClass = isTimeLocked ? 'bg-slate-800 text-slate-400 border-slate-700' : '';
 
     return (
         <div className="space-y-4">
@@ -14,7 +14,7 @@ export const EditRoomFields = ({ values, errors = {}, isTimeLocked = false, onCh
                 onChange={handleChange}
                 error={errors.nombre}
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
                 <Input
                     name="nombreCancha"
                     label="Complejo / Cancha"
@@ -34,7 +34,7 @@ export const EditRoomFields = ({ values, errors = {}, isTimeLocked = false, onCh
                     error={errors.direccion}
                 />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
                 <Input
                     name="fecha"
                     type="date"
@@ -65,7 +65,7 @@ export const EditRoomFields = ({ values, errors = {}, isTimeLocked = false, onCh
                 error={errors.cuposTotales}
             />
             <div>
-                <label htmlFor="descripcion" className="block text-sm font-medium text-slate-700 mb-1.5">
+                <label htmlFor="descripcion" className="block text-sm font-medium text-slate-200 mb-1.5">
                     Descripción / Indicaciones
                 </label>
                 <textarea
@@ -74,7 +74,7 @@ export const EditRoomFields = ({ values, errors = {}, isTimeLocked = false, onCh
                     rows={3}
                     value={values.descripcion}
                     onChange={handleChange}
-                    className="w-full rounded-lg border border-slate-300 p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    className="min-h-24 w-full rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-main)] p-3 text-sm text-white outline-none placeholder:text-slate-400 focus:border-[var(--color-brand-primary)] focus:ring-1 focus:ring-[var(--color-brand-primary)]"
                     placeholder="Ej: Traer pechera o camiseta clara..."
                 />
                 {errors.descripcion && (

@@ -1,29 +1,32 @@
-import React from 'react';
-
 export const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, isLoading, children }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-96">
-                <h3 className="text-xl font-bold mb-4 text-gray-800">{title}</h3>
+        <div onClick={(event) => event.stopPropagation()} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
+            <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="confirm-modal-title"
+                className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] p-5 shadow-xl sm:p-6"
+            >
+                <h3 id="confirm-modal-title" className="mb-4 text-xl font-bold text-slate-100">{title}</h3>
                 {children ? (
                     children
                 ) : (
                     <>
-                        <p className="text-gray-600 mb-6">{message}</p>
-                        <div className="flex justify-end space-x-3">
+                        <p className="mb-6 text-slate-300">{message}</p>
+                        <div className="flex flex-col-reverse justify-end gap-3 sm:flex-row">
                             <button
                                 onClick={onClose}
                                 disabled={isLoading}
-                                className="px-4 py-2 text-gray-600 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+                                className="min-h-11 rounded-md bg-slate-700 px-4 py-2 text-slate-100 transition-colors hover:bg-slate-600 disabled:opacity-50"
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={onConfirm}
                                 disabled={isLoading}
-                                className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center"
+                                className="flex min-h-11 items-center rounded-md bg-[var(--color-brand-primary)] px-4 py-2 font-semibold text-[#21263A] transition-colors hover:bg-[var(--color-brand-primary-dark)] disabled:opacity-50"
                             >
                                 {isLoading ? 'Guardando...' : 'Confirmar Cambios'}
                             </button>

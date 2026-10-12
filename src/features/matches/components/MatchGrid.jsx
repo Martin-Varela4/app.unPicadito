@@ -1,4 +1,4 @@
-import Spinner from '../../../components/Spinner';
+import Spinner from '../../../components/ui/Spinner';
 import MatchCard from './MatchCard';
 
 export default function MatchGrid({ matches, isLoading, error, leaveMatch, isLeaving, leaveError, joinMatch, joiningMatchId, joinError }) {
@@ -12,7 +12,7 @@ export default function MatchGrid({ matches, isLoading, error, leaveMatch, isLea
 
     if (error) {
         return (
-            <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+            <div role="alert" className="flex items-center gap-2 rounded-md border border-red-500/40 bg-red-950/40 p-3 text-sm text-red-200">
                 <span>⚠️</span>
                 <span>{error}</span>
             </div>
@@ -22,7 +22,7 @@ export default function MatchGrid({ matches, isLoading, error, leaveMatch, isLea
     if (!matches || matches.length === 0) {
         return (
             <div className="text-center py-12">
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-slate-400">
                     No se encontraron partidos con los filtros seleccionados.
                 </p>
             </div>
@@ -30,14 +30,11 @@ export default function MatchGrid({ matches, isLoading, error, leaveMatch, isLea
     }
 
     return (
-        <div className="flex flex-col gap-4">
-            <p className="text-sm text-slate-500">
-                <span className="font-semibold text-blue-600">{matches.length}</span>{' '}
-                {matches.length === 1 ? 'partido encontrado' : 'partidos encontrados'}
-            </p>
-            {joinError && <p className="text-sm text-red-600">{joinError}</p>}
+        <div className="mt-2 flex flex-col gap-4">
+            <h2 className="text-lg font-semibold text-white sm:text-xl">Partidos para sumarte <span className="ml-2 rounded-sm bg-slate-800 px-2 py-1 text-sm font-normal text-slate-300">{matches.length} partidos</span></h2>
+            {joinError && <p role="alert" className="text-sm text-red-400">{joinError}</p>}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {matches.map((match) => (
                     <MatchCard
                         key={match.id}

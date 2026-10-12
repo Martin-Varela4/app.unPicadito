@@ -1,26 +1,18 @@
-import { useState, useEffect } from 'react';
-import Input from '../../../components/Input';
-import Button from '../../../components/Button';
+import { useState } from 'react';
+import Input from '../../../components/ui/Input';
+import Button from '../../../components/ui/Button';
 import { useAuth } from '../hooks/useAuth';
 
 export default function AuthForm({ mode = 'login', onToggleMode }) {
   const isLogin = mode === 'login';
 
-  const initialFormState = {
+  const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
     confirmPassword: '',
-  };
-
-  const [formData, setFormData] = useState(initialFormState);
+  });
   const { authenticate, isLoading, validationErrors, apiError, clearErrors } = useAuth();
-
-  // Limpiar campos y errores cuando cambia de Login a Registro o viceversa
-  useEffect(() => {
-    setFormData(initialFormState);
-    clearErrors();
-  }, [mode]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,7 +29,7 @@ export default function AuthForm({ mode = 'login', onToggleMode }) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
       {/* Alerta de Error de Backend */}
       {apiError && (
-        <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+        <div className="p-3 text-sm text-red-200 bg-red-950/40 border border-red-500/40 rounded-lg flex items-center gap-2">
           <span>⚠️</span>
           <span>{apiError}</span>
         </div>
@@ -100,12 +92,15 @@ export default function AuthForm({ mode = 'login', onToggleMode }) {
       </Button>
 
       {/* Selector de modo */}
-      <div className="text-center text-sm text-slate-600 mt-2">
+      <div className="text-center text-sm text-slate-300 mt-2">
         {isLogin ? '¿No tienes una cuenta?' : '¿Ya tienes una cuenta?'}{' '}
         <button
           type="button"
-          onClick={onToggleMode}
-          className="font-semibold text-blue-600 hover:text-blue-700 underline focus:outline-none"
+          onClick={() => {
+            clearErrors();
+            onToggleMode();
+          }}
+          className="font-semibold text-sky-300 hover:text-sky-300 underline focus:outline-none"
         >
           {isLogin ? 'Regístrate aquí' : 'Inicia sesión'}
         </button>

@@ -1,10 +1,10 @@
-import Input from '../../../../components/Input';
+import Input from '../../../../components/ui/Input';
 
 export const DateTimeSection = ({ values, errors, onChange }) => {
 
     return (
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
-            <h2 className="text-lg font-semibold text-gray-800">2. Día y Horario</h2>
+        <div className="bg-[var(--color-background-card)] p-6 rounded-xl border border-slate-700 shadow-sm space-y-4">
+            <h2 className="text-lg font-semibold text-slate-100">2. Día y Horario</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
                     type="date"

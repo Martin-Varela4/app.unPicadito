@@ -1,1 +1,37 @@
 @import "tailwindcss";
+
+@theme {
+  --color-brand-light: #c7cee8;
+  --color-brand-primary: #d0d34d;
+  --color-brand-primary-dark: #b8bb43;
+  --color-brand-green: #157954;
+  --color-brand-dark: #21263A;
+  --color-background-main: #0f172a;
+  --color-background-card: #1e293b;
+  --color-border-subtle: #334155;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    min-width: 320px;
+    margin: 0;
+    background-color: var(--color-background-main);
+    color: #f8fafc;
+    font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+}
