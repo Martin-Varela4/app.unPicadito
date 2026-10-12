@@ -3,9 +3,11 @@ import { ProfileHeader } from "../components/ProfileHeader";
 import { AboutSection } from "../components/AboutSection";
 import { ProfileRanking } from "../components/ProfileRanking";
 import { ProfileReviews } from "../components/ProfileReviews";
+import { useNavigate } from "react-router-dom";
 
 export default function ProfileView() {
   const { profile, reviews, loading, error, isOwnProfile } = useProfile();
+  const navigate = useNavigate();
 
   if (loading) return <div className="flex justify-center items-center h-64">Cargando perfil...</div>;
   if (error) return <div className="text-center p-4 text-red-600">{error}</div>;
@@ -18,7 +20,7 @@ export default function ProfileView() {
         <ProfileHeader 
           player={profile} 
           isOwnProfile={isOwnProfile} 
-          onEditClick={() => console.log("Editar perfil")} 
+          onEditClick={() => navigate("/profile/edit")}
         />
         
         <AboutSection player={profile} />
