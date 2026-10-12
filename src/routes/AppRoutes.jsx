@@ -18,11 +18,11 @@ export default function AppRoutes() {
             <Route element={<PublicRoute />}>
                 <Route path="/login" element={<AuthPage />} />
                 <Route path="/registro" element={<AuthPage />} />
+                <Route path="/" element={<HomePage />} />
             </Route>
 
             <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
-                    <Route path="/" element={<HomePage />} />
                     <Route path="/profile" element={<PerfilUsuario />} />
                     <Route path="/profile/edit" element={<EditProfileForm />} />
                     <Route path="/partidos" element={<MatchesPage />} />

@@ -5,6 +5,7 @@ import { useMatches } from '../../../matches/hooks/useMatches';
 import MatchCard from '../../../matches/components/MatchCard';
 import Spinner from '../../../../components/Spinner';
 import heroImage from '../../../../assets/hero.png';
+import { ProfileRanking } from '../../../profile/components/ProfileRanking';
 
 const HomePage = () => {
     const user = useAuthStore((state) => state.user);
@@ -60,6 +61,8 @@ const HomePage = () => {
                     className="w-full md:w-72 lg:w-80 h-44 md:h-auto rounded-xl object-cover shadow-inner"
                 />
             </section>
+
+            <ProfileRanking />
 
             {/* Sección: Mis próximos partidos */}
             <section className="flex flex-col gap-4">
