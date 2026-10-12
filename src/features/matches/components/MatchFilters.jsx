@@ -1,14 +1,14 @@
-import Switch from '../../../components/Switch';
-import Input from '../../../components/Input';
-import Select from '../../../components/Select';
+import Switch from '../../../components/ui/Switch';
+import Input from '../../../components/ui/Input';
+import Select from '../../../components/ui/Select';
 
 export default function MatchFilters({
     filters,
     onFilterChange,
 }) {
     return (
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
+        <div className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] p-4 shadow-sm sm:p-5">
+            <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 
                 <Input
                     label="Lugar / Cancha"
@@ -20,6 +20,7 @@ export default function MatchFilters({
                 />
                 <Select
                     label="Privacidad"
+                    name="esPublica"
                     value={filters.esPublica}
                     onChange={(e) => onFilterChange('esPublica', e.target.value)}
                     options={[
@@ -30,6 +31,7 @@ export default function MatchFilters({
                 />
                 <Select
                     label="Suplentes"
+                    name="permiteSuplentes"
                     value={filters.permiteSuplentes}
                     onChange={(e) => onFilterChange('permiteSuplentes', e.target.value)}
                     options={[
@@ -42,6 +44,7 @@ export default function MatchFilters({
                     label="Fecha"
                     name="date"
                     type="date"
+                    min={new Date().toLocaleDateString('en-CA')}
                     value={filters.date}
                     onChange={(e) => onFilterChange('date', e.target.value)}
                 />
@@ -52,7 +55,7 @@ export default function MatchFilters({
                     value={filters.time}
                     onChange={(e) => onFilterChange('time', e.target.value)}
                 />
-                <div className="md:col-span-2">
+                <div className="sm:col-span-2 lg:col-span-2">
                     <Switch
                         label="Solo con lugares disponibles"
                         checked={filters.onlyAvailable}

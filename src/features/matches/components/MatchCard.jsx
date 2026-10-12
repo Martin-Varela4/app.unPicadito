@@ -1,15 +1,17 @@
-import Badge from "../../../components/Badge";
-import ProgressBar from "../../../components/ProgressBar";
-import Button from "../../../components/Button";
-import { useNavigate } from "react-router-dom";
+import Badge from "../../../components/ui/Badge";
+import ProgressBar from "../../../components/ui/ProgressBar";
+import Button from "../../../components/ui/Button";
+import { Card, CardContent } from "../../../components/ui/Card";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuthStore } from "../../auth/store/useAuthStore";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { useCancelRoom } from "../hooks/useCancelRoom";
 
 export default function MatchCard({ match, leaveMatch, isLeaving, leaveError, onMatchLeft, joinMatch, joiningMatchId }) {
+  const isPastMatch = Boolean(match.fechaHoraPartido && new Date(match.fechaHoraPartido) <= new Date());
   const isComplete = match.estado === "COMPLETA";
-  const cannotJoin = isComplete && !match.permiteSuplentes;
+  const cannotJoin = isPastMatch || (isComplete && !match.permiteSuplentes);
   const navigate = useNavigate();
   const { user: currentUser } = useAuthStore();
   const isOwner = currentUser?.id === match.creador?.id || currentUser?.id === match.creadorId;
@@ -41,7 +43,9 @@ export default function MatchCard({ match, leaveMatch, isLeaving, leaveError, on
         if (onMatchLeft) {
           onMatchLeft(match.id);
         }
-      } catch (err) { }
+      } catch {
+        return;
+      }
     }
   };
 
@@ -61,9 +65,18 @@ export default function MatchCard({ match, leaveMatch, isLeaving, leaveError, on
     joinMatch(match.id);
   };
 
+  const handleCardClick = (event) => {
+    if (event.target.closest('button, a, input, select, textarea, [role="dialog"]')) return;
+    navigate(`/salas/${match.id}`);
+  };
+
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 flex flex-col gap-3">
-      <div className="flex items-center gap-2 flex-wrap">
+    <Card
+      onClick={handleCardClick}
+      className="group flex cursor-pointer flex-col gap-3 rounded-sm transition duration-200 hover:border-[var(--color-brand-primary)]/50 hover:shadow-[0_0_12px_rgba(208,211,77,0.12)] focus-within:border-[var(--color-brand-primary)]/60 focus-within:shadow-[0_0_12px_rgba(208,211,77,0.12)]"
+    >
+      <CardContent className="flex h-full flex-col gap-3 p-4">
+      <div className="flex flex-wrap items-center gap-2">
         {/* Usamos el estado real que viene de la base de datos */}
         <Badge label={match.estado} variant="status" value={match.estado} />
         {match.esPublica ? (
@@ -73,51 +86,48 @@ export default function MatchCard({ match, leaveMatch, isLeaving, leaveError, on
         )}
 
         {isOwner ? (
-          <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">
-            Organizás
-          </span>
+          <Badge label="Organizás" variant="status" value="organizas" />
         ) : isJoined && (
-          <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-            Sos parte
-          </span>
+          <Badge label="Sos parte" variant="status" value="confirmado" />
         )}
-
       </div>
 
-      <div className="flex items-start justify-between gap-2">
+      <div className="mt-1 flex items-start justify-between gap-2">
         <div>
-          <h3
-            onClick={() => navigate(`/salas/${match.id}`)}
-            className="text-base font-bold text-slate-900 hover:text-emerald-700 cursor-pointer transition-colors"
-            title="Ver detalles de la sala"
-          >
-            {match.nombre} →
+          <h3 className="text-base font-bold text-white transition-colors group-hover:text-[var(--color-brand-primary)]">
+            <Link
+              to={`/salas/${match.id}`}
+              className="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)]"
+              title="Ver detalles de la sala"
+            >
+              {match.nombre}
+            </Link>
           </h3>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-400 mt-1">
             {match.nombreCancha} · {match.direccion || "Sin dirección"}
           </p>
         </div>
       </div>
 
-      <div className="flex items-center justify-between text-sm text-slate-500">
+      <div className="mt-1 flex flex-wrap items-center justify-between gap-1 text-sm text-slate-400">
         <span>
           📅 {fechaStr} · 🕐 {horaStr}
         </span>
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="mt-1 flex flex-col gap-1">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-slate-600 font-medium">Jugadores</span>
-          <span className="text-slate-900 font-semibold">
+          <span className="text-slate-400 font-medium">Jugadores</span>
+          <span className="text-white font-semibold">
             {currentPlayers}/{match.cuposTotales}
           </span>
         </div>
         <ProgressBar current={currentPlayers} max={match.cuposTotales} />
       </div>
-      {leaveError && <p className="text-red-500 text-xs">{leaveError}</p>}
-      <div className="flex items-center justify-between pt-2 border-t border-slate-100 gap-2">
-        <span className="text-xs text-slate-400 truncate">por {organizerName}</span>
+      {leaveError && <p className="text-red-500 text-xs mt-1">{leaveError}</p>}
+      <div className="mt-auto flex flex-col gap-3 border-t border-[var(--color-border-subtle)] pt-3 sm:flex-row sm:items-center sm:justify-between">
+        <span className="truncate text-xs text-slate-400">por {organizerName}</span>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-2">
           {/* Botón secundario para ver el detalle de la sala siempre disponible */}
           {!isJoined && (
             <Button
@@ -142,11 +152,13 @@ export default function MatchCard({ match, leaveMatch, isLeaving, leaveError, on
           >
             {isJoined
               ? "Ir a mi sala"
-              : cannotJoin
-                ? "Sin lugares"
-                : joiningMatchId === match.id
-                  ? "Uniéndome..."
-                  : "Unirme"}
+              : isPastMatch
+                ? "Finalizado"
+                : cannotJoin
+                  ? "Sin lugares"
+                  : joiningMatchId === match.id
+                    ? "Uniéndome..."
+                    : "Unirme"}
           </Button>
 
           {isJoined && (
@@ -176,11 +188,11 @@ export default function MatchCard({ match, leaveMatch, isLeaving, leaveError, on
         title="¿Cancelar la sala?"
       >
         <div className="flex flex-col gap-4 text-left">
-          <p className="text-gray-600">
+          <p className="text-slate-300">
             Esta acción no se puede deshacer. Indica el motivo de fuerza mayor:
           </p>
           <textarea
-            className={`w-full p-2 border rounded-md resize-none ${cancelError ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-2 border rounded-md resize-none bg-slate-800 text-white ${cancelError ? 'border-red-500' : 'border-slate-700'}`}
             rows={3}
             value={cancelReason}
             placeholder="Ej: La cancha cerró por tormenta eléctrica."
@@ -215,6 +227,7 @@ export default function MatchCard({ match, leaveMatch, isLeaving, leaveError, on
           </div>
         </div>
       </ConfirmModal>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

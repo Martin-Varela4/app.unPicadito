@@ -3,11 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { createRoomSchema } from '../schemas/roomSchema';
 import { createMatch } from '../services/matchService';
 import { createIsoFromLocal } from '../utils/dateUtils';
-
-const DEFAULT_LOCATION = {
-    x: Number(import.meta.env.VITE_DEFAULT_LNG ?? -58.3816),
-    y: Number(import.meta.env.VITE_DEFAULT_LAT ?? -34.6037),
-};
+import { DEFAULT_LOCATION } from '../constants/defaultLocation';
 
 const initialValues = {
     nombre: '',

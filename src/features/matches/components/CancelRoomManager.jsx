@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { useCancelRoom } from '../hooks/useCancelRoom';
-import Button from '../../../components/Button';
+import Button from '../../../components/ui/Button';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 
 export const CancelRoomManager = ({ room, roomId, onCancelSuccess }) => {
@@ -36,7 +36,7 @@ export const CancelRoomManager = ({ room, roomId, onCancelSuccess }) => {
     };
 
     return (
-        <div className="flex justify-end border-t border-slate-200 mt-6 pt-6">
+        <div className="flex justify-end border-t border-slate-700 mt-6 pt-6">
             <Button variant="danger" onClick={() => setIsOpen(true)}>
                 Cancelar Sala
             </Button>
@@ -47,11 +47,11 @@ export const CancelRoomManager = ({ room, roomId, onCancelSuccess }) => {
                 title="¿Cancelar la sala?"
             >
                 <div className="flex flex-col gap-4">
-                    <p className="text-gray-600">
+                    <p className="text-slate-300">
                         Esta accion no se puede deshacer. Indica el motivo de fuerza mayor:
                     </p>
                     <textarea
-                        className={`w-full p-2 border rounded-md resize-none ${error ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full p-2 border rounded-md resize-none ${error ? 'border-red-500' : 'border-slate-600'}`}
                         rows={4}
                         maxLength={500}
                         placeholder="Ej: La cancha cerró por tormenta eléctrica."

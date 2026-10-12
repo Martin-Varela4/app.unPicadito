@@ -1,4 +1,4 @@
-import Select from '../../../../components/Select';
+import Select from '../../../../components/ui/Select';
 
 const privacyOptions = [
     { value: 'PUBLIC', label: 'Pública (Cualquiera puede unirse)' },
@@ -14,8 +14,8 @@ const entryRequirementOptions = [
 export const PrivacySection = ({ values, errors, onChange }) => {
 
     return (
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
-            <h2 className="text-lg font-semibold text-gray-800">4. Privacidad y Reglas</h2>
+        <div className="bg-[var(--color-background-card)] p-6 rounded-xl border border-slate-700 shadow-sm space-y-4">
+            <h2 className="text-lg font-semibold text-slate-100">4. Privacidad y Reglas</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Select
                     label="Visibilidad de la Sala"

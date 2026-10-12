@@ -12,9 +12,9 @@ const Input = forwardRef(({
     ...props
 }, ref) => { // <-- Recibimos la ref aquí
     return (
-        <div className="flex flex-col gap-1.5 w-full">
+        <div className="flex min-w-0 w-full flex-col gap-1.5">
             {label && (
-                <label htmlFor={name} className="text-sm font-medium text-slate-700">
+                <label htmlFor={name} className="text-sm font-medium text-slate-300">
                     {label} {required && <span className="text-red-500">*</span>}
                 </label>
             )}
@@ -26,18 +26,19 @@ const Input = forwardRef(({
                 type={type}
                 placeholder={placeholder}
                 disabled={disabled}
-                className={`w-full px-3.5 py-2 text-sm bg-white border rounded-lg transition-colors outline-none
+                required={required}
+                className={`min-h-11 w-full min-w-0 rounded-md border bg-[var(--color-background-main)] px-3.5 py-2 text-sm text-white outline-none transition-colors
           placeholder:text-slate-400
-          disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed
+          disabled:bg-slate-800 disabled:text-slate-400 disabled:cursor-not-allowed
           ${error
-                        ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100'
-                        : 'border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100'
+                        ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500'
+                        : 'border-[var(--color-border-subtle)] focus:border-[var(--color-brand-primary)] focus:ring-1 focus:ring-[var(--color-brand-primary)]'
                     } ${className}`}
                 {...props}
             />
 
             {error && (
-                <p className="text-xs text-red-600 font-medium">{error}</p>
+                <p className="text-xs text-red-400 font-medium">{error}</p>
             )}
         </div>
     );
