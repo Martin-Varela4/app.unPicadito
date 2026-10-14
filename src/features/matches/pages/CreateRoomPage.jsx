@@ -34,7 +34,7 @@ export default function CreateRoomPage() {
                         onChange={(coords) => create.handleChange('ubicacion', coords)}
                     />
                 </div>
-
+                                
                 <div className="flex flex-col gap-4 border-t border-slate-700 pt-2 md:flex-row">
                     <Switch
                         label="Sala pública (cualquiera puede unirse)"
