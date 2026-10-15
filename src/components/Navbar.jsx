@@ -3,10 +3,12 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { getMyProfile } from "../features/profile/services/profile.service";
 import { mapUserToProfile } from "../features/profile/services/profile.mapper";
 import { useAuthStore } from "../features/auth/store/useAuthStore";
+//import { MessagesPage } from "../features/messajes/pages/MessagesPage"
 import {
   Home,
   Search,
   Users,
+  MessageSquare,
   Bell,
   ChevronDown,
   UserPen,
@@ -57,6 +59,7 @@ export default function NavBar() {
     { icon: Home, label: "Inicio", path: "/", end: true },
     { icon: Search, label: "Buscar Partidos", path: "/partidos", end: false },
     { icon: Users, label: "Jugadores", path: "/players", end: false },
+    { icon: MessageSquare, label: "Mensajes", path: "/messages", end: false }
   ];
 
   return (

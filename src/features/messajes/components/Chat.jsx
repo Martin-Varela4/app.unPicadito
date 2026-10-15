@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { socket } from "../services/socket"; // Ajusta la ruta a tu archivo socket.js
+import { socket } from "../../../services/socket"; // Ajusta la ruta a tu archivo socket.js
 
 export function ChatComponent({ currentUserId, receiverId }) {
     const [messages, setMessages] = useState([]);
