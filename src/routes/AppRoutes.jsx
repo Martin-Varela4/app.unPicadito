@@ -26,11 +26,7 @@ export default function AppRoutes() {
                 <Route element={<MainLayout />}>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/profile" element={<PerfilUsuario />} />
-<<<<<<< HEAD
-                    <Route path="/profileEdit" element={<ProfileEdit />} />
-=======
                     <Route path="/profile/edit" element={<EditProfileForm />} />
->>>>>>> fdfaa1dc27a4ac5e99e61147a99c4654a7683904
                     <Route path="/partidos" element={<MatchesPage />} />
                     <Route path="/players" element={<PlayersPage />} />
                     <Route path="/users/:id" element={<PerfilUsuario />} />
