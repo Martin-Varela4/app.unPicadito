@@ -1,22 +1,19 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { socket } from "../../../services/socket"; // Ajusta la ruta a tu archivo socket.js
+import { socket } from "../../../services/socket";
 
 export function ChatComponent({ currentUserId, receiverId }) {
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState("");
     const messagesEndRef = useRef(null);
 
-    // 1. Cargar historial con Axios y escuchar WebSockets en tiempo real
     useEffect(() => {
         if (!socket.connected) {
             socket.connect();
         }
 
-        // Avisar al backend quién se conectó
         socket.emit("user_register", currentUserId);
 
-        // Pedir el historial de mensajes antiguos
         const loadChatHistory = async () => {
             try {
                 const response = await axios.get(`http://localhost:3000/api/messages/${currentUserId}/${receiverId}`);
@@ -30,31 +27,26 @@ export function ChatComponent({ currentUserId, receiverId }) {
 
         loadChatHistory();
 
-        // Escuchar mensajes entrantes del otro usuario
         socket.on("receive_message", (newMessage) => {
             if (newMessage.senderId === receiverId) {
                 setMessages((prev) => [...prev, newMessage]);
             }
         });
 
-        // Escuchar la confirmación de nuestro propio mensaje guardado
         socket.on("message_sent", (newMessage) => {
             setMessages((prev) => [...prev, newMessage]);
         });
 
-        // Limpiar eventos al desmontar
         return () => {
             socket.off("receive_message");
             socket.off("message_sent");
         };
     }, [currentUserId, receiverId]);
 
-    // 2. Mover el scroll al último mensaje de forma automática
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    // 3. Enviar mensaje al pulsar el botón o dar Enter
     const handleSendMessage = (e) => {
         e.preventDefault();
         if (!inputText.trim()) return;
@@ -70,23 +62,27 @@ export function ChatComponent({ currentUserId, receiverId }) {
     };
 
     return (
-        <div style={styles.chatContainer}>
-            <div style={styles.header}>
-                <h3>Chat con Usuario #{receiverId}</h3>
+        /* chatContainer: flex flex-col h-[500px] w-[380px] border border-[#ccc] rounded-lg overflow-hidden font-sans */
+        <div className="flex flex-col h-[500px] w-[380px] border border-[#ccc] rounded-lg overflow-hidden font-sans">
+            
+            {/* header: bg-[#1f1f1f] text-white p-[10px_15px] m-0 */}
+            <div className="bg-[#1f1f1f] text-white p-[10px_15px] m-0">
+                <h3 className="text-base font-bold">Chat con Usuario #{receiverId}</h3>
             </div>
 
-            <div style={styles.messagesBox}>
+            {/* messagesBox: flex-1 p-3.5 overflow-y-auto flex flex-col gap-2.5 bg-[#f9f9f9] */}
+            <div className="flex-1 p-3.5 overflow-y-auto flex flex-col gap-2.5 bg-[#f9f9f9]">
                 {messages.map((msg, index) => {
                     const isMe = msg.senderId === currentUserId;
                     return (
+                        /* messageBubble: p-[9px_14px] rounded-[15px] max-w-[75%] break-words */
                         <div
                             key={msg.id || index}
-                            style={{
-                                ...styles.messageBubble,
-                                alignSelf: isMe ? "flex-end" : "flex-start",
-                                backgroundColor: isMe ? "#0078ff" : "#e5e5ea",
-                                color: isMe ? "#fff" : "#000",
-                            }}
+                            className={`p-[9px_14px] rounded-[15px] max-w-[75%] break-words ${
+                                isMe
+                                    ? "bg-[#0078ff] text-white self-end"
+                                    : "bg-[#e5e5ea] text-black self-start"
+                            }`}
                         >
                             {msg.content}
                         </div>
@@ -95,37 +91,24 @@ export function ChatComponent({ currentUserId, receiverId }) {
                 <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={handleSendMessage} style={styles.form}>
+            {/* form: flex p-2.5 border-t border-[#ccc] bg-white */}
+            <form onSubmit={handleSendMessage} className="flex p-2.5 border-t border-[#ccc] bg-white">
+                {/* input: flex-1 p-2.5 rounded border border-[#ccc] outline-none */}
                 <input
                     type="text"
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder="Escribe un mensaje..."
-                    style={styles.input}
+                    className="flex-1 p-2.5 rounded border border-[#ccc] outline-none text-sm text-black"
                 />
-                <button type="submit" style={styles.button}>
+                {/* button: ml-2 p-[10px_16px] bg-[#0078ff] text-white border-none rounded cursor-pointer font-bold */}
+                <button 
+                    type="submit" 
+                    className="ml-2 p-[10px_16px] bg-[#0078ff] text-white border-none rounded cursor-pointer font-bold text-sm"
+                >
                     Enviar
                 </button>
             </form>
         </div>
     );
 }
-
-const styles = {
-    chatContainer: {
-        display: "flex",
-        flexDirection: "column",
-        height: "500px",
-        width: "380px",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-        overflow: "hidden",
-        fontFamily: "Arial, sans-serif"
-    },
-    header: { background: "#1f1f1f", color: "#fff", padding: "10px 15px", margin: 0 },
-    messagesBox: { flex: 1, padding: "15px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "10px", background: "#f9f9f9" },
-    messageBubble: { padding: "9px 14px", borderRadius: "15px", maxWidth: "75%", wordBreak: "break-word" },
-    form: { display: "flex", padding: "10px", borderTop: "1px solid #ccc", background: "#fff" },
-    input: { flex: 1, padding: "10px", borderRadius: "4px", border: "1px solid #ccc", outline: "none" },
-    button: { marginLeft: "8px", padding: "10px 16px", background: "#0078ff", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer", fontWeight: "bold" }
-};

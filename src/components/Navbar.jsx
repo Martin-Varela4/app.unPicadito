@@ -3,7 +3,6 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { getMyProfile } from "../features/profile/services/profile.service";
 import { mapUserToProfile } from "../features/profile/services/profile.mapper";
 import { useAuthStore } from "../features/auth/store/useAuthStore";
-//import { MessagesPage } from "../features/messajes/pages/MessagesPage"
 import {
   Home,
   Search,
