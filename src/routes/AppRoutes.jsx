@@ -11,7 +11,6 @@ import { PlayersPage } from '../features/players/pages/PlayersPage';
 import PerfilUsuario from '../features/profile/pages/ProfileView';
 import EditProfileForm from '../features/profile/pages/ProfileEdit';
 import HomePage from '../features/home/components/page/HomePage';
-import ProfileEdit from '../features/players/pages/ProfileEdit';
 import { MessagesPage } from '../features/messajes/pages/MessagesPAge';
 
 export default function AppRoutes() {
