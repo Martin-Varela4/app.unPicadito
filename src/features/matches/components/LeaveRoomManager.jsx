@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { useLeaveRoom } from '../hooks/useLeaveRoom';
-import Button from '../../../components/Button';
+import Button from '../../../components/ui/Button';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 
 export const LeaveRoomManager = ({ room, roomId, onLeaveSuccess }) => {
@@ -24,8 +24,8 @@ export const LeaveRoomManager = ({ room, roomId, onLeaveSuccess }) => {
 
     if (isOrganizer) {
         return (
-            <div className="border-t border-slate-200 mt-6 pt-4 text-center">
-                <p id="room-leave-organizer-hint" className="text-sm text-slate-500">
+            <div className="border-t border-slate-700 mt-6 pt-4 text-center">
+                <p id="room-leave-organizer-hint" className="text-sm text-slate-400">
                     Para salir de la sala, transferí la organización a otro jugador o cancelá la sala.
                 </p>
             </div>
@@ -46,7 +46,7 @@ export const LeaveRoomManager = ({ room, roomId, onLeaveSuccess }) => {
     };
 
     return (
-        <div className="flex justify-end border-t border-slate-200 mt-6 pt-6">
+        <div className="flex justify-end border-t border-slate-700 mt-6 pt-6">
             <Button variant="danger" onClick={() => setIsOpen(true)}>
                 Salir de la Sala
             </Button>
@@ -57,7 +57,7 @@ export const LeaveRoomManager = ({ room, roomId, onLeaveSuccess }) => {
                 title="¿Salir de la sala?"
             >
                 <div className="flex flex-col gap-4">
-                    <p className="text-gray-600">
+                    <p className="text-slate-300">
                         Vas a dejar tu lugar en este partido. Si querés volver a unirte,
                         tendrás que hacerlo desde la lista de partidos (sujeto a disponibilidad).
                     </p>

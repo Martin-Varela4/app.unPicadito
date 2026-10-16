@@ -19,6 +19,7 @@ const mapParticipant = (p) => ({
     lastName: p.usuario?.apellido,
     profilePictureUrl: p.usuario?.fotoPerfilUrl,
     mainPosition: p.usuario?.posicionPrincipal,
+    reputation: p.usuario?.reputacion,
 });
 
 export const mapRoomFromApi = (rawRoom) => {

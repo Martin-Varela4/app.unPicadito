@@ -39,7 +39,7 @@ export default function SearchInput({
                     type="button"
                     onClick={onClear}
                     aria-label="Limpiar búsqueda"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    className="absolute right-1 top-1/2 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center text-slate-400 transition-colors hover:text-white"
                 >
                     <svg
                         className="h-4 w-4"

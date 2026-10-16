@@ -1,5 +1,5 @@
 import { Star } from "lucide-react";
-import Button from "../../../components/Button";
+import Button from "../../../components/ui/Button";
 
 const PostMatchRating = () => {
     const jugadorEjemplo = {
@@ -10,19 +10,19 @@ const PostMatchRating = () => {
     const puntuacion = 5;
 
     return (
-        <section className="w-full overflow-hidden border border-slate-200 bg-white">
+        <section className="w-full overflow-hidden rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)]">
             {/* CONTENIDO */}
             <div className="grid min-h-[450px] grid-cols-1 md:grid-cols-[320px_1fr]">
                 {/* LISTA DE JUGADORES */}
-                <div className="border-b border-slate-200 p-6 md:border-b-0 md:border-r">
-                    <h3 className="mb-4 text-base font-semibold text-slate-900">
+                <div className="border-b border-slate-700 p-6 md:border-b-0 md:border-r">
+                    <h3 className="mb-4 text-base font-semibold text-slate-100">
                         Jugadores del partido
                     </h3>
 
                     <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-3 border border-emerald-200 bg-emerald-50 p-2.5">
+                        <div className="flex items-center gap-3 border border-[var(--color-brand-primary)]/30 bg-slate-800 p-2.5">
                             <div className="flex w-full items-center gap-3 text-left">
-                                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-600">
+                                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-800 text-sm font-semibold text-slate-300">
                                     {jugadorEjemplo.iniciales}
                                 </span>
                                 <div className="min-w-0 flex-1">
@@ -30,7 +30,7 @@ const PostMatchRating = () => {
                                         {jugadorEjemplo.nombre}
                                     </strong>
 
-                                    <span className="text-xs">
+                                    <span className="text-xs text-slate-400">
                                         {jugadorEjemplo.posicion}
                                     </span>
                                 </div>
@@ -43,14 +43,14 @@ const PostMatchRating = () => {
                 <div className="p-6 md:p-8">
                     <div className="max-w-xl">
                             <div className="mb-7 flex items-center gap-3.5">
-                                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-600">
+                                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-800 text-sm font-semibold text-slate-300">
                                     {jugadorEjemplo.iniciales}
                                 </span>
                                 <div>
-                                    <strong className="block text-base font-semibold text-slate-900">
+                                    <strong className="block text-base font-semibold text-slate-100">
                                         {jugadorEjemplo.nombre}
                                     </strong>
-                                    <span className="text-sm text-slate-500">
+                                    <span className="text-sm text-slate-400">
                                         {jugadorEjemplo.posicion}
                                     </span>
                                 </div>
@@ -58,10 +58,10 @@ const PostMatchRating = () => {
 
                             {/* ESTRELLAS */}
                             <div className="mb-7">
-                                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                                <label className="mb-2 block text-sm font-semibold text-slate-200">
                                     Puntuación
                                 </label>
-                                <div className="flex items-center gap-2 text-slate-700" aria-label="Puntuación fija de 5 sobre 5">
+                                <div className="flex items-center gap-2 text-amber-300" aria-label="Puntuación fija de 5 sobre 5">
                                     <Star size={18} fill="currentColor" />
                                     <span>{puntuacion}/5</span>
                                 </div>
@@ -71,7 +71,7 @@ const PostMatchRating = () => {
                             <div className="mb-6">
                                 <label 
                                 htmlFor="comentario"
-                                className="mb-2 block text-sm font-semibold text-slate-700"
+                                className="mb-2 block text-sm font-semibold text-slate-200"
                                 >
                                     Comentario
                                 </label>
@@ -80,7 +80,7 @@ const PostMatchRating = () => {
                                     id="comentario"
                                     placeholder="Comentá brevemente cómo fue jugar con este jugador..."
                                     rows={4}
-                                    className="w-full border border-slate-300 bg-white p-2 text-sm text-slate-700 placeholder:text-slate-400"
+                                    className="min-h-24 w-full rounded-sm border border-slate-600 bg-[var(--color-background-main)] p-3 text-sm text-slate-200 placeholder:text-slate-400 focus:border-[var(--color-brand-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)]/30"
                                     readOnly
                                     tabIndex={-1}
                                 />

@@ -17,26 +17,43 @@ export const RoomDetail = () => {
   const currentUser = useAuthStore((state) => state.user);
 
   const [room, setRoom] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loadedRoomId, setLoadedRoomId] = useState(null);
   const [error, setError] = useState("");
   const [isJoining, setIsJoining] = useState(false);
   const [joinError, setJoinError] = useState("");
+  const loading = loadedRoomId !== roomId;
 
+  const fetchRoom = useCallback(() => getMatchById(roomId), [roomId]);
   const loadRoom = useCallback(async () => {
     try {
-      setError("");
-      const mappedRoom = await getMatchById(roomId);
+      const mappedRoom = await fetchRoom();
       setRoom(mappedRoom);
+      setError("");
+      setLoadedRoomId(roomId);
     } catch {
       setError("No se pudo cargar la información de la sala.");
-    } finally {
-      setLoading(false);
+      setLoadedRoomId(roomId);
     }
-  }, [roomId]);
+  }, [fetchRoom, roomId]);
 
   useEffect(() => {
-    loadRoom();
-  }, [loadRoom]);
+    let active = true;
+    fetchRoom()
+      .then((mappedRoom) => {
+        if (!active) return;
+        setRoom(mappedRoom);
+        setError("");
+      })
+      .catch(() => {
+        if (active) setError("No se pudo cargar la información de la sala.");
+      })
+      .finally(() => {
+        if (active) setLoadedRoomId(roomId);
+      });
+    return () => {
+      active = false;
+    };
+  }, [fetchRoom, roomId]);
 
   const organizer = useRoomOrganizer(roomId, loadRoom);
   const isOrganizer = Boolean(currentUser?.id) && currentUser.id === room?.organizerId;
@@ -56,7 +73,7 @@ export const RoomDetail = () => {
 
   if (loading) {
     return (
-      <div className="text-center py-10 text-gray-600">
+      <div className="py-10 text-center text-slate-300">
         Cargando detalles del partido...
       </div>
     );
@@ -67,7 +84,7 @@ export const RoomDetail = () => {
   }
 
   if (!room) {
-    return <div className="text-center py-10 text-gray-500">Sala no encontrada.</div>;
+    return <div className="py-10 text-center text-slate-400">Sala no encontrada.</div>;
   }
 
   const confirmedPlayers = room.participants?.filter((p) => p.status === "CONFIRMED") || [];
@@ -79,7 +96,7 @@ export const RoomDetail = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-6 mb-12">
+    <div className="mx-auto mb-12 max-w-4xl space-y-5 px-4 py-5 sm:space-y-6 sm:px-6 sm:py-8">
       <RoomHeader
         room={room}
         roomId={roomId}
@@ -98,8 +115,8 @@ export const RoomDetail = () => {
         />
       </div>
 
-      <section className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <h3 className="font-bold text-slate-900 text-base mb-4">
+      <section className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] p-4 shadow-sm sm:p-6">
+        <h3 className="mb-4 text-base font-bold text-slate-100">
           Pizarrón Táctico
         </h3>
         <TacticalBoard players={confirmedPlayers} modality={room.modality} />
@@ -122,7 +139,7 @@ export const RoomDetail = () => {
         title={organizer.actionType === "EXPEL" ? "¿Expulsar jugador?" : "¿Transferir organización?"}
       >
         <div className="space-y-4">
-          <p className="text-gray-600 text-sm">
+          <p className="text-sm text-slate-300">
             {organizer.actionType === "EXPEL"
               ? `¿Estás seguro de que deseás expulsar a ${
                   organizer.targetPlayer?.firstName || organizer.targetPlayer?.username || "este jugador"
@@ -133,7 +150,7 @@ export const RoomDetail = () => {
           </p>
 
           {organizer.actionError && (
-            <p className="text-red-600 text-xs font-semibold">{organizer.actionError}</p>
+            <p className="text-xs font-semibold text-red-300">{organizer.actionError}</p>
           )}
 
           <div className="flex justify-end gap-2 pt-2">
@@ -141,7 +158,7 @@ export const RoomDetail = () => {
               type="button"
               onClick={organizer.closeModal}
               disabled={organizer.isLoading}
-              className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50"
+              className="min-h-11 rounded-md bg-slate-800 px-4 py-2 text-sm text-slate-100 transition-colors hover:bg-slate-700 disabled:opacity-50"
             >
               Cancelar
             </button>
@@ -149,10 +166,10 @@ export const RoomDetail = () => {
               type="button"
               onClick={organizer.handleConfirm}
               disabled={organizer.isLoading}
-              className={`px-4 py-2 text-sm text-white rounded-lg font-medium disabled:opacity-50 ${
+              className={`min-h-11 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50 ${
                 organizer.actionType === "EXPEL"
-                  ? "bg-red-600 hover:bg-red-700"
-                  : "bg-emerald-600 hover:bg-emerald-700"
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  : "bg-[var(--color-brand-primary)] text-[#21263A] hover:bg-[var(--color-brand-primary-dark)]"
               }`}
             >
               {organizer.isLoading ? "Procesando..." : "Confirmar"}

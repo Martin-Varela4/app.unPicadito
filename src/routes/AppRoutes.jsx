@@ -9,6 +9,7 @@ import PublicRoute from './PublicRoute';
 import MainLayout from '../components/MainLayout';
 import { PlayersPage } from '../features/players/pages/PlayersPage';
 import PerfilUsuario from '../features/profile/pages/ProfileView';
+import EditProfileForm from '../features/profile/pages/ProfileEdit';
 import HomePage from '../features/home/components/page/HomePage';
 import ProfileEdit from '../features/players/pages/ProfileEdit';
 import { MessagesPage } from '../features/messajes/pages/MessagesPAge';
@@ -25,7 +26,11 @@ export default function AppRoutes() {
                 <Route element={<MainLayout />}>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/profile" element={<PerfilUsuario />} />
+<<<<<<< HEAD
                     <Route path="/profileEdit" element={<ProfileEdit />} />
+=======
+                    <Route path="/profile/edit" element={<EditProfileForm />} />
+>>>>>>> fdfaa1dc27a4ac5e99e61147a99c4654a7683904
                     <Route path="/partidos" element={<MatchesPage />} />
                     <Route path="/players" element={<PlayersPage />} />
                     <Route path="/users/:id" element={<PerfilUsuario />} />

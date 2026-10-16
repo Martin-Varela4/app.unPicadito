@@ -1,4 +1,5 @@
 import { Check, X, Clock, Star } from "lucide-react";
+import Avatar from "../../../components/ui/Avatar";
 
 export const RoomJoinRequests = ({
   requests = [],
@@ -7,18 +8,18 @@ export const RoomJoinRequests = ({
 }) => {
   if (requests.length === 0) {
     return (
-      <section className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <section className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] p-4 shadow-sm sm:p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-slate-900 text-base">
+          <h3 className="font-bold text-slate-100 text-base">
             Solicitudes de ingreso
           </h3>
 
-          <span className="text-sm text-slate-500">
+          <span className="text-sm text-slate-400">
             0 pendientes
           </span>
         </div>
 
-        <div className="py-8 text-center text-slate-500">
+        <div className="py-8 text-center text-slate-400">
           No hay solicitudes pendientes
         </div>
       </section>
@@ -26,21 +27,21 @@ export const RoomJoinRequests = ({
   }
 
   return (
-    <section className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
+    <section className="bg-[var(--color-background-card)] p-4 sm:p-6 rounded-2xl border border-slate-700 shadow-sm">
       
       {/* Encabezado */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h3 className="font-bold text-slate-900 text-base">
+          <h3 className="font-bold text-slate-100 text-base">
             Solicitudes de ingreso
           </h3>
 
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-slate-400 mt-1">
             Jugadores que quieren unirse
           </p>
         </div>
 
-        <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
+        <span className="bg-blue-900/40 text-sky-300 px-3 py-1 rounded-full text-sm font-semibold">
           {requests.length} pendientes
         </span>
       </div>
@@ -53,23 +54,23 @@ export const RoomJoinRequests = ({
           return (
             <div
               key={request.id}
-              className="border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-4"
+              className="border border-slate-700 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-4"
             >
               
               {/* Datos del usuario */}
               <div className="flex items-center gap-3 flex-1">
-                <img
-                  src={user.avatar || "/default-avatar.png"}
+                <Avatar
+                  src={user.avatar}
                   alt={user.name}
                   className="w-12 h-12 rounded-full object-cover"
                 />
 
                 <div>
-                  <h4 className="font-semibold text-slate-900">
+                  <h4 className="font-semibold text-slate-100">
                     {user.name}
                   </h4>
 
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-slate-400">
                     {user.username}
                   </p>
 
@@ -101,7 +102,7 @@ export const RoomJoinRequests = ({
                 <button
                   type="button"
                   onClick={() => onAccept(request)}
-                  className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition"
+                  className="flex min-h-11 items-center justify-center gap-2 rounded-md bg-[var(--color-brand-primary)] px-4 py-2 text-sm font-semibold text-[#21263A] transition-colors hover:bg-[var(--color-brand-primary-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 >
                   <Check size={16} />
                   Aceptar
@@ -110,7 +111,7 @@ export const RoomJoinRequests = ({
                 <button
                   type="button"
                   onClick={() => onReject(request)}
-                  className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-100 text-red-700 text-sm font-semibold hover:bg-red-200 transition"
+                  className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-900/40 text-red-200 text-sm font-semibold hover:bg-red-200 transition"
                 >
                   <X size={16} />
                   Rechazar

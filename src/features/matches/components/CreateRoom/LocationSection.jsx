@@ -1,4 +1,4 @@
-import Select from '../../../../components/Select';
+import Select from '../../../../components/ui/Select';
 
 const mockLocations = [
     { value: '1', label: 'La Cantera - Cancha 1 (Fútbol 5)' },
@@ -9,8 +9,8 @@ const mockLocations = [
 export const LocationSection = ({ values, errors, onChange }) => {
 
     return (
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
-            <h2 className="text-lg font-semibold text-gray-800">1. Ubicación del Partido</h2>
+        <div className="bg-[var(--color-background-card)] p-6 rounded-xl border border-slate-700 shadow-sm space-y-4">
+            <h2 className="text-lg font-semibold text-slate-100">1. Ubicación del Partido</h2>
             <Select
                 label="Predio o Cancha"
                 options={mockLocations}
