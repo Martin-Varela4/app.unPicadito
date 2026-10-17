@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useMatches } from '../hooks/useMatches';
 import { useDebounce } from '../../../hooks/useDebounce';
-import SearchInput from '../../../components/SearchInput';
+import SearchInput from '../../../components/ui/SearchInput';
 import MatchFilters from '../components/MatchFilters';
 import MatchGrid from '../components/MatchGrid';
 
@@ -25,7 +25,7 @@ export default function MatchesPage() {
 
     useEffect(() => {
         setFilter('search', debouncedSearch);
-    }, [debouncedSearch]);
+    }, [debouncedSearch, setFilter]);
 
     const handleSearchChange = (e) => {
         const value = e.target.value;
@@ -38,23 +38,23 @@ export default function MatchesPage() {
     };
 
     return (
-        <div className="p-6 flex flex-col gap-6">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 md:px-8 lg:px-10">
+            <div className="flex flex-col gap-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-                        Partidos disponibles
+                    <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+                        Tu próximo picadito esta acá.
                     </h1>
-                    <p className="text-sm text-slate-500 mt-1">
-                        Encontra tu proximo partido y unite.
+                    <p className="mt-2 text-sm text-slate-300 sm:text-base">
+                        Buscá un partido cerca y sumate al equipo.
                     </p>
                 </div>
 
-                <div className="w-full sm:w-72">
+                <div className="w-full">
                     <SearchInput
                         value={searchTerm}
                         onChange={handleSearchChange}
                         onClear={handleSearchClear}
-                        placeholder="Buscar partido por nombre..."
+                        placeholder="Buscar partidos o canchas..."
                     />
                 </div>
             </div>

@@ -1,37 +1,19 @@
 export const SearchBar = ({ value, onChange }) => {
   return (
-    <div style={{ 
-      display: "flex", 
-      justifyContent: "center", 
-      width: "100%", 
-      margin: "0 auto" 
-    }}>
-      <div style={{ position: "relative", width: "100%", maxWidth: "500px" }}>
-
-        <span style={{
-          position: "absolute",
-          left: "12px",
-          top: "50%",
-          transform: "translateY(-50%)",
-          pointerEvents: "none"
-        }}>
+    <div className="mx-auto flex w-full justify-center">
+      <div className="relative w-full max-w-xl">
+        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true">
           🔍
         </span>
 
         <input
           type="search" // Cambiado de 'text' a 'search' para agregar la "X" nativa de borrado
+          aria-label="Buscar jugadores por nombre o usuario"
           placeholder="Buscar por nombre o usuario..."
           value={value}
           onChange={(e) => onChange(e.target.value)}
           autoComplete="off" // Evita que el navegador encime el historial encima de tu lista
-          style={{
-            width: "100%",
-            padding: "0.75rem 1rem 0.75rem 2.5rem", // Espacio izquierdo para que no se pise con la lupa
-            fontSize: "1rem",
-            boxSizing: "border-box",
-            borderRadius: "0.375rem",
-            border: "1px solid #cbd5e1"
-          }}
+          className="min-h-12 w-full rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] py-3 pl-10 pr-4 text-sm text-white outline-none placeholder:text-slate-400 focus:border-[var(--color-brand-primary)] focus:ring-2 focus:ring-[var(--color-brand-primary)]/30 sm:text-base"
         />
       </div>
     </div>

@@ -8,19 +8,22 @@ export const roomSchema = yup.object().shape({
         .max(50, 'Máximo 50 caracteres'),
     nombreCancha: yup
         .string()
-        .required('El nombre del complejo/cancha es obligatorio')
         .min(3, 'Mínimo 3 caracteres')
-        .max(50, 'Máximo 50 caracteres'),
+        .max(50, 'Máximo 50 caracteres')
+        .optional()
+        .nullable(),
     direccion: yup
         .string()
-        .required('La dirección es obligatoria')
         .min(5, 'Mínimo 5 caracteres')
-        .max(100, 'Máximo 100 caracteres'),
+        .max(100, 'Máximo 100 caracteres')
+        .optional()
+        .nullable(),
     fecha: yup
         .string()
         .required('La fecha es obligatoria'),
     hora: yup
         .string()
+        .matches(/^([01]\d|2[0-3]):00$/, 'La hora debe ser en punto (ej: 14:00, 15:00)')
         .required('La hora es obligatoria'),
     cuposTotales: yup
         .number()
@@ -32,7 +35,8 @@ export const roomSchema = yup.object().shape({
     descripcion: yup
         .string()
         .max(200, 'Máximo 200 caracteres')
-        .optional(),
+        .optional()
+        .nullable(),
 });
 
 export const createRoomSchema = roomSchema.test('fecha-futura', 'La fecha y hora del partido deben ser futuras', 

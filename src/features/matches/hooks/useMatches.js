@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getMatches, leaveMatch as leaveMatchService, joinMatch as joinMatchService } from '../services/matchService';
 
 const initialFilters = {
@@ -9,6 +9,11 @@ const initialFilters = {
     nombreCancha: '',
     esPublica: '', // string vacío significa "Todas"
     permiteSuplentes: '',
+};
+
+const isUpcoming = (match) => {
+    if (!match?.fechaHoraPartido) return true;
+    return new Date(match.fechaHoraPartido) >= new Date();
 };
 
 export const useMatches = () => {
@@ -30,7 +35,8 @@ export const useMatches = () => {
 
             try {
                 const data = await getMatches(filters);
-                setMatches(data);
+                const upcoming = Array.isArray(data) ? data.filter(isUpcoming) : [];
+                setMatches(upcoming);
             } catch (error) {
                 setMatchesError(error.message ?? 'Error al buscar partidos.');
             } finally {
@@ -41,9 +47,9 @@ export const useMatches = () => {
         fetchMatches();
     }, [filters]);
 
-    const setFilter = (key, value) => {
+    const setFilter = useCallback((key, value) => {
         setFilters((prev) => ({ ...prev, [key]: value }));
-    };
+    }, []);
 
     const resetFilters = () => {
         setFilters(initialFilters);
@@ -60,7 +66,7 @@ export const useMatches = () => {
         } catch (error) {
             const message = error.message || 'Error al salir de la sala';
             setLeaveError(message);
-            throw new Error(message);
+            throw new Error(message, { cause: error });
         } finally {
             setIsLeaving(false);
         }
@@ -72,7 +78,8 @@ export const useMatches = () => {
 
         try {
             await joinMatchService(matchId);
-            setMatches(await getMatches(filters));
+            const freshMatches = await getMatches(filters);
+            setMatches(Array.isArray(freshMatches) ? freshMatches.filter(isUpcoming) : []);
         } catch (error) {
             setJoinError(error.message || 'No se pudo unir al partido.');
         } finally {

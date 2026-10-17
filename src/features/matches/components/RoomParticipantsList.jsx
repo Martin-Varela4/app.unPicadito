@@ -10,18 +10,18 @@ export const RoomParticipantsList = ({
     onTransferOrganizer,
 }) => {
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">
+        <div className="space-y-6 rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] p-4 shadow-sm sm:p-6">
+            <h2 className="border-b border-[var(--color-border-subtle)] pb-2 text-lg font-semibold text-slate-100">
                 Participantes Inscriptos
             </h2>
 
             {/* Titulares Confirmados */}
             <div>
-                <h3 className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-2">
+                <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-green-300">
                     Titulares Confirmados ({confirmedPlayers.length}/{maxPlayers})
                 </h3>
                 {confirmedPlayers.length === 0 ? (
-                    <p className="text-sm text-gray-400 italic">Aún no hay jugadores confirmados.</p>
+                    <p className="text-sm italic text-slate-400">Aún no hay jugadores confirmados.</p>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                         {confirmedPlayers.map((player) => (
@@ -40,12 +40,12 @@ export const RoomParticipantsList = ({
             </div>
 
             {/* Jugadores Suplentes */}
-            <div className="pt-4 border-t border-gray-100">
-                <h3 className="text-sm font-semibold text-amber-700 mb-3 flex items-center gap-2">
+            <div className="pt-4 border-t border-slate-700">
+                <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-amber-300">
                     Suplentes / En Espera ({substitutes.length})
                 </h3>
                 {substitutes.length === 0 ? (
-                    <p className="text-sm text-gray-400 italic">No hay jugadores en la lista de suplentes.</p>
+                    <p className="text-sm italic text-slate-400">No hay jugadores en la lista de suplentes.</p>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                         {substitutes.map((player) => (

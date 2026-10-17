@@ -1,27 +1,36 @@
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin, Navigation } from 'lucide-react';
+import { MapPin } from 'lucide-react';
+import { DEFAULT_LOCATION } from '../constants/defaultLocation';
 
 const customPinIcon = L.divIcon({
     className: 'custom-div-icon',
-    html: `<div style="font-size: 32px; line-height: 1; transform: translate(-50%, -100%); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">📍</div>`,
+    html: '<div class="text-[32px] leading-none drop-shadow-md">📍</div>',
     iconSize: [32, 32],
     iconAnchor: [16, 32],
 });
 
 export const LocationPickerMap = ({ value, onChange, readOnly = false, height = '280px' }) => {
+    const lat = value?.y ?? DEFAULT_LOCATION.y;
+    const lng = value?.x ?? DEFAULT_LOCATION.x;
     const mapContainerRef = useRef(null);
     const mapInstanceRef = useRef(null);
     const markerRef = useRef(null);
+    const onChangeRef = useRef(onChange);
+    const readOnlyRef = useRef(readOnly);
+    const initialLocationRef = useRef({ lat, lng });
 
-    const lat = value?.y ?? -34.6037;
-    const lng = value?.x ?? -58.3816;
+    useEffect(() => {
+        onChangeRef.current = onChange;
+        readOnlyRef.current = readOnly;
+    }, [onChange, readOnly]);
 
     useEffect(() => {
         if (!mapContainerRef.current) return;
 
-        const map = L.map(mapContainerRef.current).setView([lat, lng], 14);
+        const initialLocation = initialLocationRef.current;
+        const map = L.map(mapContainerRef.current).setView([initialLocation.lat, initialLocation.lng], 14);
         mapInstanceRef.current = map;
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -29,24 +38,26 @@ export const LocationPickerMap = ({ value, onChange, readOnly = false, height = 
             maxZoom: 19,
         }).addTo(map);
 
-        const marker = L.marker([lat, lng], {
+        const marker = L.marker([initialLocation.lat, initialLocation.lng], {
             icon: customPinIcon,
-            draggable: !readOnly,
+            draggable: !readOnlyRef.current,
         }).addTo(map);
         markerRef.current = marker;
 
-        if (!readOnly) {
-            marker.on('dragend', () => {
+        marker.on('dragend', () => {
+            if (!readOnlyRef.current) {
                 const { lat: newLat, lng: newLng } = marker.getLatLng();
-                onChange?.({ x: Number(newLng.toFixed(6)), y: Number(newLat.toFixed(6)) });
-            });
+                onChangeRef.current?.({ x: Number(newLng.toFixed(6)), y: Number(newLat.toFixed(6)) });
+            }
+        });
 
-            map.on('click', (e) => {
+        map.on('click', (e) => {
+            if (!readOnlyRef.current) {
                 const { lat: newLat, lng: newLng } = e.latlng;
                 marker.setLatLng([newLat, newLng]);
-                onChange?.({ x: Number(newLng.toFixed(6)), y: Number(newLat.toFixed(6)) });
-            });
-        }
+                onChangeRef.current?.({ x: Number(newLng.toFixed(6)), y: Number(newLat.toFixed(6)) });
+            }
+        });
 
         return () => {
             map.remove();
@@ -55,51 +66,28 @@ export const LocationPickerMap = ({ value, onChange, readOnly = false, height = 
 
     useEffect(() => {
         if (!markerRef.current || !mapInstanceRef.current) return;
+        if (readOnly) markerRef.current.dragging?.disable();
+        else markerRef.current.dragging?.enable();
         const currentPos = markerRef.current.getLatLng();
         if (currentPos.lat !== lat || currentPos.lng !== lng) {
             markerRef.current.setLatLng([lat, lng]);
             mapInstanceRef.current.setView([lat, lng], mapInstanceRef.current.getZoom());
         }
-    }, [lat, lng]);
-
-    const handleLocateMe = () => {
-        if (!navigator.geolocation) return;
-        navigator.geolocation.getCurrentPosition(
-            ({ coords }) => {
-                const newCoords = {
-                    x: Number(coords.longitude.toFixed(6)),
-                    y: Number(coords.latitude.toFixed(6)),
-                };
-                onChange?.(newCoords);
-            },
-            null,
-            { timeout: 5000 }
-        );
-    };
+    }, [lat, lng, readOnly]);
 
     return (
         <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs text-slate-500">
+            <div className="text-xs text-slate-400">
                 <span className="flex items-center gap-1">
-                    <MapPin size={14} className="text-emerald-600" />
+                    <MapPin size={14} className="text-[var(--color-brand-primary)]" />
                     {!readOnly ? 'Hacé clic o arrastrá el pin hasta la cancha' : 'Ubicación de la cancha'}
                 </span>
-                {!readOnly && (
-                    <button
-                        type="button"
-                        onClick={handleLocateMe}
-                        className="flex items-center gap-1 text-emerald-700 hover:text-emerald-800 font-semibold"
-                    >
-                        <Navigation size={12} />
-                        Mi ubicación
-                    </button>
-                )}
             </div>
 
             <div
                 ref={mapContainerRef}
                 style={{ height }}
-                className="w-full rounded-xl border border-slate-300 overflow-hidden shadow-inner z-0"
+                className="w-full rounded-xl border border-slate-600 overflow-hidden shadow-inner z-0"
             />
             
             <p className="text-[11px] text-slate-400">

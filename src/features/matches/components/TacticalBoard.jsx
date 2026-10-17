@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { TACTICAL_FORMATIONS } from "../constants/formations";
 
 export default function TacticalBoard({
@@ -12,7 +12,7 @@ export default function TacticalBoard({
 
   return (
     <div className="flex flex-col gap-2 w-full max-w-md mx-auto">
-      <div className="flex justify-between items-center text-xs text-slate-500 font-semibold px-1">
+      <div className="flex justify-between items-center text-xs text-slate-400 font-semibold px-1">
         <span>Formación Visual ({modality})</span>
         <span>{players.length} Jugadores</span>
       </div>
@@ -22,7 +22,7 @@ export default function TacticalBoard({
         {/* Líneas de Cancha */}
         <div className="absolute inset-x-0 top-1/2 border-t-2 border-white/40 -translate-y-1/2 pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 w-24 h-24 border-2 border-white/40 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-white/60 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-[var(--color-background-card)]/60 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1/6 border-b-2 border-x-2 border-white/40 rounded-b-xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-1/6 border-t-2 border-x-2 border-white/40 rounded-t-xl pointer-events-none" />
 

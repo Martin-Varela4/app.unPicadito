@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { getMyProfile } from "../features/profile/services/profile.service";
 import { mapUserToProfile } from "../features/profile/services/profile.mapper";
@@ -11,9 +11,9 @@ import {
   ChevronDown,
   UserPen,
   LogOut,
-  UserRound,
   PlusCircle,
 } from "lucide-react";
+import Avatar from "./ui/Avatar";
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,10 +26,7 @@ export default function NavBar() {
     let isCurrent = true;
 
     if (!token) {
-      setProfile(null);
-      return () => {
-        isCurrent = false;
-      };
+      return undefined;
     }
 
     getMyProfile()
@@ -44,6 +41,7 @@ export default function NavBar() {
       isCurrent = false;
     };
   }, [token]);
+  const visibleProfile = token ? profile : null;
 
   const handleLogout = () => {
     setIsOpen(false);
@@ -51,7 +49,7 @@ export default function NavBar() {
     navigate("/login", { replace: true });
   };
 
-  const baseNavLinkClass = "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ease-in-out";
+  const baseNavLinkClass = "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)]";
 
   const navItems = [
     { icon: Home, label: "Inicio", path: "/", end: true },
@@ -60,14 +58,14 @@ export default function NavBar() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 h-[70px] bg-white border-b border-gray-200 z-50 px-4 md:px-6">
-      <div className="flex items-center justify-between h-full max-w-[1400px] mx-auto">
+    <nav className="fixed inset-x-0 top-0 z-50 h-16 border-b border-[var(--color-border-subtle)] bg-[var(--color-background-main)] px-3 sm:px-4 md:h-[70px] md:px-6">
+      <div className="mx-auto flex h-full max-w-[1400px] items-center justify-between gap-2">
         {/* Logo que redirige a Inicio */}
         <Link to="/" className="flex items-center gap-2 select-none" aria-label="Ir al inicio">
           <div className="text-2xl">⚽</div>
-          <div className="flex flex-col leading-none font-bold text-gray-900">
-            <span className="text-xs text-gray-500 font-medium">Un</span>
-            <span className="text-lg text-emerald-600 tracking-wide">Picadito</span>
+          <div className="flex flex-col leading-none font-bold text-white">
+            <span className="text-xs text-[var(--color-brand-light)] font-medium">Un</span>
+            <span className="text-lg text-[var(--color-brand-primary)] tracking-wide">Picadito</span>
           </div>
         </Link>
 
@@ -81,8 +79,8 @@ export default function NavBar() {
               className={({ isActive }) => `
                 ${baseNavLinkClass} 
                 ${isActive
-                  ? "bg-emerald-50 text-emerald-700 font-semibold"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-emerald-800"
+                  ? "text-[var(--color-brand-primary)] font-semibold"
+                  : "text-slate-400 hover:text-white"
                 }
               `}
             >
@@ -93,17 +91,17 @@ export default function NavBar() {
         </div>
 
         {/* Acciones de la derecha: Crear Sala + Notificaciones + Perfil */}
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           <Link
             id="navbar-create-room"
             to="/salas/nueva"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors shadow-sm"
+            className="flex min-h-11 items-center gap-1.5 rounded-md bg-[var(--color-brand-primary)] px-2.5 py-2 text-sm font-semibold text-[#21263A] shadow-sm transition-colors hover:bg-[var(--color-brand-primary-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:px-3"
           >
             <PlusCircle size={18} />
             <span className="hidden sm:inline">Crear sala</span>
           </Link>
 
-          <button className="p-2 text-gray-500 hover:bg-gray-50 hover:text-gray-700 rounded-full transition-colors relative cursor-pointer">
+          <button type="button" aria-label="Notificaciones" className="relative flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)]">
             <Bell size={20} />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
@@ -112,46 +110,41 @@ export default function NavBar() {
           <div className="relative">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none cursor-pointer group"
+              aria-expanded={isOpen}
+              className="group flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg p-1.5 transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)] sm:gap-2"
               aria-label="Abrir menú de usuario"
             >
-              {profile?.avatar ? (
-                <img
-                  src={profile.avatar}
-                  alt={`Foto de perfil de ${profile.name}`}
-                  className="w-8 h-8 rounded-full border border-gray-200 object-cover"
-                />
-              ) : (
-                <span className="flex items-center justify-center w-8 h-8 rounded-full border border-gray-200 bg-gray-50 text-gray-500">
-                  <UserRound size={18} />
-                </span>
-              )}
+              <Avatar
+                src={visibleProfile?.avatar}
+                alt={`Foto de perfil de ${visibleProfile?.name || "usuario"}`}
+                className="h-8 w-8 rounded-full border border-[var(--color-border-subtle)] object-cover"
+              />
               <ChevronDown
                 size={16}
-                className={`text-gray-500 group-hover:text-gray-700 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                className={`text-slate-400 group-hover:text-white transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
               />
             </button>
 
             {isOpen && (
-              <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50">
-                <div className="px-4 py-1.5 text-xs text-gray-400 font-medium uppercase tracking-wider">
-                  {profile?.name || "Usuario"}
+              <div className="absolute right-0 mt-2 w-52 max-w-[calc(100vw-1.5rem)] rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] py-1.5 shadow-xl">
+                <div className="px-4 py-1.5 text-xs text-slate-400 font-medium uppercase tracking-wider">
+                  {visibleProfile?.name || "Usuario"}
                 </div>
 
                 <Link
                   to="/profile"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white hover:bg-slate-800 transition-colors font-medium"
                 >
-                  <UserPen size={16} className="text-gray-400" />
+                  <UserPen size={16} className="text-slate-400" />
                   Mi Perfil
                 </Link>
 
-                <hr className="border-gray-100 my-1" />
+                <hr className="border-[var(--color-border-subtle)] my-1" />
 
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2.5 w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium cursor-pointer"
+                  className="flex items-center gap-2.5 w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-slate-800 transition-colors font-medium cursor-pointer"
                 >
                   <LogOut size={16} />
                   Cerrar Sesión
@@ -159,6 +152,23 @@ export default function NavBar() {
               </div>
             )}
           </div>
+        </div>
+      </div>
+      <div className="fixed inset-x-0 bottom-0 border-t border-[var(--color-border-subtle)] bg-[var(--color-background-main)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
+        <div className="mx-auto grid max-w-lg grid-cols-3">
+          {navItems.map(({ icon: Icon, label, path, end }) => (
+            <NavLink
+              key={`mobile-${label}`}
+              to={path}
+              end={end}
+              className={({ isActive }) => `flex min-h-14 flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-brand-primary)] ${
+                isActive ? 'text-[var(--color-brand-primary)]' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Icon size={19} aria-hidden="true" />
+              <span>{label}</span>
+            </NavLink>
+          ))}
         </div>
       </div>
     </nav>

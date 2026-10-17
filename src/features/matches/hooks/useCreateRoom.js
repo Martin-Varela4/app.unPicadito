@@ -3,11 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { createRoomSchema } from '../schemas/roomSchema';
 import { createMatch } from '../services/matchService';
 import { createIsoFromLocal } from '../utils/dateUtils';
-
-const DEFAULT_LOCATION = {
-    x: Number(import.meta.env.VITE_DEFAULT_LNG ?? -58.3816),
-    y: Number(import.meta.env.VITE_DEFAULT_LAT ?? -34.6037),
-};
+import { DEFAULT_LOCATION } from '../constants/defaultLocation';
 
 const initialValues = {
     nombre: '',
@@ -33,6 +29,10 @@ export const useCreateRoom = () => {
         setFormData((current) => ({ ...current, [name]: value }));
         setFieldErrors((current) => ({ ...current, [name]: '' }));
         setErrorMessage('');
+
+        if (name === 'nombreCancha' && !value) {
+            setFormData((current) => ({ ...current, direccion: '' }));
+        }
     };
 
     const handleSubmit = async (event) => {
@@ -54,17 +54,19 @@ export const useCreateRoom = () => {
             const created = await createMatch({
                 nombre: data.nombre.trim(),
                 descripcion: data.descripcion?.trim() || undefined,
-                nombreCancha: data.nombreCancha.trim(),
-                direccion: data.direccion.trim(),
+                nombreCancha: data.nombreCancha?.trim() || undefined,
+                direccion: data.direccion?.trim() || undefined,
                 fechaHoraPartido: createIsoFromLocal(data.fecha, data.hora),
                 cuposTotales: Number(data.cuposTotales),
                 permiteSuplentes: Boolean(data.permiteSuplentes),
                 esPublica: Boolean(data.esPublica),
-                ubicacion: formData.ubicacion, 
+                ubicacion: formData.ubicacion,
+                duracionMinutos: 60,
             });
             navigate(`/salas/${created.id}`, { replace: true });
         } catch (error) {
-            setErrorMessage(error.message || 'No se pudo crear la sala.');
+            const backendMessage = error.response?.data?.message || error.message;
+            setErrorMessage(backendMessage || 'No se pudo crear la sala.');
         } finally {
             setIsSubmitting(false);
         }
