@@ -16,7 +16,9 @@
     "lucide-react": "^1.48.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.18.2",
+    "socket.io-client": "^4.8.4",
     "tailwindcss": "^4.3.3",
     "yup": "^1.7.1",
     "zustand": "^5.0.15"
