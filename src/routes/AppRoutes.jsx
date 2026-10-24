@@ -11,6 +11,7 @@ import { PlayersPage } from '../features/players/pages/PlayersPage';
 import PerfilUsuario from '../features/profile/pages/ProfileView';
 import EditProfileForm from '../features/profile/pages/ProfileEdit';
 import HomePage from '../features/home/components/page/HomePage';
+import { MessagesPage } from '../features/messajes/pages/MessagesPAge';
 
 export default function AppRoutes() {
     return (
@@ -31,6 +32,7 @@ export default function AppRoutes() {
                     <Route path="/salas/nueva" element={<CreateRoomPage />} />
                     <Route path="/salas/:id" element={<RoomDetail />} />
                     <Route path="/salas/:id/editar" element={<EditRoomPage />} />
+                    <Route path="/messages" element={<MessagesPage/>} />
                 </Route>
             </Route>
 
