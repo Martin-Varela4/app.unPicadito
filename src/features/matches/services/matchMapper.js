@@ -1,9 +1,10 @@
 import { getLocalPart } from '../utils/dateUtils';
+import { PARTICIPANT_STATUS, ROOM_STATUS } from '../constants/matchConstants';
 
 const mapParticipantStatus = (p) => {
-    if (p.estado === 'PENDIENTE') return 'PENDING';
-    if (p.estado !== 'CONFIRMADO') return 'INACTIVE';
-    return p.rol === 'SUPLENTE' ? 'SUBSTITUTE' : 'CONFIRMED';
+    if (p.estado === 'PENDIENTE') return PARTICIPANT_STATUS.PENDING;
+    if (p.estado !== 'CONFIRMADO') return PARTICIPANT_STATUS.INACTIVE;
+    return p.rol === 'SUPLENTE' ? PARTICIPANT_STATUS.SUBSTITUTE : PARTICIPANT_STATUS.CONFIRMED;
 };
 
 const mapParticipant = (p) => ({
@@ -39,7 +40,7 @@ export const mapRoomFromApi = (rawRoom) => {
         maxPlayers: rawRoom.cuposTotales || 0,
         creatorId: rawRoom.creador?.id ?? rawRoom.creadorId,
         organizerId: organizer?.userId ?? null,
-        status: rawRoom.estado || 'ABIERTA',
+        status: rawRoom.estado || ROOM_STATUS.ABIERTA,
         isPublic: Boolean(rawRoom.esPublica),
         privacy: rawRoom.esPublica ? 'Pública' : 'Privada',
         allowsSubstitutes: Boolean(rawRoom.permiteSuplentes),

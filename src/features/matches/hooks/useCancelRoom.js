@@ -1,25 +1,16 @@
-import { useState } from 'react';
+import { useAsyncAction } from '../../../hooks/useAsyncAction';
 import { cancelarSala } from '../services/matchService';
 
 export const useCancelRoom = () => {
-    const [isCanceling, setIsCanceling] = useState(false);
-    const [error, setError] = useState('');
+    const { execute, isLoading, error, setError } = useAsyncAction(
+        cancelarSala,
+        'Error al cancelar la sala'
+    );
 
-    const executeCancel = async (roomId, motivo) => {
-        setIsCanceling(true);
-        setError('');
-        
-        try {
-            await cancelarSala(roomId, motivo);
-            return { success: true };
-        } catch (err) {
-            const errorMessage = err.message || 'Error al cancelar la sala';
-            setError(errorMessage);
-            return { success: false };
-        } finally {
-            setIsCanceling(false);
-        }
+    return {
+        executeCancel: execute,
+        isCanceling: isLoading,
+        error,
+        setError,
     };
-
-    return { executeCancel, isCanceling, error, setError };
 };

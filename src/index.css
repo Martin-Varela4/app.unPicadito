@@ -9,6 +9,7 @@
   --color-background-main: #0f172a;
   --color-background-card: #1e293b;
   --color-border-subtle: #334155;
+  --color-text-secondary: #94a3b8;
 }
 
 @layer base {

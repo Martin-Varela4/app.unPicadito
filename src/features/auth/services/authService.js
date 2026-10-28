@@ -18,7 +18,8 @@ export const loginService = async (credentials) => {
  * @param {Object} userData - { username, email, password }
  */
 export const registerService = async (userData) => {
-    const { confirmPassword, ...payload } = userData;
+    const payload = { ...userData };
+    delete payload.confirmPassword;
     const response = await api.post(ENDPOINT_REGISTER, payload);
     return response.data;
 };

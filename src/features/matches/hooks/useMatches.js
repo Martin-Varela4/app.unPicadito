@@ -1,15 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getMatches, leaveMatch as leaveMatchService, joinMatch as joinMatchService } from '../services/matchService';
-
-const initialFilters = {
-    search: '', // Se usa para el nombre de la sala
-    date: '',
-    time: '',
-    onlyAvailable: false,
-    nombreCancha: '',
-    esPublica: '', // string vacío significa "Todas"
-    permiteSuplentes: '',
-};
+import { INITIAL_MATCH_FILTERS } from '../constants/matchConstants';
+import { useDebounce } from '../../../hooks/useDebounce';
+import { DEBOUNCE_DELAY_MS } from '../../../constants/appConstants';
 
 const isUpcoming = (match) => {
     if (!match?.fechaHoraPartido) return true;
@@ -17,7 +10,8 @@ const isUpcoming = (match) => {
 };
 
 export const useMatches = () => {
-    const [filters, setFilters] = useState(initialFilters);
+    const [filters, setFilters] = useState(INITIAL_MATCH_FILTERS);
+    const debouncedFilters = useDebounce(filters, DEBOUNCE_DELAY_MS);
 
     const [matches, setMatches] = useState([]);
     const [isLoadingMatches, setIsLoadingMatches] = useState(false);
@@ -29,30 +23,37 @@ export const useMatches = () => {
     const [leaveError, setLeaveError] = useState(null);
 
     useEffect(() => {
+        let active = true;
+
         const fetchMatches = async () => {
             setIsLoadingMatches(true);
             setMatchesError(null);
 
             try {
-                const data = await getMatches(filters);
+                const data = await getMatches(debouncedFilters);
+                if (!active) return;
                 const upcoming = Array.isArray(data) ? data.filter(isUpcoming) : [];
                 setMatches(upcoming);
             } catch (error) {
-                setMatchesError(error.message ?? 'Error al buscar partidos.');
+                if (active) setMatchesError(error.message ?? 'Error al buscar partidos.');
             } finally {
-                setIsLoadingMatches(false);
+                if (active) setIsLoadingMatches(false);
             }
         };
 
         fetchMatches();
-    }, [filters]);
+
+        return () => {
+            active = false;
+        };
+    }, [debouncedFilters]);
 
     const setFilter = useCallback((key, value) => {
         setFilters((prev) => ({ ...prev, [key]: value }));
     }, []);
 
     const resetFilters = () => {
-        setFilters(initialFilters);
+        setFilters(INITIAL_MATCH_FILTERS);
     };
 
     const leaveMatch = async (matchId, reason) => {

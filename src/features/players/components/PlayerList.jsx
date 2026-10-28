@@ -1,8 +1,11 @@
+import { useNavigate } from 'react-router-dom';
+import Button from '../../../components/ui/Button';
+
 export const PlayerList = ({ players }) => {
-  const handleViewProfile = (playerId, username) => {
-    // guía para el que tenga que implementar la navegación a la página de perfil del jugador
-    console.log(`[Futura Implementación]: Redirigir a /players/${playerId}`);
-    alert(`acá se abririía el perfil de @${username} (ID: ${playerId})`);
+  const navigate = useNavigate();
+
+  const handleViewProfile = (playerId) => {
+    navigate(`/users/${playerId}`);
   };
 
   return (
@@ -25,13 +28,13 @@ export const PlayerList = ({ players }) => {
             </p>
           </div>
 
-          {/* Botón de ejemplo */}
-          <button
-            onClick={() => handleViewProfile(player.id, player.nombreUsuario)}
-            className="min-h-11 shrink-0 rounded-md border border-[var(--color-border-subtle)] bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-200 transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)]"
+          <Button
+            variant="outline"
+            onClick={() => handleViewProfile(player.id)}
+            className="shrink-0"
           >
             Ver Perfil 
-          </button>
+          </Button>
         </div>
       ))}
     </div>

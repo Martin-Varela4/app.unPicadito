@@ -1,3 +1,5 @@
+import Button from './ui/Button';
+
 export const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, isLoading, children }) => {
     if (!isOpen) return null;
 
@@ -16,20 +18,20 @@ export const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, isLoa
                     <>
                         <p className="mb-6 text-slate-300">{message}</p>
                         <div className="flex flex-col-reverse justify-end gap-3 sm:flex-row">
-                            <button
+                            <Button
+                                variant="outline"
                                 onClick={onClose}
                                 disabled={isLoading}
-                                className="min-h-11 rounded-md bg-slate-700 px-4 py-2 text-slate-100 transition-colors hover:bg-slate-600 disabled:opacity-50"
                             >
                                 Cancelar
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                                variant="primary"
                                 onClick={onConfirm}
-                                disabled={isLoading}
-                                className="flex min-h-11 items-center rounded-md bg-[var(--color-brand-primary)] px-4 py-2 font-semibold text-[#21263A] transition-colors hover:bg-[var(--color-brand-primary-dark)] disabled:opacity-50"
+                                isLoading={isLoading}
                             >
-                                {isLoading ? 'Guardando...' : 'Confirmar Cambios'}
-                            </button>
+                                Confirmar Cambios
+                            </Button>
                         </div>
                     </>
                 )}

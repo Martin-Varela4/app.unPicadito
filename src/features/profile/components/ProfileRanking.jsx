@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import SectionCard from "../../../components/ui/SectionCard";
 
 export const ProfileRanking = ({ ranking }) => {
   const valorNumerico = Number(ranking ?? 0);
@@ -9,12 +10,12 @@ export const ProfileRanking = ({ ranking }) => {
   }
 
   return (
-    <div className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] p-5 shadow-md sm:p-6">
-      <div className="flex items-center gap-2 mb-3">
-        <Star className="text-amber-300" size={20} fill="currentColor" />
-        <h3 className="text-lg font-bold text-slate-100">Estrellas</h3>
-      </div>
-
+    <SectionCard
+      title="Estrellas"
+      icon={<Star className="text-amber-300" size={20} fill="currentColor" />}
+      hasDivider={false}
+      className="shadow-md"
+    >
       <div className="flex items-center gap-2">
         <span className="text-3xl font-extrabold text-slate-100">
           {valorNumerico.toFixed(2)}
@@ -26,6 +27,6 @@ export const ProfileRanking = ({ ranking }) => {
           en promedio
         </span>
       </div>
-    </div>
+    </SectionCard>
   );
 };

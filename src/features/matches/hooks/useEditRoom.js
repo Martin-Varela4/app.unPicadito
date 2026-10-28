@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { roomSchema } from '../schemas/roomSchema';
 import { getMatchById, updateMatch } from '../services/matchService';
 import { createIsoFromLocal, isWithin24Hours } from '../utils/dateUtils';
+import { INITIAL_ROOM_FORM_VALUES } from '../constants/matchConstants';
+import { validateWithSchema } from '../../../utils/validation';
 
 const getFormValues = (room) => ({
     nombre: room.title,
@@ -39,7 +41,7 @@ const buildPatch = (data, room, timeLocked) => {
 export const useEditRoom = (roomId) => {
     const navigate = useNavigate();
     const [room, setRoom] = useState(null);
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState(INITIAL_ROOM_FORM_VALUES);
     const [fieldErrors, setFieldErrors] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true);
@@ -75,20 +77,21 @@ export const useEditRoom = (roomId) => {
         event.preventDefault();
         if (!room) return;
         setErrorMessage('');
-        try {
-            const data = await roomSchema.validate(formData, { abortEarly: false });
-            setFieldErrors({});
-            const patch = buildPatch(data, room, isTimeLocked);
-            if (!Object.keys(patch).length) {
-                setErrorMessage('No has realizado ningún cambio.');
-                return;
-            }
-            setPendingData(patch);
-            setIsModalOpen(true);
-        } catch (error) {
-            if (error.name !== 'ValidationError') throw error;
-            setFieldErrors(Object.fromEntries(error.inner.map(({ path, message }) => [path, message])));
+
+        const { isValid, data, errors } = await validateWithSchema(roomSchema, formData);
+        if (!isValid) {
+            setFieldErrors(errors);
+            return;
         }
+        setFieldErrors({});
+
+        const patch = buildPatch(data, room, isTimeLocked);
+        if (!Object.keys(patch).length) {
+            setErrorMessage('No has realizado ningún cambio.');
+            return;
+        }
+        setPendingData(patch);
+        setIsModalOpen(true);
     };
 
     const confirmSubmit = async () => {

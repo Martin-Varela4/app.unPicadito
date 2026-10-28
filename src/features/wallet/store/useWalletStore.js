@@ -12,7 +12,7 @@ export const useWalletStore = create((set) => ({
             const data = await walletApi.getSaldo();
             set({ saldoCredito: Number(data.saldoCredito), isLoading: false });
         } catch (err) {
-            set({ error: 'Error al cargar el saldo', isLoading: false });
+            set({ error: err.message || 'Error al cargar el saldo', isLoading: false });
         }
     },
 

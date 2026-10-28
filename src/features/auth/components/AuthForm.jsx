@@ -1,17 +1,14 @@
 import { useState } from 'react';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
+import Alert from '../../../components/ui/Alert';
 import { useAuth } from '../hooks/useAuth';
+import { INITIAL_AUTH_FORM_VALUES } from '../constants/authConstants';
 
 export default function AuthForm({ mode = 'login', onToggleMode }) {
   const isLogin = mode === 'login';
 
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
+  const [formData, setFormData] = useState(INITIAL_AUTH_FORM_VALUES);
   const { authenticate, isLoading, validationErrors, apiError, clearErrors } = useAuth();
 
   const handleChange = (e) => {
@@ -21,19 +18,14 @@ export default function AuthForm({ mode = 'login', onToggleMode }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     await authenticate(mode, formData);
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
       {/* Alerta de Error de Backend */}
-      {apiError && (
-        <div className="p-3 text-sm text-red-200 bg-red-950/40 border border-red-500/40 rounded-lg flex items-center gap-2">
-          <span>⚠️</span>
-          <span>{apiError}</span>
-        </div>
-      )}
+      {apiError && <Alert message={apiError} />}
 
       {/* Campo: Nombre de usuario (Solo Registro) */}
       {!isLogin && (
@@ -94,16 +86,17 @@ export default function AuthForm({ mode = 'login', onToggleMode }) {
       {/* Selector de modo */}
       <div className="text-center text-sm text-slate-300 mt-2">
         {isLogin ? '¿No tienes una cuenta?' : '¿Ya tienes una cuenta?'}{' '}
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={() => {
             clearErrors();
             onToggleMode();
           }}
-          className="font-semibold text-sky-300 hover:text-sky-300 underline focus:outline-none"
+          className="min-h-0 px-1.5 py-0.5 font-semibold text-sky-300 hover:text-sky-200 underline hover:bg-transparent"
         >
           {isLogin ? 'Regístrate aquí' : 'Inicia sesión'}
-        </button>
+        </Button>
       </div>
     </form>
   );

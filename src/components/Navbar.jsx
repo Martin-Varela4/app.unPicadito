@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { getMyProfile } from "../features/profile/services/profile.service";
-import { mapUserToProfile } from "../features/profile/services/profile.mapper";
+import { mapUserToProfile } from "../features/profile/services/profileMapper";
 import { useAuthStore } from "../features/auth/store/useAuthStore";
 import {
   Home,
@@ -15,49 +14,38 @@ import {
   PlusCircle,
 } from "lucide-react";
 import Avatar from "./ui/Avatar";
+import Button from "./ui/Button";
+import { NAV_ITEMS as RAW_NAV_ITEMS } from "../constants/appConstants";
+
+const BASE_NAV_LINK_CLASS =
+  "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)]";
+
+const NAV_ICONS = {
+  Home,
+  Search,
+  Users,
+  MessageSquare,
+};
+
+const NAV_ITEMS = RAW_NAV_ITEMS.map((item) => ({
+  ...item,
+  icon: NAV_ICONS[item.iconName] || Home,
+}));
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [profile, setProfile] = useState(null);
+  const user = useAuthStore((state) => state.user);
   const token = useAuthStore((state) => state.token);
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    let isCurrent = true;
-
-    if (!token) {
-      return undefined;
-    }
-
-    getMyProfile()
-      .then((rawUser) => {
-        if (isCurrent) setProfile(mapUserToProfile(rawUser));
-      })
-      .catch(() => {
-        if (isCurrent) setProfile(null);
-      });
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [token]);
-  const visibleProfile = token ? profile : null;
+  const visibleProfile = token && user ? mapUserToProfile(user) : null;
 
   const handleLogout = () => {
     setIsOpen(false);
     logout();
     navigate("/login", { replace: true });
   };
-
-  const baseNavLinkClass = "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)]";
-
-  const navItems = [
-    { icon: Home, label: "Inicio", path: "/", end: true },
-    { icon: Search, label: "Buscar Partidos", path: "/partidos", end: false },
-    { icon: Users, label: "Jugadores", path: "/players", end: false },
-    { icon: MessageSquare, label: "Mensajes", path: "/messages", end: false }
-  ];
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 h-16 border-b border-[var(--color-border-subtle)] bg-[var(--color-background-main)] px-3 sm:px-4 md:h-[70px] md:px-6">
@@ -73,13 +61,13 @@ export default function NavBar() {
 
         {/* Links principales de navegación */}
         <div className="hidden md:flex items-center gap-1">
-          {navItems.map(({ icon: Icon, label, path, end }) => (
+          {NAV_ITEMS.map(({ icon: Icon, label, path, end }) => (
             <NavLink
               key={label}
               to={path}
               end={end}
               className={({ isActive }) => `
-                ${baseNavLinkClass} 
+                ${BASE_NAV_LINK_CLASS} 
                 ${isActive
                   ? "text-[var(--color-brand-primary)] font-semibold"
                   : "text-slate-400 hover:text-white"
@@ -103,18 +91,25 @@ export default function NavBar() {
             <span className="hidden sm:inline">Crear sala</span>
           </Link>
 
-          <button type="button" aria-label="Notificaciones" className="relative flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)]">
+          <Button
+            type="button"
+            variant="ghost"
+            aria-label="Notificaciones"
+            className="relative flex min-h-11 min-w-11 items-center justify-center rounded-full p-2 text-slate-400 hover:bg-slate-800 hover:text-white"
+          >
             <Bell size={20} />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
+          </Button>
 
           {/* Menú Dropdown de Usuario */}
           <div className="relative">
-            <button
+            <Button
+              type="button"
+              variant="ghost"
               onClick={() => setIsOpen(!isOpen)}
               aria-expanded={isOpen}
-              className="group flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg p-1.5 transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)] sm:gap-2"
               aria-label="Abrir menú de usuario"
+              className="group flex min-h-11 items-center gap-1.5 rounded-lg p-1.5 sm:gap-2"
             >
               <Avatar
                 src={visibleProfile?.avatar}
@@ -125,7 +120,7 @@ export default function NavBar() {
                 size={16}
                 className={`text-slate-400 group-hover:text-white transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
               />
-            </button>
+            </Button>
 
             {isOpen && (
               <div className="absolute right-0 mt-2 w-52 max-w-[calc(100vw-1.5rem)] rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] py-1.5 shadow-xl">
@@ -144,21 +139,24 @@ export default function NavBar() {
 
                 <hr className="border-[var(--color-border-subtle)] my-1" />
 
-                <button
+                <Button
+                  type="button"
+                  variant="ghost"
+                  fullWidth
                   onClick={handleLogout}
-                  className="flex items-center gap-2.5 w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-slate-800 transition-colors font-medium cursor-pointer"
+                  className="justify-start gap-2.5 px-4 py-2.5 text-sm text-red-500 hover:bg-slate-800 font-medium"
                 >
                   <LogOut size={16} />
                   Cerrar Sesión
-                </button>
+                </Button>
               </div>
             )}
           </div>
         </div>
       </div>
       <div className="fixed inset-x-0 bottom-0 border-t border-[var(--color-border-subtle)] bg-[var(--color-background-main)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
-        <div className="mx-auto grid max-w-lg grid-cols-3">
-          {navItems.map(({ icon: Icon, label, path, end }) => (
+        <div className="mx-auto grid max-w-lg grid-cols-4">
+          {NAV_ITEMS.map(({ icon: Icon, label, path, end }) => (
             <NavLink
               key={`mobile-${label}`}
               to={path}

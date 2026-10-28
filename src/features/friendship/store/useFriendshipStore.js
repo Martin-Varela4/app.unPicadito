@@ -19,7 +19,7 @@ export const useFriendshipStore = create((set) => ({
             set({ pendingRequests: response.data || [], loading: false });
         } catch (err) {
             set({
-                error: err.response?.data?.message || 'Error al cargar las solicitudes',
+                error: err.message || 'Error al cargar las solicitudes',
                 loading: false,
             });
         }
@@ -33,7 +33,7 @@ export const useFriendshipStore = create((set) => ({
             set({ loading: false });
             return { success: true, data: response.data };
         } catch (err) {
-            const message = err.response?.data?.message || 'Error al enviar la solicitud';
+            const message = err.message || 'Error al enviar la solicitud';
             set({ error: message, loading: false });
             return { success: false, error: message };
         }
@@ -51,7 +51,7 @@ export const useFriendshipStore = create((set) => ({
             }));
             return { success: true };
         } catch (err) {
-            const message = err.response?.data?.message || 'Error al procesar la solicitud';
+            const message = err.message || 'Error al procesar la solicitud';
             set({ error: message, loading: false });
             return { success: false, error: message };
         }

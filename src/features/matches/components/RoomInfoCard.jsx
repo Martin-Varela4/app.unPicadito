@@ -1,12 +1,11 @@
+import SectionCard from '../../../components/ui/SectionCard';
 import { LocationPickerMap } from './LocationPickerMap';
 
 export const RoomInfoCard = ({ room }) => {
     const ubicacion = room.raw?.ubicacion;
 
     return (
-        <div className="space-y-4 rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] p-4 shadow-sm sm:p-6">
-            <h2 className="border-b border-[var(--color-border-subtle)] pb-2 text-lg font-semibold text-slate-100">Información del Encuentro</h2>
-
+        <SectionCard title="Información del Encuentro" className="space-y-4">
             <div className="space-y-3 text-sm text-slate-300">
                 <div className="flex items-center gap-3">
                     <span className="font-medium text-slate-100">Día y Horario:</span>
@@ -29,6 +28,6 @@ export const RoomInfoCard = ({ room }) => {
                     <LocationPickerMap value={ubicacion} readOnly height="180px" />
                 </div>
             )}
-        </div>
+        </SectionCard>
     );
 };

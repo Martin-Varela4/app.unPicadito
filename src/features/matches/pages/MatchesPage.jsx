@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useMatches } from '../hooks/useMatches';
-import { useDebounce } from '../../../hooks/useDebounce';
 import SearchInput from '../../../components/ui/SearchInput';
 import MatchFilters from '../components/MatchFilters';
 import MatchGrid from '../components/MatchGrid';
+import PageContainer from '../../../components/ui/PageContainer';
 
 export default function MatchesPage() {
     const {
@@ -21,15 +21,11 @@ export default function MatchesPage() {
     } = useMatches();
 
     const [searchTerm, setSearchTerm] = useState('');
-    const debouncedSearch = useDebounce(searchTerm, 400);
-
-    useEffect(() => {
-        setFilter('search', debouncedSearch);
-    }, [debouncedSearch, setFilter]);
 
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
+        setFilter('search', value);
     };
 
     const handleSearchClear = () => {
@@ -38,7 +34,7 @@ export default function MatchesPage() {
     };
 
     return (
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 md:px-8 lg:px-10">
+        <PageContainer size="full" className="flex flex-col gap-6 sm:gap-8">
             <div className="flex flex-col gap-6">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
@@ -75,6 +71,6 @@ export default function MatchesPage() {
                 joiningMatchId={joiningMatchId}
                 joinError={joinError}
             />
-        </div>
+        </PageContainer>
     );
 }

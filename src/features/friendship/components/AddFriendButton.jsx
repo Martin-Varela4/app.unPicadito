@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useFriendshipStore } from "../store/useFriendshipStore";
 import Button from "../../../components/ui/Button";
+import Alert from "../../../components/ui/Alert";
 
 export const AddFriendButton = ({ receiverId, initialStatus = "NONE" }) => {
   const { sendRequest, loading } = useFriendshipStore();
@@ -23,18 +24,14 @@ export const AddFriendButton = ({ receiverId, initialStatus = "NONE" }) => {
   return (
     <div className="inline-flex flex-col items-start gap-2">
       {/* Notificación simple de error */}
-      {errorMessage && (
-        <div role="alert" className="rounded-sm border border-red-500/40 bg-red-950/40 px-3 py-2 text-sm text-red-200">
-          <span>{errorMessage}</span>
-        </div>
-      )}
+      {errorMessage && <Alert message={errorMessage} />}
 
       {/* Control del botón según estado */}
       {status === "PENDING" ? (
         <Button disabled variant="outline">Solicitud Enviada</Button>
       ) : (
         <Button onClick={handleSendRequest} disabled={loading} isLoading={loading}>
-          {loading ? "Cargando..." : "Agregar amigo"}
+          Agregar amigo
         </Button>
       )}
     </div>
