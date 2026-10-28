@@ -23,10 +23,10 @@ export default function AppRoutes() {
 
             <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
-                    <Route path="/" element={<HomePage />} />
+                    <Route path="/home" element={<HomePage />} />
                     <Route path="/profile" element={<PerfilUsuario />} />
                     <Route path="/profile/edit" element={<EditProfileForm />} />
-                    <Route path="/partidos" element={<MatchesPage />} />
+                    <Route path="/" element={<MatchesPage />} />
                     <Route path="/players" element={<PlayersPage />} />
                     <Route path="/users/:id" element={<PerfilUsuario />} />
                     <Route path="/salas/nueva" element={<CreateRoomPage />} />
@@ -37,7 +37,7 @@ export default function AppRoutes() {
             </Route>
 
             {/* Redirección por defecto */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
     );
 }

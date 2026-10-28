@@ -53,8 +53,8 @@ export default function NavBar() {
   const baseNavLinkClass = "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)]";
 
   const navItems = [
-    { icon: Home, label: "Inicio", path: "/", end: true },
-    { icon: Search, label: "Buscar Partidos", path: "/partidos", end: false },
+    { icon: Home, label: "Inicio", path: "/home", end: true },
+    { icon: Search, label: "Buscar Partidos", path: "/", end: false },
     { icon: Users, label: "Jugadores", path: "/players", end: false },
     { icon: MessageSquare, label: "Mensajes", path: "/messages", end: false }
   ];
@@ -63,7 +63,7 @@ export default function NavBar() {
     <nav className="fixed inset-x-0 top-0 z-50 h-16 border-b border-[var(--color-border-subtle)] bg-[var(--color-background-main)] px-3 sm:px-4 md:h-[70px] md:px-6">
       <div className="mx-auto flex h-full max-w-[1400px] items-center justify-between gap-2">
         {/* Logo que redirige a Inicio */}
-        <Link to="/" className="flex items-center gap-2 select-none" aria-label="Ir al inicio">
+        <Link to="/home" className="flex items-center gap-2 select-none" aria-label="Ir al inicio">
           <div className="text-2xl">⚽</div>
           <div className="flex flex-col leading-none font-bold text-white">
             <span className="text-xs text-[var(--color-brand-light)] font-medium">Un</span>

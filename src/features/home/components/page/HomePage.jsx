@@ -3,7 +3,7 @@ import { Search, PlusCircle } from 'lucide-react';
 import { useAuthStore } from '../../../auth/store/useAuthStore';
 import { useMatches } from '../../../matches/hooks/useMatches';
 import MatchCard from '../../../matches/components/MatchCard';
-import Spinner from '../../../../components/Spinner';
+import Spinner from '../../../../components/ui/Spinner';
 import heroImage from '../../../../assets/hero.png';
 import { ProfileRanking } from '../../../profile/components/ProfileRanking';
 
