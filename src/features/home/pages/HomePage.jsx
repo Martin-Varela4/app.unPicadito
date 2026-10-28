@@ -8,6 +8,7 @@ import LoadingState from '../../../components/ui/LoadingState';
 import ErrorAlert from '../../../components/ui/ErrorAlert';
 import EmptyState from '../../../components/ui/EmptyState';
 import heroImage from '../../../assets/cancha-fondo.jpg';
+import { ProfileRanking } from '../../profile/components/ProfileRanking';
 
 const HomePage = () => {
     const user = useAuthStore((state) => state.user);
@@ -69,6 +70,8 @@ const HomePage = () => {
                     </div>
                 </div>
             </section>
+
+            <ProfileRanking />
 
             {/* Sección: Mis próximos partidos */}
             <section className="flex flex-col gap-4">
