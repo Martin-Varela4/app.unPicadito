@@ -3,8 +3,9 @@ import { Search, PlusCircle } from 'lucide-react';
 import { useAuthStore } from '../../../auth/store/useAuthStore';
 import { useMatches } from '../../../matches/hooks/useMatches';
 import MatchCard from '../../../matches/components/MatchCard';
-import Spinner from '../../../../components/ui/Spinner';
-import heroImage from '../../../../assets/cancha-fondo.jpg';
+import Spinner from '../../../../components/Spinner';
+import heroImage from '../../../../assets/hero.png';
+import { ProfileRanking } from '../../../profile/components/ProfileRanking';
 
 const HomePage = () => {
     const user = useAuthStore((state) => state.user);
@@ -66,6 +67,8 @@ const HomePage = () => {
                     </div>
                 </div>
             </section>
+
+            <ProfileRanking />
 
             {/* Sección: Mis próximos partidos */}
             <section className="flex flex-col gap-4">
