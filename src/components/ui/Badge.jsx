@@ -16,6 +16,8 @@ const colorMaps = {
         completo: 'bg-red-600 text-white',
         publica: 'bg-slate-700 text-white',
         organizas: 'bg-[var(--color-brand-primary)] text-[#21263A]',
+        solicitud_enviada: 'bg-amber-500/20 text-amber-300 border border-amber-500/40',
+        pendiente: 'bg-amber-500/20 text-amber-300 border border-amber-500/40',
     },
     level: {
         principiante: 'bg-slate-800 text-slate-300',

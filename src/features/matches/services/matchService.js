@@ -19,8 +19,23 @@ export const getMatches = async (filters = {}) => {
     // Solo se envían si el usuario eligió "Sí(true)" o "No(false)", si está vacío manda todas
     if (filters.esPublica !== '') params.esPublica = filters.esPublica;
     if (filters.permiteSuplentes !== '') params.permiteSuplentes = filters.permiteSuplentes;
+    if (filters.misSalas !== undefined) params.misSalas = filters.misSalas;
+    if (filters.pagina) params.pagina = filters.pagina;
+    if (filters.limite) params.limite = filters.limite;
+
     const response = await api.get(ENDPOINT_MATCHES_SEARCH, { params });
-    return response.data?.data ?? [];
+    const matchesData = response.data?.data ?? [];
+    const paginationData = response.data?.paginacion ?? {
+        total: matchesData.length,
+        pagina: filters.pagina || 1,
+        limite: filters.limite || 12,
+        totalPaginas: 1,
+    };
+
+    return {
+        matches: matchesData,
+        pagination: paginationData,
+    };
 };
 
 export const getMatchById = async (id) => {
@@ -67,5 +82,15 @@ export const transferOrganizer = async (matchId, nuevoOrganizadorUserId) => {
     const response = await api.patch(`${ENDPOINT_MATCHES}/${matchId}/transferir-organizador`, {
         nuevoOrganizadorUserId: Number(nuevoOrganizadorUserId),
     });
+    return response.data;
+};
+
+export const acceptJoinRequest = async (roomId, participationId) => {
+    const response = await api.patch(`${ENDPOINT_MATCHES}/${roomId}/solicitudes/${participationId}/aceptar`);
+    return response.data;
+};
+
+export const rejectJoinRequest = async (roomId, participationId) => {
+    const response = await api.patch(`${ENDPOINT_MATCHES}/${roomId}/solicitudes/${participationId}/rechazar`);
     return response.data;
 };

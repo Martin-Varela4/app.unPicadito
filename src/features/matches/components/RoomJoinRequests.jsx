@@ -1,12 +1,14 @@
-import { Check, X, Clock, Star } from "lucide-react";
+import { Check, X, Clock } from "lucide-react";
 import Avatar from "../../../components/ui/Avatar";
 import Button from "../../../components/ui/Button";
 import SectionCard from "../../../components/ui/SectionCard";
+import RatingBadge from "../../../components/ui/RatingBadge";
 
 export const RoomJoinRequests = ({
   requests = [],
   onAccept,
   onReject,
+  isLoading = false,
 }) => {
   if (requests.length === 0) {
     return (
@@ -36,7 +38,7 @@ export const RoomJoinRequests = ({
 
           return (
             <div
-              key={request.id}
+              key={request.participationId || request.id}
               className="border border-[var(--color-border-subtle)] rounded-md p-4 flex flex-col sm:flex-row sm:items-center gap-4 bg-[var(--color-background-main)]/50"
             >
               {/* Datos del usuario */}
@@ -49,27 +51,20 @@ export const RoomJoinRequests = ({
 
                 <div>
                   <h4 className="font-semibold text-slate-100">
-                    {user.name}
+                    {user.name || "Jugador"}
                   </h4>
 
                   <p className="text-sm text-slate-400">
-                    {user.username}
+                    {user.username || `@${request.username || "usuario"}`}
                   </p>
 
-                  <div className="flex items-center gap-1 mt-1 text-sm text-amber-400">
-                    <Star
-                      size={14}
-                      fill="currentColor"
-                    />
-
-                    <span>
-                      {user.rating ?? "Sin rating"}
-                    </span>
+                  <div className="mt-1">
+                    <RatingBadge value={user.rating} />
                   </div>
                 </div>
               </div>
 
-              {/* Fecha */}
+              {/* Estado */}
               <div className="flex items-center gap-1 text-sm text-slate-400">
                 <Clock size={15} />
                 <span>Solicitud pendiente</span>
@@ -78,7 +73,8 @@ export const RoomJoinRequests = ({
               {/* Aceptar / Rechazar */}
               <div className="flex gap-2">
                 <Button
-                  onClick={() => onAccept(request)}
+                  disabled={isLoading}
+                  onClick={() => onAccept && onAccept(request)}
                   className="gap-2"
                 >
                   <Check size={16} />
@@ -86,7 +82,8 @@ export const RoomJoinRequests = ({
                 </Button>
 
                 <Button
-                  onClick={() => onReject(request)}
+                  disabled={isLoading}
+                  onClick={() => onReject && onReject(request)}
                   variant="danger"
                   className="gap-2"
                 >

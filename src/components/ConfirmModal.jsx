@@ -1,6 +1,16 @@
 import Button from './ui/Button';
 
-export const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, isLoading, children }) => {
+export const ConfirmModal = ({
+    isOpen,
+    onClose,
+    onConfirm,
+    title,
+    message,
+    isLoading,
+    children,
+    confirmText = 'Confirmar Cambios',
+    confirmVariant = 'primary',
+}) => {
     if (!isOpen) return null;
 
     return (
@@ -26,11 +36,11 @@ export const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, isLoa
                                 Cancelar
                             </Button>
                             <Button
-                                variant="primary"
+                                variant={confirmVariant}
                                 onClick={onConfirm}
                                 isLoading={isLoading}
                             >
-                                Confirmar Cambios
+                                {confirmText}
                             </Button>
                         </div>
                     </>

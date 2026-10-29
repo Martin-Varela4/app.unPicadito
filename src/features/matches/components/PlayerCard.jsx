@@ -1,8 +1,9 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { MoreHorizontal, Star } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import Avatar from '../../../components/ui/Avatar';
 import Badge from '../../../components/ui/Badge';
 import Button from '../../../components/ui/Button';
+import RatingBadge from '../../../components/ui/RatingBadge';
 
 export const PlayerCard = ({
     player,
@@ -23,7 +24,6 @@ export const PlayerCard = ({
     const displayName = player.firstName
         ? `${player.firstName} ${player.lastName || ''}`.trim()
         : player.username || 'Jugador';
-    const hasReputation = player.reputation !== null && player.reputation !== undefined;
 
     useEffect(() => {
         if (!isMenuOpen) return undefined;
@@ -60,24 +60,8 @@ export const PlayerCard = ({
                     <p className="text-sm font-semibold text-slate-100 truncate">
                         {displayName}
                     </p>
-                    <div className="flex min-w-0 items-center gap-1 text-xs text-slate-400">
-                        <Star
-                            size={14}
-                            aria-hidden="true"
-                            className="shrink-0 text-amber-300"
-                            fill="currentColor"
-                        />
-                        <span
-                            role="img"
-                            className="truncate"
-                            aria-label={
-                                hasReputation
-                                    ? `Calificación: ${player.reputation} estrellas`
-                                    : 'Sin estrellas asignadas'
-                            }
-                        >
-                            {hasReputation ? player.reputation : 'Sin estrellas'}
-                        </span>
+                    <div className="flex min-w-0 items-center gap-1.5 text-xs text-slate-400">
+                        <RatingBadge value={player.reputation} />
                         {player.mainPosition && (
                             <span className="truncate">• {player.mainPosition}</span>
                         )}

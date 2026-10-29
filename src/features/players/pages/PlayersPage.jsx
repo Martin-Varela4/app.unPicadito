@@ -10,6 +10,7 @@ import LoadingState from "../../../components/ui/LoadingState";
 import EmptyState from "../../../components/ui/EmptyState";
 import Alert from "../../../components/ui/Alert";
 import Button from "../../../components/ui/Button";
+import Pagination from "../../../components/ui/Pagination";
 
 export const PlayersPage = () => {
   const [searchInput, setSearchInput] = useState("");
@@ -17,6 +18,8 @@ export const PlayersPage = () => {
   const debouncedSearch = useDebounce(searchInput, DEBOUNCE_DELAY_MS);
 
   const players = usePlayerStore((state) => state.players);
+  const pagination = usePlayerStore((state) => state.pagination);
+  const setPage = usePlayerStore((state) => state.setPage);
   const loading = usePlayerStore((state) => state.loading);
   const error = usePlayerStore((state) => state.error);
   const fetchPlayers = usePlayerStore((state) => state.fetchPlayers);
@@ -72,7 +75,7 @@ export const PlayersPage = () => {
             <p className="mb-4 text-sm">{error}</p>
             <Button 
               variant="danger"
-              onClick={() => fetchPlayers(debouncedSearch)}
+              onClick={() => fetchPlayers(debouncedSearch, pagination.pagina)}
             >
               Reintentar conexión
             </Button>
@@ -84,9 +87,18 @@ export const PlayersPage = () => {
             {players.length > 0 ? (
               <div>
                 <p className="mb-4 text-sm text-slate-400">
-                  Se encontraron <strong>{players.length}</strong> jugadores disponibles
+                  Se encontraron <strong>{pagination.total}</strong> jugadores disponibles
                 </p>
                 <PlayerList players={players} />
+
+                <Pagination
+                  currentPage={pagination.pagina}
+                  totalPages={pagination.totalPaginas}
+                  totalItems={pagination.total}
+                  itemsPerPage={pagination.limite}
+                  onPageChange={setPage}
+                  className="mt-6"
+                />
               </div>
             ) : (
               <EmptyState
@@ -105,3 +117,5 @@ export const PlayersPage = () => {
     </PageContainer>
   );
 };
+
+export default PlayersPage;

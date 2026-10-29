@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { roomSchema } from '../schemas/roomSchema';
 import { getMatchById, updateMatch } from '../services/matchService';
 import { createIsoFromLocal, isWithin24Hours } from '../utils/dateUtils';

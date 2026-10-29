@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { createRoomSchema } from '../schemas/roomSchema';
 import { createMatch } from '../services/matchService';
 import { createIsoFromLocal } from '../utils/dateUtils';

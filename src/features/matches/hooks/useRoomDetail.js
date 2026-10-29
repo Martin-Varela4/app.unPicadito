@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getMatchById, joinMatch } from "../services/matchService";
+import { getMatchById, joinMatch, acceptJoinRequest, rejectJoinRequest } from "../services/matchService";
 import { ROOM_STATUS, PARTICIPANT_STATUS } from "../constants/matchConstants";
 
 export const useRoomDetail = (roomId) => {
@@ -8,6 +8,8 @@ export const useRoomDetail = (roomId) => {
   const [error, setError] = useState("");
   const [isJoining, setIsJoining] = useState(false);
   const [joinError, setJoinError] = useState("");
+  const [actionError, setActionError] = useState("");
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const loading = loadedRoomId !== roomId;
 
   const fetchRoom = useCallback(() => getMatchById(roomId), [roomId]);
@@ -60,10 +62,42 @@ export const useRoomDetail = (roomId) => {
     setRoom((prev) => (prev ? { ...prev, status: ROOM_STATUS.CANCELADA } : null));
   };
 
+  const handleAcceptRequest = async (request) => {
+    const participationId = request.participationId || request.id;
+    if (!participationId) return;
+    setIsActionLoading(true);
+    setActionError("");
+    try {
+      await acceptJoinRequest(roomId, participationId);
+      await loadRoom();
+    } catch (err) {
+      setActionError(err.message || "Error al aceptar la solicitud.");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handleRejectRequest = async (request) => {
+    const participationId = request.participationId || request.id;
+    if (!participationId) return;
+    setIsActionLoading(true);
+    setActionError("");
+    try {
+      await rejectJoinRequest(roomId, participationId);
+      await loadRoom();
+    } catch (err) {
+      setActionError(err.message || "Error al rechazar la solicitud.");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
   const confirmedPlayers =
     room?.participants?.filter((p) => p.status === PARTICIPANT_STATUS.CONFIRMED) || [];
   const substitutes =
     room?.participants?.filter((p) => p.status === PARTICIPANT_STATUS.SUBSTITUTE) || [];
+  const pendingRequests =
+    room?.participants?.filter((p) => p.status === PARTICIPANT_STATUS.PENDING || p.role === 'SOLICITANTE') || [];
   const availableSlots = room ? Math.max(0, room.maxPlayers - confirmedPlayers.length) : 0;
 
   return {
@@ -72,11 +106,16 @@ export const useRoomDetail = (roomId) => {
     error,
     isJoining,
     joinError,
+    actionError,
+    isActionLoading,
     loadRoom,
     handleJoin,
     handleRoomCanceled,
+    handleAcceptRequest,
+    handleRejectRequest,
     confirmedPlayers,
     substitutes,
+    pendingRequests,
     availableSlots,
   };
 };

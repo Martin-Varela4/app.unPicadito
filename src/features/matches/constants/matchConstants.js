@@ -55,6 +55,8 @@ export const INITIAL_MATCH_FILTERS = Object.freeze({
     nombreCancha: '',
     esPublica: '',
     permiteSuplentes: '',
+    pagina: 1,
+    limite: 12,
 });
 
 export const PRIVACY_FILTER_OPTIONS = Object.freeze([
@@ -80,5 +82,5 @@ export const MEMBERSHIP_STATUS_CONFIG = Object.freeze({
     ORGANIZER: { label: 'Organizás este partido', className: 'bg-[var(--color-brand-primary)] text-[#21263A]' },
     [PARTICIPANT_STATUS.CONFIRMED]: { label: 'Sos titular', className: 'bg-blue-900/40 text-blue-200' },
     [PARTICIPANT_STATUS.SUBSTITUTE]: { label: 'Sos suplente', className: 'bg-amber-900/40 text-amber-200' },
-    [PARTICIPANT_STATUS.PENDING]: { label: 'Solicitud pendiente', className: 'bg-slate-800 text-slate-200' },
+    [PARTICIPANT_STATUS.PENDING]: { label: 'Solicitud enviada', className: 'bg-amber-500/20 text-amber-300 border border-amber-500/40' },
 });

@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 import { RoomFormFields } from '../components/RoomFormFields';
 import { useEditRoom } from '../hooks/useEditRoom';

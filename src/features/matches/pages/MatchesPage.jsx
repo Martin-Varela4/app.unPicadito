@@ -4,11 +4,14 @@ import SearchInput from '../../../components/ui/SearchInput';
 import MatchFilters from '../components/MatchFilters';
 import MatchGrid from '../components/MatchGrid';
 import PageContainer from '../../../components/ui/PageContainer';
+import Pagination from '../../../components/ui/Pagination';
 
 export default function MatchesPage() {
     const {
         filters,
         setFilter,
+        setPage,
+        pagination,
         matches,
         isLoadingMatches,
         matchesError,
@@ -71,6 +74,17 @@ export default function MatchesPage() {
                 joiningMatchId={joiningMatchId}
                 joinError={joinError}
             />
+
+            {!isLoadingMatches && !matchesError && matches.length > 0 && (
+                <Pagination
+                    currentPage={pagination.pagina}
+                    totalPages={pagination.totalPaginas}
+                    totalItems={pagination.total}
+                    itemsPerPage={pagination.limite}
+                    onPageChange={setPage}
+                    className="mt-4"
+                />
+            )}
         </PageContainer>
     );
 }

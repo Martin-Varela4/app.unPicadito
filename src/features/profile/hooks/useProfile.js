@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { getMyProfile, getPublicProfileById } from "../services/profileService"; 
 import { mapUserToProfile } from "../services/profileMapper";
 import { useAuthStore } from "../../auth/store/useAuthStore";

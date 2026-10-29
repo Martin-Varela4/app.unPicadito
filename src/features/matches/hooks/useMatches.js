@@ -9,11 +9,12 @@ const isUpcoming = (match) => {
     return new Date(match.fechaHoraPartido) >= new Date();
 };
 
-export const useMatches = () => {
-    const [filters, setFilters] = useState(INITIAL_MATCH_FILTERS);
+export const useMatches = (initialFilters = INITIAL_MATCH_FILTERS) => {
+    const [filters, setFilters] = useState(() => ({ ...INITIAL_MATCH_FILTERS, ...initialFilters }));
     const debouncedFilters = useDebounce(filters, DEBOUNCE_DELAY_MS);
 
     const [matches, setMatches] = useState([]);
+    const [pagination, setPagination] = useState({ total: 0, pagina: 1, limite: 12, totalPaginas: 1 });
     const [isLoadingMatches, setIsLoadingMatches] = useState(false);
     const [matchesError, setMatchesError] = useState(null);
     const [joiningMatchId, setJoiningMatchId] = useState(null);
@@ -32,8 +33,15 @@ export const useMatches = () => {
             try {
                 const data = await getMatches(debouncedFilters);
                 if (!active) return;
-                const upcoming = Array.isArray(data) ? data.filter(isUpcoming) : [];
-                setMatches(upcoming);
+                const rawList = Array.isArray(data) ? data : data.matches ?? [];
+                const pag = !Array.isArray(data) && data.pagination ? data.pagination : {
+                    total: rawList.length,
+                    pagina: debouncedFilters.pagina || 1,
+                    limite: debouncedFilters.limite || 12,
+                    totalPaginas: 1,
+                };
+                setMatches(rawList.filter(isUpcoming));
+                setPagination(pag);
             } catch (error) {
                 if (active) setMatchesError(error.message ?? 'Error al buscar partidos.');
             } finally {
@@ -49,11 +57,19 @@ export const useMatches = () => {
     }, [debouncedFilters]);
 
     const setFilter = useCallback((key, value) => {
-        setFilters((prev) => ({ ...prev, [key]: value }));
+        setFilters((prev) => ({
+            ...prev,
+            [key]: value,
+            ...(key !== 'pagina' ? { pagina: 1 } : {}),
+        }));
+    }, []);
+
+    const setPage = useCallback((pagina) => {
+        setFilters((prev) => ({ ...prev, pagina }));
     }, []);
 
     const resetFilters = () => {
-        setFilters(INITIAL_MATCH_FILTERS);
+        setFilters({ ...INITIAL_MATCH_FILTERS, ...initialFilters });
     };
 
     const leaveMatch = async (matchId, reason) => {
@@ -62,7 +78,19 @@ export const useMatches = () => {
 
         try {
             const data = await leaveMatchService(matchId, reason);
-            setMatches((prevMatches) => prevMatches.filter((match) => match.id !== matchId));
+            setMatches((prev) =>
+                prev.map((m) =>
+                    m.id === matchId
+                        ? { ...m, solicitudPendiente: 0, unidoPorUsuarioActual: 0 }
+                        : m
+                )
+            );
+            const freshMatches = await getMatches(filters);
+            const freshList = Array.isArray(freshMatches) ? freshMatches : freshMatches.matches ?? [];
+            setMatches(freshList.filter(isUpcoming));
+            if (!Array.isArray(freshMatches) && freshMatches.pagination) {
+                setPagination(freshMatches.pagination);
+            }
             return data;
         } catch (error) {
             const message = error.message || 'Error al salir de la sala';
@@ -79,8 +107,19 @@ export const useMatches = () => {
 
         try {
             await joinMatchService(matchId);
+            setMatches((prev) =>
+                prev.map((m) =>
+                    m.id === matchId
+                        ? { ...m, solicitudPendiente: 1, unidoPorUsuarioActual: 0 }
+                        : m
+                )
+            );
             const freshMatches = await getMatches(filters);
-            setMatches(Array.isArray(freshMatches) ? freshMatches.filter(isUpcoming) : []);
+            const freshList = Array.isArray(freshMatches) ? freshMatches : freshMatches.matches ?? [];
+            setMatches(freshList.filter(isUpcoming));
+            if (!Array.isArray(freshMatches) && freshMatches.pagination) {
+                setPagination(freshMatches.pagination);
+            }
         } catch (error) {
             setJoinError(error.message || 'No se pudo unir al partido.');
         } finally {
@@ -91,6 +130,8 @@ export const useMatches = () => {
     return {
         filters,
         setFilter,
+        setPage,
+        pagination,
         resetFilters,
         matches,
         isLoadingMatches,

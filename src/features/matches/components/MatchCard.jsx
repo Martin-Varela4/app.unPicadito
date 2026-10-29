@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import Badge from "../../../components/ui/Badge";
 import ProgressBar from "../../../components/ui/ProgressBar";
 import Button from "../../../components/ui/Button";
@@ -33,8 +33,21 @@ export default function MatchCard({
   const isPast = checkPastMatch(match.fechaHoraPartido);
   const isComplete = match.estado === ROOM_STATUS.COMPLETA;
   const cannotJoin = isPast || (isComplete && !match.permiteSuplentes);
+  const myParticipation = match.participantes?.find(
+    (p) => (p.usuario?.id || p.userId) === currentUser?.id
+  );
   const isOwner = currentUser?.id === match.creador?.id || currentUser?.id === match.creadorId;
-  const isJoined = Boolean(match.unidoPorUsuarioActual) || isOwner;
+  const isPending =
+    !isOwner &&
+    (Boolean(match.solicitudPendiente) ||
+      myParticipation?.estado === "PENDIENTE" ||
+      myParticipation?.status === "PENDING");
+  const isConfirmed =
+    isOwner ||
+    Boolean(match.unidoPorUsuarioActual) ||
+    myParticipation?.estado === "CONFIRMADO" ||
+    myParticipation?.status === "CONFIRMED" ||
+    myParticipation?.status === "SUBSTITUTE";
   const isBlocked = checkWithin24Hours(match.fechaHoraPartido);
 
   const handleConfirmLeave = async () => {
@@ -56,8 +69,15 @@ export default function MatchCard({
 
   const fechaStr = formatMatchDate(match.fechaHoraPartido);
   const horaStr = formatMatchTime(match.fechaHoraPartido);
-  const currentPlayers = match.cuposOcupados ?? match.participantes?.length ?? 0;
-  const organizerName = match.creador?.nombre || "Organizador";
+  const currentPlayers =
+    match.cuposOcupados ??
+    match.participantes?.filter(
+      (p) =>
+        p.estado === "CONFIRMADO" ||
+        p.status === "CONFIRMED" ||
+        p.status === "SUBSTITUTE"
+    )?.length ??
+    0;
 
   return (
     <Card
@@ -74,9 +94,11 @@ export default function MatchCard({
           />
           {isOwner ? (
             <Badge label="Organizás" variant="status" value="organizas" />
-          ) : isJoined && (
+          ) : isPending ? (
+            <Badge label="Solicitud enviada" variant="status" value="solicitud_enviada" />
+          ) : isConfirmed ? (
             <Badge label="Sos parte" variant="status" value="confirmado" />
-          )}
+          ) : null}
         </div>
 
         <div className="mt-1">
@@ -104,43 +126,55 @@ export default function MatchCard({
 
         {leaveError && <p className="text-red-500 text-xs mt-1">{leaveError}</p>}
 
-        <div className="mt-auto flex flex-col gap-3 border-t border-[var(--color-border-subtle)] pt-3 sm:flex-row sm:items-center sm:justify-between">
-          <span className="truncate text-xs text-slate-400">por {organizerName}</span>
-
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            {!isJoined && (
-              <Button variant="outline" onClick={() => navigate(`/salas/${match.id}`)}>
-                Ver partido
-              </Button>
-            )}
-
-            <Button
-              variant={isJoined ? "outline" : "primary"}
-              onClick={isJoined ? () => navigate(`/salas/${match.id}`) : handleJoin}
-              disabled={!isJoined && (cannotJoin || joiningMatchId === match.id)}
-            >
-              {isJoined
-                ? "Ir a mi sala"
-                : isPast
-                  ? "Finalizado"
-                  : cannotJoin
-                    ? "Sin lugares"
-                    : joiningMatchId === match.id
-                      ? "Uniéndome..."
-                      : "Unirme"}
+        <div className="mt-auto flex flex-wrap items-center justify-end gap-2 border-t border-[var(--color-border-subtle)] pt-3">
+          {!isConfirmed && (
+            <Button variant="outline" onClick={() => navigate(`/salas/${match.id}`)}>
+              Ver partido
             </Button>
+          )}
 
-            {isJoined && (
-              <Button
-                variant="danger"
-                onClick={() => (isOwner ? setIsCancelModalOpen(true) : setIsLeaveModalOpen(true))}
-                disabled={isLeaving || isBlocked}
-                title={isBlocked ? "No puedes salir/cancelar con menos de 24hs de anticipación" : ""}
-              >
-                {isBlocked ? "Fuera de término" : isOwner ? "Cancelar" : isLeaving ? "Saliendo..." : "Salir"}
-              </Button>
-            )}
-          </div>
+          {isConfirmed && (
+            <Button variant="outline" onClick={() => navigate(`/salas/${match.id}`)}>
+              Ir a mi sala
+            </Button>
+          )}
+
+          {!isConfirmed && !isPending && (
+            <Button
+              variant="primary"
+              onClick={handleJoin}
+              disabled={cannotJoin || joiningMatchId === match.id}
+            >
+              {isPast
+                ? "Finalizado"
+                : cannotJoin
+                  ? "Sin lugares"
+                  : joiningMatchId === match.id
+                    ? (match.esPublica ? "Uniéndome..." : "Solicitando...")
+                    : (match.esPublica ? "Unirme" : "Solicitar")}
+            </Button>
+          )}
+
+          {isPending && (
+            <Button
+              variant="danger"
+              onClick={() => setIsLeaveModalOpen(true)}
+              disabled={isLeaving}
+            >
+              {isLeaving ? "Cancelando..." : "Cancelar solicitud"}
+            </Button>
+          )}
+
+          {isConfirmed && (
+            <Button
+              variant="danger"
+              onClick={() => (isOwner ? setIsCancelModalOpen(true) : setIsLeaveModalOpen(true))}
+              disabled={isLeaving || isBlocked}
+              title={isBlocked ? "No puedes salir/cancelar con menos de 24hs de anticipación" : ""}
+            >
+              {isBlocked ? "Fuera de término" : isOwner ? "Cancelar" : isLeaving ? "Saliendo..." : "Salir"}
+            </Button>
+          )}
         </div>
 
         {isCancelModalOpen && (
@@ -158,8 +192,14 @@ export default function MatchCard({
             onClose={() => setIsLeaveModalOpen(false)}
             onConfirm={handleConfirmLeave}
             isLoading={isLeaving}
-            title="¿Salir de la sala?"
-            message="¿Estás seguro de que deseas cancelar tu participación en esta sala?"
+            title={isPending ? "¿Cancelar solicitud?" : "¿Salir de la sala?"}
+            message={
+              isPending
+                ? "¿Estás seguro de que deseas cancelar tu solicitud para unirte a esta sala?"
+                : "¿Estás seguro de que deseas cancelar tu participación en esta sala?"
+            }
+            confirmText={isPending ? "Cancelar solicitud" : "Salir de la sala"}
+            confirmVariant="danger"
           />
         )}
       </CardContent>

@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useProfile } from "../hooks/useProfile";
 import { ProfileHeader } from "../components/ProfileHeader";
 import { AboutSection } from "../components/AboutSection";

@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Button from '../../../components/ui/Button';
 import Badge from '../../../components/ui/Badge';
 import { useAuthStore } from '../../auth/store/useAuthStore';

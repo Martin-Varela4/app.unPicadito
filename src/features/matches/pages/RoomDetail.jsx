@@ -1,8 +1,9 @@
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { RoomHeader } from "../components/RoomHeader";
 import { RoomInfoCard } from "../components/RoomInfoCard";
 import { RoomSlotsSummary } from "../components/RoomSlotsSummary";
 import { RoomParticipantsList } from "../components/RoomParticipantsList";
+import { RoomJoinRequests } from "../components/RoomJoinRequests";
 import TacticalBoard from "../components/TacticalBoard";
 import { CancelRoomManager } from "../components/CancelRoomManager";
 import { LeaveRoomManager } from "../components/LeaveRoomManager";
@@ -26,11 +27,16 @@ export const RoomDetail = () => {
     error,
     isJoining,
     joinError,
+    actionError,
+    isActionLoading,
     loadRoom,
     handleJoin,
     handleRoomCanceled,
+    handleAcceptRequest,
+    handleRejectRequest,
     confirmedPlayers,
     substitutes,
+    pendingRequests,
     availableSlots,
   } = useRoomDetail(roomId);
 
@@ -80,6 +86,19 @@ export const RoomDetail = () => {
       <SectionCard title="Pizarrón Táctico">
         <TacticalBoard players={confirmedPlayers} modality={room.modality} />
       </SectionCard>
+
+      {/* Solicitudes de ingreso (solo visible para el organizador de la sala) */}
+      {isOrganizer && (!room.isPublic || pendingRequests.length > 0) && (
+        <div className="space-y-2">
+          {actionError && <ErrorAlert message={actionError} />}
+          <RoomJoinRequests
+            requests={pendingRequests}
+            onAccept={handleAcceptRequest}
+            onReject={handleRejectRequest}
+            isLoading={isActionLoading}
+          />
+        </div>
+      )}
 
       <RoomParticipantsList
         confirmedPlayers={confirmedPlayers}

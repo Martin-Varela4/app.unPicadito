@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { useLeaveRoom } from '../hooks/useLeaveRoom';
 import Button from '../../../components/ui/Button';
 import { ConfirmModal } from '../../../components/ConfirmModal';
-import { ACTIVE_PARTICIPANT_STATUSES, CLOSED_ROOM_STATUSES } from '../constants/matchConstants';
+import { ACTIVE_PARTICIPANT_STATUSES, CLOSED_ROOM_STATUSES, PARTICIPANT_STATUS } from '../constants/matchConstants';
 
 export const LeaveRoomManager = ({ room, roomId, onLeaveSuccess }) => {
     const { user: currentUser } = useAuthStore();
@@ -14,6 +14,8 @@ export const LeaveRoomManager = ({ room, roomId, onLeaveSuccess }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const isOrganizer = Boolean(currentUser?.id) && currentUser.id === room.organizerId;
+    const myParticipation = room.participants?.find((p) => p.userId === currentUser?.id);
+    const isPending = myParticipation?.status === PARTICIPANT_STATUS.PENDING;
 
     const isParticipant = room.participants?.some(
         (p) => p.userId === currentUser?.id && ACTIVE_PARTICIPANT_STATUSES.includes(p.status)
@@ -49,17 +51,19 @@ export const LeaveRoomManager = ({ room, roomId, onLeaveSuccess }) => {
     return (
         <div className="flex justify-end border-t border-slate-700 mt-6 pt-6">
             <Button variant="danger" onClick={() => setIsOpen(true)}>
-                Salir de la Sala
+                {isPending ? 'Cancelar Solicitud' : 'Salir de la Sala'}
             </Button>
 
             <ConfirmModal
                 isOpen={isOpen}
                 onClose={() => { setIsOpen(false); setError(''); }}
-                title="¿Salir de la sala?"
+                title={isPending ? '¿Cancelar solicitud?' : '¿Salir de la sala?'}
             >
                 <div className="flex flex-col gap-4">
                     <p className="text-slate-300">
-                        ¿Estás seguro de que querés abandonar este partido? Si cambiás de opinión, tendrás que volver a solicitar tu lugar.
+                        {isPending
+                            ? '¿Estás seguro de que deseas cancelar tu solicitud de ingreso para este partido?'
+                            : '¿Estás seguro de que querés abandonar este partido? Si cambiás de opinión, tendrás que volver a solicitar tu lugar.'}
                     </p>
 
                     {error && (
@@ -81,7 +85,7 @@ export const LeaveRoomManager = ({ room, roomId, onLeaveSuccess }) => {
                             onClick={handleLeave}
                             isLoading={isLeaving}
                         >
-                            Confirmar Salida
+                            {isPending ? 'Cancelar Solicitud' : 'Confirmar Salida'}
                         </Button>
                     </div>
                 </div>

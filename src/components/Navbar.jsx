@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router";
 import { mapUserToProfile } from "../features/profile/services/profileMapper";
 import { useAuthStore } from "../features/auth/store/useAuthStore";
 import {

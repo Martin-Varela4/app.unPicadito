@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router';
 import AuthPage from '../features/auth/pages/AuthPage';
 import MatchesPage from '../features/matches/pages/MatchesPage';
 import CreateRoomPage from '../features/matches/pages/CreateRoomPage';

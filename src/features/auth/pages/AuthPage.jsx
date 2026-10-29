@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import AuthForm from '../components/AuthForm';
 import { AUTH_MODES } from '../constants/authConstants';
 import canchaFondo from '../../../assets/cancha-fondo.jpg';

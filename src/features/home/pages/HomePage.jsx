@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Search, PlusCircle } from 'lucide-react';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { useMatches } from '../../matches/hooks/useMatches';
@@ -9,6 +9,8 @@ import ErrorAlert from '../../../components/ui/ErrorAlert';
 import EmptyState from '../../../components/ui/EmptyState';
 import heroImage from '../../../assets/cancha-fondo.jpg';
 import { ProfileRanking } from '../../profile/components/ProfileRanking';
+
+const HOME_MATCHES_FILTERS = { misSalas: true, limite: 50 };
 
 const HomePage = () => {
     const user = useAuthStore((state) => state.user);
@@ -21,10 +23,10 @@ const HomePage = () => {
         leaveError,
         joinMatch,
         joiningMatchId,
-    } = useMatches();
+    } = useMatches(HOME_MATCHES_FILTERS);
 
     const myMatches = matches.filter(
-        (m) => Boolean(m.unidoPorUsuarioActual) || m.creador?.id === user?.id
+        (m) => Boolean(m.unidoPorUsuarioActual) || m.creador?.id === user?.id || Boolean(m.solicitudPendiente)
     );
 
     return (

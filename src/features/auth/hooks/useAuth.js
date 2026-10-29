@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useAuthStore } from '../store/useAuthStore';
 import { loginService, registerService } from '../services/authService';
 import { loginSchema, registerSchema } from '../schemas/authSchema';
