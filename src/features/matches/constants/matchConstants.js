@@ -36,6 +36,9 @@ export const LOCK_WINDOW_HOURS = 24;
 
 export const INITIAL_ROOM_FORM_VALUES = Object.freeze({
     nombre: '',
+    predioId: null,
+    canchaId: null,
+    nombrePredio: '',
     nombreCancha: '',
     direccion: '',
     fecha: '',
@@ -55,6 +58,11 @@ export const INITIAL_MATCH_FILTERS = Object.freeze({
     nombreCancha: '',
     esPublica: '',
     permiteSuplentes: '',
+    lat: DEFAULT_LOCATION.y,
+    lng: DEFAULT_LOCATION.x,
+    radioKm: 15,
+    tipoUbicacion: 'MI_UBICACION',
+    localidadNombre: 'Mi ubicación',
     pagina: 1,
     limite: 12,
 });

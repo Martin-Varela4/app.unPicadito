@@ -20,6 +20,11 @@ export const getMatches = async (filters = {}) => {
     if (filters.esPublica !== '') params.esPublica = filters.esPublica;
     if (filters.permiteSuplentes !== '') params.permiteSuplentes = filters.permiteSuplentes;
     if (filters.misSalas !== undefined) params.misSalas = filters.misSalas;
+    if (filters.lat !== undefined && filters.lng !== undefined) {
+        params.lat = filters.lat;
+        params.lng = filters.lng;
+        if (filters.radioKm) params.radioKm = filters.radioKm;
+    }
     if (filters.pagina) params.pagina = filters.pagina;
     if (filters.limite) params.limite = filters.limite;
 

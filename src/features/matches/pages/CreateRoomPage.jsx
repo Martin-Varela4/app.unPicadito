@@ -24,16 +24,17 @@ export default function CreateRoomPage() {
                         onChange={create.handleChange}
                     />
 
+                    {/* Vista previa del mapa centrada en el complejo seleccionado de la BD */}
                     <div className="pt-2">
-                        <label className="block text-sm font-medium text-slate-200 mb-1">
-                            Ubicación en el mapa
-                        </label>
                         <LocationPickerMap
                             value={create.formData.ubicacion}
-                            onChange={(coords) => create.handleChange('ubicacion', coords)}
+                            readOnly
+                            label={create.formData.nombrePredio || create.formData.nombreCancha || 'Posadas, Misiones'}
+                            direccion={create.formData.direccion || 'Seleccioná un complejo para ver su ubicación exacta'}
+                            height="200px"
                         />
                     </div>
-                                    
+
                     <div className="flex flex-col gap-4 border-t border-slate-700 pt-2 md:flex-row">
                         <Switch
                             label="Sala pública (cualquiera puede unirse)"
@@ -49,7 +50,6 @@ export default function CreateRoomPage() {
 
                     <FormActions
                         onCancel={create.cancel}
-                        cancelText="Cancelar"
                         submitText="Crear Sala"
                         isLoading={create.isSubmitting}
                         id="create-room-submit"

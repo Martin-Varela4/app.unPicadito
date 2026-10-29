@@ -39,6 +39,7 @@ export const useCreateRoom = () => {
             const created = await createMatch({
                 nombre: data.nombre.trim(),
                 descripcion: data.descripcion?.trim() || undefined,
+                canchaId: Number(data.canchaId),
                 nombreCancha: data.nombreCancha?.trim() || undefined,
                 direccion: data.direccion?.trim() || undefined,
                 fechaHoraPartido: createIsoFromLocal(data.fecha, data.hora),
