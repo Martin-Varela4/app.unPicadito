@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import * as yup from 'yup';
+import { useNavigate } from 'react-router';
 import { useAuthStore } from '../store/useAuthStore';
 import { loginService, registerService } from '../services/authService';
 import { loginSchema, registerSchema } from '../schemas/authSchema';
+import { validateWithSchema } from '../../../utils/validation';
+import { DEFAULT_EMPTY_LASTNAME } from '../../../constants/appConstants';
 
 export const useAuth = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -27,15 +28,19 @@ export const useAuth = () => {
         const activeService = isLogin ? loginService : registerService;
 
         try {
-            await activeSchema.validate(formData, { abortEarly: false });
+            const { isValid, errors } = await validateWithSchema(activeSchema, formData);
+            if (!isValid) {
+                setValidationErrors(errors);
+                return;
+            }
 
             let payload = { ...formData };
 
             if (!isLogin) {
                 payload.nombreUsuario = payload.username;
                 payload.passwordConfirm = payload.confirmPassword;
-                payload.nombre = payload.username; 
-                payload.apellido = "Sin apellido"; 
+                payload.nombre = payload.username;
+                payload.apellido = DEFAULT_EMPTY_LASTNAME;
                 delete payload.username;
                 delete payload.confirmPassword;
             }
@@ -46,23 +51,11 @@ export const useAuth = () => {
             const token = response.token ?? response.data?.token;
             const refreshToken = response.refreshToken ?? response.data?.refreshToken ?? null;
 
-
             storeLogin({ user, token, refreshToken });
 
             navigate('/', { replace: true });
-
         } catch (error) {
-            if (error instanceof yup.ValidationError) {
-                const formattedErrors = {};
-                error.inner.forEach((err) => {
-                    if (!formattedErrors[err.path]) {
-                        formattedErrors[err.path] = err.message;
-                    }
-                });
-                setValidationErrors(formattedErrors);
-            } else {
-                setApiError(error.message ?? 'Ocurrió un error en el servidor. Por favor intentá más tarde.');
-            }
+            setApiError(error.message ?? 'Ocurrió un error en el servidor. Por favor intentá más tarde.');
         } finally {
             setIsLoading(false);
         }

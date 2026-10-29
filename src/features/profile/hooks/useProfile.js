@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { getMyProfile, getPublicProfileById } from "../services/profile.service"; 
-import { mapUserToProfile } from "../services/profile.mapper";
+import { useParams } from "react-router";
+import { getMyProfile, getPublicProfileById } from "../services/profileService"; 
+import { mapUserToProfile } from "../services/profileMapper";
 import { useAuthStore } from "../../auth/store/useAuthStore";
 
 export const useProfile = () => {
@@ -26,7 +26,7 @@ export const useProfile = () => {
       }
 
       try {
-        const rawUser = id ? await getPublicProfileById(id) : await getMyProfile(token);
+        const rawUser = id ? await getPublicProfileById(id) : await getMyProfile();
         
         setProfile(mapUserToProfile(rawUser));
 

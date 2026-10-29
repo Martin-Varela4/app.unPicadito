@@ -1,15 +1,17 @@
-export default function Spinner({ size = 'md', label }) {
+export default function Spinner({ size = 'md', label, colorClass, className = '' }) {
     const sizes = {
         sm: 'h-4 w-4',
         md: 'h-6 w-6',
         lg: 'h-10 w-10',
     };
 
+    const color = colorClass || 'text-[var(--color-brand-primary)]';
+
     return (
-        <div role="status" aria-label={label || 'Cargando'} className="flex flex-col items-center justify-center gap-2">
+        <div role="status" aria-label={label || 'Cargando'} className={`flex flex-col items-center justify-center gap-2 ${className}`}>
             <svg
                 aria-hidden="true"
-                className={`animate-spin text-[var(--color-brand-primary)] ${sizes[size] || sizes.md}`}
+                className={`animate-spin ${color} ${sizes[size] || sizes.md}`}
                 fill="none"
                 viewBox="0 0 24 24"
             >

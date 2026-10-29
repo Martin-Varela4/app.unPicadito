@@ -3,6 +3,9 @@ import { useEffect } from "react";
 import { useFriendshipStore } from "../store/useFriendshipStore";
 import Button from "../../../components/ui/Button";
 import Avatar from "../../../components/ui/Avatar";
+import SectionCard from "../../../components/ui/SectionCard";
+import LoadingState from "../../../components/ui/LoadingState";
+import ErrorAlert from "../../../components/ui/ErrorAlert";
 
 export const PendingRequestsList = () => {
   const {
@@ -22,14 +25,12 @@ export const PendingRequestsList = () => {
   };
 
   if (loading && pendingRequests.length === 0) {
-    return <div role="status" className="py-6 text-center text-sm text-slate-300">Cargando solicitudes...</div>;
+    return <LoadingState label="Cargando solicitudes..." className="py-6" />;
   }
 
   return (
-    <section className="space-y-4 rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] p-4 sm:p-6">
-      <h2 className="text-lg font-semibold text-slate-100">Solicitudes de Amistad Pendientes</h2>
-
-      {error && <div role="alert" className="rounded-sm border border-red-500/40 bg-red-950/40 p-3 text-sm text-red-200">Error: {error}</div>}
+    <SectionCard title="Solicitudes de Amistad Pendientes" hasDivider={false} className="space-y-4">
+      {error && <ErrorAlert message={`Error: ${error}`} />}
 
       {pendingRequests.length === 0 ? (
         <p className="py-6 text-center text-sm text-slate-400">No tienes solicitudes pendientes.</p>
@@ -58,15 +59,15 @@ export const PendingRequestsList = () => {
               <div className="flex flex-wrap gap-2">
                 <Button
                   onClick={() => handleAction(req.id, "ACCEPTED")}
-                  disabled={loading}
-                  isLoading={loading}
+                  variant="primary"
+                  className="min-h-10 px-3 py-1.5 text-xs"
                 >
                   Aceptar
                 </Button>
                 <Button
-                  variant="outline"
                   onClick={() => handleAction(req.id, "REJECTED")}
-                  disabled={loading}
+                  variant="outline"
+                  className="min-h-10 px-3 py-1.5 text-xs"
                 >
                   Rechazar
                 </Button>
@@ -75,6 +76,6 @@ export const PendingRequestsList = () => {
           ))}
         </ul>
       )}
-    </section>
+    </SectionCard>
   );
 };

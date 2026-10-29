@@ -16,6 +16,8 @@ const colorMaps = {
         completo: 'bg-red-600 text-white',
         publica: 'bg-slate-700 text-white',
         organizas: 'bg-[var(--color-brand-primary)] text-[#21263A]',
+        solicitud_enviada: 'bg-amber-500/20 text-amber-300 border border-amber-500/40',
+        pendiente: 'bg-amber-500/20 text-amber-300 border border-amber-500/40',
     },
     level: {
         principiante: 'bg-slate-800 text-slate-300',
@@ -26,15 +28,16 @@ const colorMaps = {
 
 const defaultColor = 'bg-slate-800 text-slate-200 border border-slate-700';
 
-export default function Badge({ label, variant, value }) {
-    const variantMap = colorMaps[variant] || {};
-    const colorClasses = variantMap[value] || defaultColor;
+export default function Badge({ label, children, variant, value, className = '', ...props }) {
+    const variantMap = variant ? colorMaps[variant] || {} : {};
+    const colorClasses = value && variantMap[value] ? variantMap[value] : (className ? '' : defaultColor);
 
     return (
         <span
-            className={`inline-flex items-center px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider ${colorClasses}`}
+            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${colorClasses} ${className}`.trim()}
+            {...props}
         >
-            {label}
+            {children || label}
         </span>
     );
 }

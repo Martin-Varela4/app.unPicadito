@@ -1,5 +1,5 @@
 // src/components/ProtectedRoute.jsx
-import { Navigate, Outlet, useLocation} from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router';
 import { useAuthStore } from '../features/auth/store/useAuthStore';
 
 export default function ProtectedRoute() {

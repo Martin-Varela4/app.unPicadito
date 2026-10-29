@@ -1,12 +1,10 @@
+import SectionCard from "../../../components/ui/SectionCard";
+
 export const ProfileReviews = ({ reviews }) => {
   const lista = Array.isArray(reviews) ? reviews : [];
   
   return (
-    <div className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] p-5 shadow-md sm:p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <h3 className="text-lg font-bold text-slate-100">Reseñas ({lista.length})</h3>
-      </div>
-
+    <SectionCard title={`Reseñas (${lista.length})`} hasDivider={false} className="shadow-md">
       {lista.length === 0 ? (
         <p className="text-sm text-slate-400 italic">Todavía no tiene reseñas.</p>
       ) : (
@@ -26,6 +24,6 @@ export const ProfileReviews = ({ reviews }) => {
           ))}
         </ul>
       )}
-    </div>
+    </SectionCard>
   );
 };

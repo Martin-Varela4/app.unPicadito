@@ -32,12 +32,12 @@ export const useRoomOrganizer = (roomId, onActionSuccess) => {
         setActionError('');
 
         try {
-            const playerId = targetPlayer.id ?? targetPlayer.userId;
+            const targetUserId = targetPlayer.userId ?? targetPlayer.user?.id ?? targetPlayer.usuario?.id ?? targetPlayer.id;
 
             if (actionType === 'EXPEL') {
-                await expelPlayer(roomId, playerId);
+                await expelPlayer(roomId, targetUserId);
             } else if (actionType === 'TRANSFER') {
-                await transferOrganizer(roomId, playerId);
+                await transferOrganizer(roomId, targetUserId);
             }
 
             closeModal();

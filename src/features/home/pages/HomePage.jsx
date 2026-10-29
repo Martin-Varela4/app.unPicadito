@@ -1,11 +1,16 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Search, PlusCircle } from 'lucide-react';
-import { useAuthStore } from '../../../auth/store/useAuthStore';
-import { useMatches } from '../../../matches/hooks/useMatches';
-import MatchCard from '../../../matches/components/MatchCard';
-import Spinner from '../../../../components/ui/Spinner';
-import heroImage from '../../../../assets/hero.png';
-import { ProfileRanking } from '../../../profile/components/ProfileRanking';
+import { useAuthStore } from '../../auth/store/useAuthStore';
+import { useMatches } from '../../matches/hooks/useMatches';
+import MatchCard from '../../matches/components/MatchCard';
+import PageContainer from '../../../components/ui/PageContainer';
+import LoadingState from '../../../components/ui/LoadingState';
+import ErrorAlert from '../../../components/ui/ErrorAlert';
+import EmptyState from '../../../components/ui/EmptyState';
+import heroImage from '../../../assets/cancha-fondo.jpg';
+import { ProfileRanking } from '../../profile/components/ProfileRanking';
+
+const HOME_MATCHES_FILTERS = { misSalas: true, limite: 50 };
 
 const HomePage = () => {
     const user = useAuthStore((state) => state.user);
@@ -18,14 +23,14 @@ const HomePage = () => {
         leaveError,
         joinMatch,
         joiningMatchId,
-    } = useMatches();
+    } = useMatches(HOME_MATCHES_FILTERS);
 
     const myMatches = matches.filter(
-        (m) => Boolean(m.unidoPorUsuarioActual) || m.creador?.id === user?.id
+        (m) => Boolean(m.unidoPorUsuarioActual) || m.creador?.id === user?.id || Boolean(m.solicitudPendiente)
     );
 
     return (
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-5 sm:gap-8 sm:px-6 sm:py-8 lg:px-8">
+        <PageContainer size="xl" className="flex flex-col gap-6 sm:gap-8">
             {/* Banner Hero */}
             <section
                 className="relative isolate flex min-h-64 items-center overflow-hidden rounded-md border border-emerald-900/60 bg-[#17241f] p-5 text-white shadow-sm sm:p-8 md:min-h-72"
@@ -83,29 +88,27 @@ const HomePage = () => {
                 </div>
 
                 {isLoadingMatches && (
-                    <div className="flex justify-center py-10">
-                        <Spinner />
-                    </div>
+                    <LoadingState label="Cargando tus partidos..." className="py-10" />
                 )}
 
                 {matchesError && (
-                    <div role="alert" className="rounded-md border border-red-500/40 bg-red-950/40 p-4 text-sm text-red-200">
-                        {matchesError}
-                    </div>
+                    <ErrorAlert message={matchesError} />
                 )}
 
                 {!isLoadingMatches && !matchesError && myMatches.length === 0 && (
-                    <div className="rounded-md border border-dashed border-[var(--color-border-subtle)] bg-[var(--color-background-card)] p-6 py-12 text-center">
-                        <div className="text-3xl mb-2">⚽</div>
-                        <p className="font-medium text-slate-200">Todavía no estás anotado en ningún partido.</p>
-                        <p className="mb-4 mt-1 text-xs text-slate-400">Sumate a un partido abierto o armá el tuyo.</p>
-                        <Link
-                            to="/partidos"
-                            className="inline-flex min-h-11 items-center gap-2 rounded-md bg-[var(--color-brand-primary)] px-4 py-2 text-sm font-semibold text-[#21263A] transition-colors hover:bg-[var(--color-brand-primary-dark)]"
-                        >
-                            Explorar partidos disponibles
-                        </Link>
-                    </div>
+                    <EmptyState
+                        icon="⚽"
+                        title="Todavía no estás anotado en ningún partido."
+                        description="Sumate a un partido abierto o armá el tuyo."
+                        action={
+                            <Link
+                                to="/partidos"
+                                className="inline-flex min-h-11 items-center gap-2 rounded-md bg-[var(--color-brand-primary)] px-4 py-2 text-sm font-semibold text-[#21263A] transition-colors hover:bg-[var(--color-brand-primary-dark)]"
+                            >
+                                Explorar partidos disponibles
+                            </Link>
+                        }
+                    />
                 )}
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -122,7 +125,7 @@ const HomePage = () => {
                     ))}
                 </div>
             </section>
-        </div>
+        </PageContainer>
     );
 };
 

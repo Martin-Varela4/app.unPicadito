@@ -1,12 +1,17 @@
-import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import AuthForm from '../components/AuthForm';
+import { AUTH_MODES } from '../constants/authConstants';
 import canchaFondo from '../../../assets/cancha-fondo.jpg';
 
 export default function AuthPage() {
-  const [mode, setMode] = useState('login');
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const mode = location.pathname === '/registro' ? AUTH_MODES.REGISTER : AUTH_MODES.LOGIN;
 
   const toggleMode = () => {
-    setMode((prev) => (prev === 'login' ? 'register' : 'login'));
+    const nextPath = mode === AUTH_MODES.LOGIN ? '/registro' : '/login';
+    navigate(nextPath, { replace: true });
   };
 
   return (
@@ -23,7 +28,7 @@ export default function AuthPage() {
             unPicadito
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            {mode === 'login'
+            {mode === AUTH_MODES.LOGIN
               ? 'Ingresa a tu cuenta para armar el partido'
               : 'Únete para empezar a jugar'}
           </p>

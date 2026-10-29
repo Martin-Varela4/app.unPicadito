@@ -1,25 +1,16 @@
-import { useState } from 'react';
+import { useAsyncAction } from '../../../hooks/useAsyncAction';
 import { leaveMatch } from '../services/matchService';
 
 export const useLeaveRoom = () => {
-    const [isLeaving, setIsLeaving] = useState(false);
-    const [error, setError] = useState('');
+    const { execute, isLoading, error, setError } = useAsyncAction(
+        leaveMatch,
+        'Error al salir de la sala'
+    );
 
-    const executeLeave = async (roomId) => {
-        setIsLeaving(true);
-        setError('');
-
-        try {
-            await leaveMatch(roomId);
-            return { success: true };
-        } catch (err) {
-            const errorMessage = err.message || 'Error al salir de la sala';
-            setError(errorMessage);
-            return { success: false };
-        } finally {
-            setIsLeaving(false);
-        }
+    return {
+        executeLeave: execute,
+        isLeaving: isLoading,
+        error,
+        setError,
     };
-
-    return { executeLeave, isLeaving, error, setError };
 };

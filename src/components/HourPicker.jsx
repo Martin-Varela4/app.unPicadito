@@ -1,26 +1,32 @@
-import React from "react";
+import Select from './ui/Select';
 
-export default function HourPicker({ value, onChange, disabled }) {
-  // Genera opciones de 00:00 a 23:00
-  const hours = Array.from({ length: 24 }, (_, i) => {
-    const hour = i.toString().padStart(2, "0");
-    return { value: `${hour}:00`, label: `${hour}:00` };
-  });
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => {
+  const hour = i.toString().padStart(2, '0');
+  return { value: `${hour}:00`, label: `${hour}:00` };
+});
 
+export default function HourPicker({
+  value,
+  onChange,
+  disabled = false,
+  error = null,
+  label = 'Hora (en punto)',
+  name = 'hora',
+  className = '',
+  ...props
+}) {
   return (
-    <select
-      value={value || ""}
-      onChange={(e) => onChange(e.target.value)}
+    <Select
+      id={name}
+      name={name}
+      label={label}
+      value={value || ''}
+      onChange={onChange}
       disabled={disabled}
-      className="form-control" // Ajusta a tu clase de estilo (ej: tailwind "border rounded p-2")
-      required
-    >
-      <option value="" disabled>Seleccioná una hora</option>
-      {hours.map((h) => (
-        <option key={h.value} value={h.value}>
-          {h.label}
-        </option>
-      ))}
-    </select>
+      error={error}
+      options={HOUR_OPTIONS}
+      className={className}
+      {...props}
+    />
   );
 }

@@ -1,15 +1,16 @@
 import Switch from '../../../components/ui/Switch';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
+import SectionCard from '../../../components/ui/SectionCard';
+import { PRIVACY_FILTER_OPTIONS, SUBSTITUTES_FILTER_OPTIONS } from '../constants/matchConstants';
 
 export default function MatchFilters({
     filters,
     onFilterChange,
 }) {
     return (
-        <div className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] p-4 shadow-sm sm:p-5">
+        <SectionCard hasDivider={false} className="p-4 sm:p-5">
             <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                
                 <Input
                     label="Lugar / Cancha"
                     name="nombreCancha"
@@ -23,22 +24,14 @@ export default function MatchFilters({
                     name="esPublica"
                     value={filters.esPublica}
                     onChange={(e) => onFilterChange('esPublica', e.target.value)}
-                    options={[
-                        { value: '', label: 'Todas' },
-                        { value: 'true', label: 'Solo Públicas' },
-                        { value: 'false', label: 'Solo Privadas' }
-                    ]}
+                    options={PRIVACY_FILTER_OPTIONS}
                 />
                 <Select
                     label="Suplentes"
                     name="permiteSuplentes"
                     value={filters.permiteSuplentes}
                     onChange={(e) => onFilterChange('permiteSuplentes', e.target.value)}
-                    options={[
-                        { value: '', label: 'Todos' },
-                        { value: 'true', label: 'Permite suplentes' },
-                        { value: 'false', label: 'Sin suplentes' }
-                    ]}
+                    options={SUBSTITUTES_FILTER_OPTIONS}
                 />
                 <Input
                     label="Fecha"
@@ -63,6 +56,6 @@ export default function MatchFilters({
                     />
                 </div>
             </div>
-        </div>
+        </SectionCard>
     );
 }

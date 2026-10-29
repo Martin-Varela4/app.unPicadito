@@ -1,9 +1,9 @@
 import { Calendar, MapPin } from "lucide-react";
+import SectionCard from "../../../components/ui/SectionCard";
 
 export function AboutSection({ player }) {
   return (
-    <div className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background-card)] p-5 shadow-md sm:p-6">
-      <h2 className="text-lg font-bold text-slate-100 mb-2">Sobre mí</h2>
+    <SectionCard title="Sobre mí" hasDivider={false} className="shadow-md">
       <p className="text-slate-300 text-sm leading-relaxed mb-6">
         {player.about || "Sin descripción por el momento."}
       </p>
@@ -22,6 +22,6 @@ export function AboutSection({ player }) {
           <span>{player.playingSince || "Jugador activo"}</span>
         </div>
       </div>
-    </div>
+    </SectionCard>
   );
 }

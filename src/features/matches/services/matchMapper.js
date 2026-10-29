@@ -1,26 +1,39 @@
 import { getLocalPart } from '../utils/dateUtils';
+import { PARTICIPANT_STATUS, ROOM_STATUS } from '../constants/matchConstants';
 
 const mapParticipantStatus = (p) => {
-    if (p.estado === 'PENDIENTE') return 'PENDING';
-    if (p.estado !== 'CONFIRMADO') return 'INACTIVE';
-    return p.rol === 'SUPLENTE' ? 'SUBSTITUTE' : 'CONFIRMED';
+    if (p.estado === 'PENDIENTE') return PARTICIPANT_STATUS.PENDING;
+    if (p.estado !== 'CONFIRMADO') return PARTICIPANT_STATUS.INACTIVE;
+    return p.rol === 'SUPLENTE' ? PARTICIPANT_STATUS.SUBSTITUTE : PARTICIPANT_STATUS.CONFIRMED;
 };
 
-const mapParticipant = (p) => ({
-    ...p,
-    participationId: p.id,
-    id: p.usuario?.id,
-    userId: p.usuario?.id,
-    role: p.rol,
-    isOrganizer: p.rol === 'ORGANIZADOR' && p.estado === 'CONFIRMADO',
-    status: mapParticipantStatus(p),
-    username: p.usuario?.nombreUsuario,
-    firstName: p.usuario?.nombre,
-    lastName: p.usuario?.apellido,
-    profilePictureUrl: p.usuario?.fotoPerfilUrl,
-    mainPosition: p.usuario?.posicionPrincipal,
-    reputation: p.usuario?.reputacion,
-});
+const mapParticipant = (p) => {
+    const fullName = `${p.usuario?.nombre || ''} ${p.usuario?.apellido || ''}`.trim();
+    const displayName = fullName || p.usuario?.nombreUsuario || 'Jugador';
+
+    return {
+        ...p,
+        participationId: p.id,
+        id: p.id,
+        userId: p.usuario?.id,
+        role: p.rol,
+        isOrganizer: p.rol === 'ORGANIZADOR' && p.estado === 'CONFIRMADO',
+        status: mapParticipantStatus(p),
+        username: p.usuario?.nombreUsuario,
+        firstName: p.usuario?.nombre,
+        lastName: p.usuario?.apellido,
+        profilePictureUrl: p.usuario?.fotoPerfilUrl,
+        mainPosition: p.usuario?.posicionPrincipal,
+        reputation: p.usuario?.reputacion,
+        user: {
+            id: p.usuario?.id,
+            name: displayName,
+            username: p.usuario?.nombreUsuario ? `@${p.usuario.nombreUsuario}` : '',
+            avatar: p.usuario?.fotoPerfilUrl,
+            rating: p.usuario?.reputacion ? parseFloat(p.usuario.reputacion) : null,
+        },
+    };
+};
 
 export const mapRoomFromApi = (rawRoom) => {
     if (!rawRoom) return null;
@@ -39,7 +52,7 @@ export const mapRoomFromApi = (rawRoom) => {
         maxPlayers: rawRoom.cuposTotales || 0,
         creatorId: rawRoom.creador?.id ?? rawRoom.creadorId,
         organizerId: organizer?.userId ?? null,
-        status: rawRoom.estado || 'ABIERTA',
+        status: rawRoom.estado || ROOM_STATUS.ABIERTA,
         isPublic: Boolean(rawRoom.esPublica),
         privacy: rawRoom.esPublica ? 'Pública' : 'Privada',
         allowsSubstitutes: Boolean(rawRoom.permiteSuplentes),

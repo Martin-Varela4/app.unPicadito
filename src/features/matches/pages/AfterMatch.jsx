@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import Button from "../../../components/ui/Button";
+import Textarea from "../../../components/ui/Textarea";
 
 const PostMatchRating = () => {
     const jugadorEjemplo = {
@@ -69,18 +70,11 @@ const PostMatchRating = () => {
 
                             {/* COMENTARIOS */}
                             <div className="mb-6">
-                                <label 
-                                htmlFor="comentario"
-                                className="mb-2 block text-sm font-semibold text-slate-200"
-                                >
-                                    Comentario
-                                </label>
-                                
-                                <textarea
+                                <Textarea
                                     id="comentario"
+                                    label="Comentario"
                                     placeholder="Comentá brevemente cómo fue jugar con este jugador..."
                                     rows={4}
-                                    className="min-h-24 w-full rounded-sm border border-slate-600 bg-[var(--color-background-main)] p-3 text-sm text-slate-200 placeholder:text-slate-400 focus:border-[var(--color-brand-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)]/30"
                                     readOnly
                                     tabIndex={-1}
                                 />

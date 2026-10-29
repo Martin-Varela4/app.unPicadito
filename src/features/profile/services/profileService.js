@@ -8,9 +8,7 @@ export const getMyProfile = async () => {
     throw new Error("No hay un token de sesión activo.");
   }
 
-  const response = await api.get("/users/me", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await api.get("/users/me");
   return response.data;
 };
 
@@ -21,11 +19,5 @@ export const updateMyProfile = async (profileData) => {
 
 export const getPublicProfileById = async (userId) => {
   const response = await api.get(`/users/${userId}`);
-  return response.data;
-};
-
-export const getUserReviews = async (userId) => {
-  const response = await api.get(`/reviews/ranking/${userId}`);
-  console.log("FORMA REAL de /reviews/ranking:", response.data); 
   return response.data;
 };

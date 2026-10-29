@@ -1,26 +1,14 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { createRoomSchema } from '../schemas/roomSchema';
 import { createMatch } from '../services/matchService';
 import { createIsoFromLocal } from '../utils/dateUtils';
-import { DEFAULT_LOCATION } from '../constants/defaultLocation';
-
-const initialValues = {
-    nombre: '',
-    nombreCancha: '',
-    direccion: '',
-    fecha: '',
-    hora: '',
-    cuposTotales: 10,
-    permiteSuplentes: true,
-    esPublica: true,
-    descripcion: '',
-    ubicacion: DEFAULT_LOCATION,
-};
+import { INITIAL_ROOM_FORM_VALUES } from '../constants/matchConstants';
+import { validateWithSchema } from '../../../utils/validation';
 
 export const useCreateRoom = () => {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState(initialValues);
+    const [formData, setFormData] = useState(INITIAL_ROOM_FORM_VALUES);
     const [fieldErrors, setFieldErrors] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,15 +27,12 @@ export const useCreateRoom = () => {
         event.preventDefault();
         setErrorMessage('');
 
-        let data;
-        try {
-            data = await createRoomSchema.validate(formData, { abortEarly: false });
-            setFieldErrors({});
-        } catch (error) {
-            if (error.name !== 'ValidationError') throw error;
-            setFieldErrors(Object.fromEntries(error.inner.map(({ path, message }) => [path, message])));
+        const { isValid, data, errors } = await validateWithSchema(createRoomSchema, formData);
+        if (!isValid) {
+            setFieldErrors(errors);
             return;
         }
+        setFieldErrors({});
 
         setIsSubmitting(true);
         try {
@@ -61,12 +46,16 @@ export const useCreateRoom = () => {
                 permiteSuplentes: Boolean(data.permiteSuplentes),
                 esPublica: Boolean(data.esPublica),
                 ubicacion: formData.ubicacion,
-                duracionMinutos: 60,
             });
-            navigate(`/salas/${created.id}`, { replace: true });
+
+            const createdId = created?.id || created?.data?.id;
+            if (createdId) {
+                navigate(`/salas/${createdId}`);
+            } else {
+                navigate('/');
+            }
         } catch (error) {
-            const backendMessage = error.response?.data?.message || error.message;
-            setErrorMessage(backendMessage || 'No se pudo crear la sala.');
+            setErrorMessage(error.message || 'No se pudo crear la sala. Intente nuevamente.');
         } finally {
             setIsSubmitting(false);
         }
@@ -79,6 +68,6 @@ export const useCreateRoom = () => {
         isSubmitting,
         handleChange,
         handleSubmit,
-        cancel: () => navigate(-1),
+        cancel: () => navigate('/'),
     };
 };

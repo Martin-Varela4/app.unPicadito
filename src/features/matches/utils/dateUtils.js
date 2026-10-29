@@ -1,8 +1,9 @@
+import { LOCK_WINDOW_HOURS } from '../constants/matchConstants';
+
 export const getLocalPart = (isoString) => {
     if (!isoString) return { date: '', time: '' };
     const date = new Date(isoString);
     if (isNaN(date.getTime())) {
-        // Fallback en caso de que venga un string sin Z ni timezone
         const parts = isoString.split('T');
         return {
             date: parts[0] || '',
@@ -22,12 +23,37 @@ export const createIsoFromLocal = (dateStr, timeStr) => {
     return date.toISOString();
 };
 
+export const isPastMatch = (isoString) => {
+    if (!isoString) return false;
+    const matchDate = new Date(isoString);
+    return !isNaN(matchDate.getTime()) && matchDate.getTime() <= Date.now();
+};
+
 export const isWithin24Hours = (isoString) => {
     if (!isoString) return false;
     const matchDate = new Date(isoString);
-    const now = new Date();
-    const diffHours = (matchDate - now) / (1000 * 60 * 60);
-    return diffHours > 0 && diffHours <= 24;
+    if (isNaN(matchDate.getTime())) return false;
+    const diffHours = (matchDate.getTime() - Date.now()) / (1000 * 60 * 60);
+    return diffHours > 0 && diffHours <= (LOCK_WINDOW_HOURS || 24);
+};
+
+export const formatMatchDate = (isoString) => {
+    if (!isoString) return '—';
+    const date = new Date(isoString);
+    return isNaN(date.getTime()) ? '—' : date.toLocaleDateString('es-AR');
+};
+
+export const formatMatchTime = (isoString) => {
+    if (!isoString) return '—';
+    const date = new Date(isoString);
+    return isNaN(date.getTime())
+        ? '—'
+        : date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+};
+
+export const formatMatchDateTime = (isoString) => {
+    if (!isoString) return '—';
+    return `${formatMatchDate(isoString)} - ${formatMatchTime(isoString)} hs`;
 };
 
 export const MINUTES_TO_FINALIZE = 30;

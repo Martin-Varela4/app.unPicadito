@@ -1,15 +1,14 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { INITIAL_AUTH_STATE } from '../constants/authConstants';
+import { AUTH_STORAGE_KEY } from '../../../constants/appConstants';
 
 export const useAuthStore = create(
   persist(
     (set, get) => ({
       // --- Estado Inicial ---
-      user: null,
-      token: null,
-      refreshToken: null,
-      isAuthenticated: false,
-      _hasHydrated: false, 
+      ...INITIAL_AUTH_STATE,
+      _hasHydrated: false,
 
       // Setter para la hidratación
       setHasHydrated: (state) => set({ _hasHydrated: state }),
@@ -20,7 +19,7 @@ export const useAuthStore = create(
           user,
           token,
           refreshToken,
-          isAuthenticated: Boolean(token), 
+          isAuthenticated: Boolean(token),
         }),
 
       updateUser: (updatedData) =>
@@ -28,18 +27,12 @@ export const useAuthStore = create(
           user: state.user ? { ...state.user, ...updatedData } : updatedData,
         })),
 
-      logout: () =>
-        set({
-          user: null,
-          token: null,
-          refreshToken: null,
-          isAuthenticated: false,
-        }),
+      logout: () => set(INITIAL_AUTH_STATE),
 
       checkAuth: () => Boolean(get().token && get().isAuthenticated),
     }),
     {
-      name: 'unpicadito_auth_session',
+      name: AUTH_STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
@@ -47,7 +40,7 @@ export const useAuthStore = create(
         refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
       }),
-      
+
       onRehydrateStorage: () => (state) => {
         if (state) {
           state.setHasHydrated(true);

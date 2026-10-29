@@ -1,6 +1,9 @@
+import { DEFAULT_EMPTY_LASTNAME } from "../../../constants/appConstants";
+
 export const mapUserToProfile = (rawUser) => {
-  const apellidoLimpio = 
-    !rawUser.apellido || rawUser.apellido.trim().toLowerCase() === "sin apellido"
+  if (!rawUser) return null;
+  const apellidoLimpio =
+    !rawUser.apellido || rawUser.apellido.trim().toLowerCase() === DEFAULT_EMPTY_LASTNAME.toLowerCase()
       ? ""
       : rawUser.apellido;
 
@@ -10,12 +13,12 @@ export const mapUserToProfile = (rawUser) => {
     username: rawUser.nombreUsuario,
     avatar: rawUser.fotoPerfilUrl ?? null,
     position: rawUser.posicionPrincipal,
-    reputacion: rawUser.reputacion, 
-    
+    reputacion: rawUser.reputacion,
+
     about: rawUser.about ?? null,
     age: rawUser.age ?? null,
     location: rawUser.location ?? null,
-    
+
     reviews: (rawUser.resenasRecibidas || []).map(r => ({
       id: r.id,
       estrellas: r.estrellas,
