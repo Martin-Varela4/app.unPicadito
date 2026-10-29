@@ -16,6 +16,7 @@ export const RoomHeader = ({ room, roomId, availableSlots, onJoin, isJoining, jo
     const membership = isOrganizer ? 'ORGANIZER' : myParticipation?.status;
     const membershipBadge = MEMBERSHIP_STATUS_CONFIG[membership];
     const isMember = Boolean(membershipBadge);
+    const canRate = room.status === 'FINALIZADA' && ['ORGANIZER', 'CONFIRMED', 'SUBSTITUTE'].includes(membership);
 
     const canJoin =
         !isMember &&
@@ -58,6 +59,11 @@ export const RoomHeader = ({ room, roomId, availableSlots, onJoin, isJoining, jo
                 {canJoin && (
                     <Button id="room-join-button" onClick={onJoin} isLoading={isJoining}>
                         {room.isPublic ? 'Unirme' : 'Solicitar unirme'}
+                    </Button>
+                )}
+                {canRate && (
+                    <Button id="room-rate-button" disabled title="Disponible próximamente (UP-061)">
+                        ⭐ Calificar jugadores
                     </Button>
                 )}
             </div>

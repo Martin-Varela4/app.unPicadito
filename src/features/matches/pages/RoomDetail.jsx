@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useParams } from "react-router";
 import { RoomHeader } from "../components/RoomHeader";
 import { RoomInfoCard } from "../components/RoomInfoCard";
@@ -6,16 +7,24 @@ import { RoomParticipantsList } from "../components/RoomParticipantsList";
 import { RoomJoinRequests } from "../components/RoomJoinRequests";
 import TacticalBoard from "../components/TacticalBoard";
 import { CancelRoomManager } from "../components/CancelRoomManager";
+import { FinalizeRoomManager } from "../components/FinalizeRoomManager";
 import { LeaveRoomManager } from "../components/LeaveRoomManager";
 import { useAuthStore } from "../../auth/store/useAuthStore";
 import { useRoomOrganizer } from "../hooks/useRoomOrganizer";
 import { useRoomDetail } from "../hooks/useRoomDetail";
+import { ROOM_STATUS } from "../constants/matchConstants";
+import { getFinalizeAvailableAt } from "../utils/dateUtils";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import Button from "../../../components/ui/Button";
 import PageContainer from "../../../components/ui/PageContainer";
 import SectionCard from "../../../components/ui/SectionCard";
 import LoadingState from "../../../components/ui/LoadingState";
 import ErrorAlert from "../../../components/ui/ErrorAlert";
+
+const OPEN_ROOM_STATUSES = [ROOM_STATUS.ABIERTA, ROOM_STATUS.COMPLETA];
+const MAX_TIMEOUT_MS = 2147483647;
+const MAX_REFRESH_ATTEMPTS = 5;
+const REFRESH_RETRY_MS = 30000;
 
 export const RoomDetail = () => {
   const { id: roomId } = useParams();
@@ -42,6 +51,55 @@ export const RoomDetail = () => {
 
   const organizer = useRoomOrganizer(roomId, loadRoom);
   const isOrganizer = Boolean(currentUser?.id) && currentUser.id === room?.organizerId;
+
+  const roomStatus = room?.status;
+  const matchDate = room?.raw?.fechaHoraPartido;
+
+  useEffect(() => {
+    if (loading || !matchDate || !OPEN_ROOM_STATUSES.includes(roomStatus)) return;
+
+    const availableAt = getFinalizeAvailableAt(matchDate);
+    if (!availableAt) return;
+
+    const delay = Math.max(availableAt.getTime() - Date.now(), 0);
+    if (delay > MAX_TIMEOUT_MS) return;
+
+    let cancelled = false;
+    let attempts = 0;
+    let timeoutId;
+
+    const refreshRoom = async () => {
+      const refreshedRoom = await loadRoom();
+      if (cancelled) return;
+
+      if (
+        (!refreshedRoom || OPEN_ROOM_STATUSES.includes(refreshedRoom.status)) &&
+        attempts < MAX_REFRESH_ATTEMPTS
+      ) {
+        attempts += 1;
+        timeoutId = setTimeout(refreshRoom, REFRESH_RETRY_MS);
+      }
+    };
+
+    timeoutId = setTimeout(refreshRoom, delay);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
+  }, [loadRoom, loading, matchDate, roomStatus]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        loadRoom();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [loadRoom]);
 
   if (loading) {
     return <LoadingState label="Cargando detalles del partido..." className="py-20" />;
@@ -119,12 +177,10 @@ export const RoomDetail = () => {
         <div className="space-y-4">
           <p className="text-sm text-slate-300">
             {organizer.actionType === "EXPEL"
-              ? `¿Estás seguro de que deseás expulsar a ${
-                  organizer.targetPlayer?.firstName || organizer.targetPlayer?.username || "este jugador"
-                } de la sala?`
-              : `¿Estás seguro de que deseás transferir la organización a ${
-                  organizer.targetPlayer?.firstName || organizer.targetPlayer?.username || "este jugador"
-                }? Dejarás de ser el organizador de este partido.`}
+              ? `¿Estás seguro de que deseás expulsar a ${organizer.targetPlayer?.firstName || organizer.targetPlayer?.username || "este jugador"
+              } de la sala?`
+              : `¿Estás seguro de que deseás transferir la organización a ${organizer.targetPlayer?.firstName || organizer.targetPlayer?.username || "este jugador"
+              }? Dejarás de ser el organizador de este partido.`}
           </p>
 
           {organizer.actionError && (
@@ -144,14 +200,23 @@ export const RoomDetail = () => {
               type="button"
               variant={organizer.actionType === "EXPEL" ? "danger" : "primary"}
               onClick={organizer.handleConfirm}
-              isLoading={organizer.isLoading}
+              disabled={organizer.isLoading}
+              className={`min-h-11 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50 ${
+                organizer.actionType === "EXPEL"
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  : "bg-[var(--color-brand-primary)] text-[#21263A] hover:bg-[var(--color-brand-primary-dark)]"
+              }`}
             >
               Confirmar
             </Button>
           </div>
         </div>
       </ConfirmModal>
-
+      <FinalizeRoomManager
+        room={room}
+        roomId={roomId}
+        onFinalizeSuccess={loadRoom}
+      />
       <CancelRoomManager
         room={room}
         roomId={roomId}

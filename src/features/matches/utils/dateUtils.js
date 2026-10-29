@@ -55,3 +55,12 @@ export const formatMatchDateTime = (isoString) => {
     if (!isoString) return '—';
     return `${formatMatchDate(isoString)} - ${formatMatchTime(isoString)} hs`;
 };
+
+export const MINUTES_TO_FINALIZE = 30;
+
+export const getFinalizeAvailableAt = (isoString) => {
+    if (!isoString) return null;
+    const matchDate = new Date(isoString);
+    if (isNaN(matchDate.getTime())) return null;
+    return new Date(matchDate.getTime() + MINUTES_TO_FINALIZE * 60 * 1000);
+};

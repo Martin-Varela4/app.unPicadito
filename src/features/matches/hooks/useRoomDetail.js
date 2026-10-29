@@ -20,9 +20,11 @@ export const useRoomDetail = (roomId) => {
       setRoom(mappedRoom);
       setError("");
       setLoadedRoomId(roomId);
+      return mappedRoom;
     } catch {
       setError("No se pudo cargar la información de la sala.");
       setLoadedRoomId(roomId);
+      return null;
     }
   }, [fetchRoom, roomId]);
 
