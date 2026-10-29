@@ -29,3 +29,12 @@ export const isWithin24Hours = (isoString) => {
     const diffHours = (matchDate - now) / (1000 * 60 * 60);
     return diffHours > 0 && diffHours <= 24;
 };
+
+export const MINUTES_TO_FINALIZE = 30;
+
+export const getFinalizeAvailableAt = (isoString) => {
+    if (!isoString) return null;
+    const matchDate = new Date(isoString);
+    if (isNaN(matchDate.getTime())) return null;
+    return new Date(matchDate.getTime() + MINUTES_TO_FINALIZE * 60 * 1000);
+};
