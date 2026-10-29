@@ -6,16 +6,25 @@ export const roomSchema = yup.object().shape({
         .required('El nombre del partido es obligatorio')
         .min(3, 'Mínimo 3 caracteres')
         .max(50, 'Máximo 50 caracteres'),
+    canchaId: yup
+        .number()
+        .typeError('Debes seleccionar una cancha')
+        .required('Debes seleccionar una cancha obligatoriamente')
+        .positive('Cancha inválida'),
+    predioId: yup
+        .number()
+        .nullable()
+        .optional(),
+    nombrePredio: yup
+        .string()
+        .optional()
+        .nullable(),
     nombreCancha: yup
         .string()
-        .min(3, 'Mínimo 3 caracteres')
-        .max(50, 'Máximo 50 caracteres')
         .optional()
         .nullable(),
     direccion: yup
         .string()
-        .min(5, 'Mínimo 5 caracteres')
-        .max(100, 'Máximo 100 caracteres')
         .optional()
         .nullable(),
     fecha: yup
@@ -41,7 +50,7 @@ export const roomSchema = yup.object().shape({
 
 export const createRoomSchema = roomSchema.test('fecha-futura', 'La fecha y hora del partido deben ser futuras', 
     function ({ fecha, hora }) {
-        if (!fecha || !hora) return true; // los required ya informan si falta alguno
+        if (!fecha || !hora) return true;
         const isFuture = new Date(`${fecha}T${hora}:00`) > new Date();
         return isFuture || this.createError({ path: 'fecha', message: 'La fecha y hora del partido deben ser futuras' });
     }
