@@ -15,7 +15,7 @@ export const getMatches = async (filters = {}) => {
     }
     if (filters.search) params.nombre = filters.search;
     if (filters.nombreCancha) params.nombreCancha = filters.nombreCancha;
-    
+
     // Solo se envían si el usuario eligió "Sí(true)" o "No(false)", si está vacío manda todas
     if (filters.esPublica !== '') params.esPublica = filters.esPublica;
     if (filters.permiteSuplentes !== '') params.permiteSuplentes = filters.permiteSuplentes;
@@ -43,6 +43,11 @@ export const cancelarSala = async (roomId, motivoCancelacion) => {
     const response = await api.patch(`${ENDPOINT_MATCHES}/${roomId}/cancelar`, {
         motivoCancelacion
     });
+    return response.data;
+};
+
+export const finalizarSala = async (roomId) => {
+    const response = await api.patch(`${ENDPOINT_MATCHES}/${roomId}/finalizar`);
     return response.data;
 };
 

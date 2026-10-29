@@ -11,6 +11,8 @@ import { LeaveRoomManager } from "../components/LeaveRoomManager";
 import { useAuthStore } from "../../auth/store/useAuthStore";
 import { useRoomOrganizer } from "../hooks/useRoomOrganizer";
 import { ConfirmModal } from "../../../components/ConfirmModal";
+import { FinalizeRoomManager } from "../components/FinalizeRoomManager";
+import { getFinalizeAvailableAt } from "../utils/dateUtils";
 
 export const RoomDetail = () => {
   const { id: roomId } = useParams();
@@ -57,6 +59,53 @@ export const RoomDetail = () => {
 
   const organizer = useRoomOrganizer(roomId, loadRoom);
   const isOrganizer = Boolean(currentUser?.id) && currentUser.id === room?.organizerId;
+
+  const roomStatus = room?.status;
+  const matchIso = room?.raw?.fechaHoraPartido;
+
+  useEffect(() => {
+    if (!matchIso || !["ABIERTA", "COMPLETA"].includes(roomStatus)) return;
+    const availableAt = getFinalizeAvailableAt(matchIso);
+    if (!availableAt) return;
+
+    const MAX_TIMEOUT_MS = 2147483647;
+    const MAX_ATTEMPTS = 5;
+    const RETRY_MS = 30000;
+    const delay = Math.max(availableAt.getTime() - Date.now(), 0);
+    if (delay > MAX_TIMEOUT_MS) return;
+
+    let cancelled = false;
+    let attempts = 0;
+    let timeoutId;
+
+    const refresh = async () => {
+      try {
+        const fresh = await fetchRoom();
+        if (cancelled) return;
+        setRoom(fresh);
+        const stillOpen = ["ABIERTA", "COMPLETA"].includes(fresh?.status);
+        if (stillOpen && attempts < MAX_ATTEMPTS) {
+          attempts += 1;
+          timeoutId = setTimeout(refresh, RETRY_MS);
+        }
+      } catch {
+      }
+    };
+
+    timeoutId = setTimeout(refresh, delay);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
+  }, [fetchRoom, matchIso, roomStatus]);
+
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") loadRoom();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [loadRoom]);
 
   const handleJoin = async () => {
     setIsJoining(true);
@@ -141,12 +190,10 @@ export const RoomDetail = () => {
         <div className="space-y-4">
           <p className="text-sm text-slate-300">
             {organizer.actionType === "EXPEL"
-              ? `¿Estás seguro de que deseás expulsar a ${
-                  organizer.targetPlayer?.firstName || organizer.targetPlayer?.username || "este jugador"
-                } de la sala?`
-              : `¿Estás seguro de que deseás transferir la organización a ${
-                  organizer.targetPlayer?.firstName || organizer.targetPlayer?.username || "este jugador"
-                }? Dejarás de ser el organizador de este partido.`}
+              ? `¿Estás seguro de que deseás expulsar a ${organizer.targetPlayer?.firstName || organizer.targetPlayer?.username || "este jugador"
+              } de la sala?`
+              : `¿Estás seguro de que deseás transferir la organización a ${organizer.targetPlayer?.firstName || organizer.targetPlayer?.username || "este jugador"
+              }? Dejarás de ser el organizador de este partido.`}
           </p>
 
           {organizer.actionError && (
@@ -166,18 +213,21 @@ export const RoomDetail = () => {
               type="button"
               onClick={organizer.handleConfirm}
               disabled={organizer.isLoading}
-              className={`min-h-11 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50 ${
-                organizer.actionType === "EXPEL"
-                  ? "bg-red-600 text-white hover:bg-red-700"
-                  : "bg-[var(--color-brand-primary)] text-[#21263A] hover:bg-[var(--color-brand-primary-dark)]"
-              }`}
+              className={`min-h-11 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50 ${organizer.actionType === "EXPEL"
+                ? "bg-red-600 text-white hover:bg-red-700"
+                : "bg-[var(--color-brand-primary)] text-[#21263A] hover:bg-[var(--color-brand-primary-dark)]"
+                }`}
             >
               {organizer.isLoading ? "Procesando..." : "Confirmar"}
             </button>
           </div>
         </div>
       </ConfirmModal>
-
+      <FinalizeRoomManager
+        room={room}
+        roomId={roomId}
+        onFinalizeSuccess={loadRoom}
+      />
       <CancelRoomManager
         room={room}
         roomId={roomId}
