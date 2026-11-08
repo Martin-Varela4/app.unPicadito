@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { getMatchById, joinMatch, acceptJoinRequest, rejectJoinRequest } from "../services/matchService";
 import { ROOM_STATUS, PARTICIPANT_STATUS } from "../constants/matchConstants";
 
-export const useRoomDetail = (roomId) => {
+export const useRoomDetail = (roomId, currentUserId) => {
   const [room, setRoom] = useState(null);
   const [loadedRoomId, setLoadedRoomId] = useState(null);
   const [error, setError] = useState("");
@@ -102,6 +102,13 @@ export const useRoomDetail = (roomId) => {
     room?.participants?.filter((p) => p.status === PARTICIPANT_STATUS.PENDING || p.role === 'SOLICITANTE') || [];
   const availableSlots = room ? Math.max(0, room.maxPlayers - confirmedPlayers.length) : 0;
 
+  const isOrganizer = Boolean(currentUserId) && currentUserId === room?.organizerId;
+  const myParticipation = room?.participants?.find((p) => p.userId === currentUserId) ?? null;
+  const membership = isOrganizer ? "ORGANIZER" : myParticipation?.status ?? null;
+  const canRate =
+    room?.status === ROOM_STATUS.FINALIZADA &&
+    ["ORGANIZER", PARTICIPANT_STATUS.CONFIRMED, PARTICIPANT_STATUS.SUBSTITUTE].includes(membership);
+
   return {
     room,
     loading,
@@ -119,6 +126,10 @@ export const useRoomDetail = (roomId) => {
     substitutes,
     pendingRequests,
     availableSlots,
+    isOrganizer,
+    myParticipation,
+    membership,
+    canRate,
   };
 };
 

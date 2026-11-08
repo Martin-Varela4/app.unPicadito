@@ -9,6 +9,13 @@ const isUpcoming = (match) => {
     return new Date(match.fechaHoraPartido) >= new Date();
 };
 
+const filterMatchesList = (list, activeFilters) => {
+    if (activeFilters?.misSalas || activeFilters?.misPartidos) {
+        return list;
+    }
+    return list.filter(isUpcoming);
+};
+
 export const useMatches = (initialFilters = INITIAL_MATCH_FILTERS) => {
     const [filters, setFilters] = useState(() => ({ ...INITIAL_MATCH_FILTERS, ...initialFilters }));
     const debouncedFilters = useDebounce(filters, DEBOUNCE_DELAY_MS);
@@ -40,7 +47,7 @@ export const useMatches = (initialFilters = INITIAL_MATCH_FILTERS) => {
                     limite: debouncedFilters.limite || 12,
                     totalPaginas: 1,
                 };
-                setMatches(rawList.filter(isUpcoming));
+                setMatches(filterMatchesList(rawList, debouncedFilters));
                 setPagination(pag);
             } catch (error) {
                 if (active) setMatchesError(error.message ?? 'Error al buscar partidos.');
@@ -87,7 +94,7 @@ export const useMatches = (initialFilters = INITIAL_MATCH_FILTERS) => {
             );
             const freshMatches = await getMatches(filters);
             const freshList = Array.isArray(freshMatches) ? freshMatches : freshMatches.matches ?? [];
-            setMatches(freshList.filter(isUpcoming));
+            setMatches(filterMatchesList(freshList, filters));
             if (!Array.isArray(freshMatches) && freshMatches.pagination) {
                 setPagination(freshMatches.pagination);
             }
@@ -116,7 +123,7 @@ export const useMatches = (initialFilters = INITIAL_MATCH_FILTERS) => {
             );
             const freshMatches = await getMatches(filters);
             const freshList = Array.isArray(freshMatches) ? freshMatches : freshMatches.matches ?? [];
-            setMatches(freshList.filter(isUpcoming));
+            setMatches(filterMatchesList(freshList, filters));
             if (!Array.isArray(freshMatches) && freshMatches.pagination) {
                 setPagination(freshMatches.pagination);
             }

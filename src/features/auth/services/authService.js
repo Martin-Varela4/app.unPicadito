@@ -4,6 +4,7 @@ import api from '../../../api/axiosInstance';
 const ENDPOINT_LOGIN = import.meta.env.VITE_AUTH_LOGIN_ENDPOINT || '/users/login';
 const ENDPOINT_REGISTER = import.meta.env.VITE_AUTH_REGISTER_ENDPOINT || '/users/register';
 
+
 /**
  * Servicio para iniciar sesión
  * @param {Object} credentials - { email, password }

@@ -7,7 +7,7 @@ import { Card, CardContent } from "../../../components/ui/Card";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { CancelRoomModal } from "./CancelRoomModal";
 import { useAuthStore } from "../../auth/store/useAuthStore";
-import { ROOM_STATUS } from "../constants/matchConstants";
+import { CLOSED_ROOM_STATUSES, ROOM_STATUS } from "../constants/matchConstants";
 import {
   isPastMatch as checkPastMatch,
   isWithin24Hours as checkWithin24Hours,
@@ -31,8 +31,10 @@ export default function MatchCard({
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
 
   const isPast = checkPastMatch(match.fechaHoraPartido);
+  const isClosed = CLOSED_ROOM_STATUSES.includes(match.estado);
+  const isFinished = match.estado === ROOM_STATUS.FINALIZADA;
   const isComplete = match.estado === ROOM_STATUS.COMPLETA;
-  const cannotJoin = isPast || (isComplete && !match.permiteSuplentes);
+  const cannotJoin = isClosed || isPast || (isComplete && !match.permiteSuplentes);
   const myParticipation = match.participantes?.find(
     (p) => (p.usuario?.id || p.userId) === currentUser?.id
   );
@@ -135,7 +137,7 @@ export default function MatchCard({
 
           {isConfirmed && (
             <Button variant="outline" onClick={() => navigate(`/salas/${match.id}`)}>
-              Ir a mi sala
+              {isFinished ? "Ver / Calificar" : "Ir a mi sala"}
             </Button>
           )}
 
@@ -145,7 +147,7 @@ export default function MatchCard({
               onClick={handleJoin}
               disabled={cannotJoin || joiningMatchId === match.id}
             >
-              {isPast
+              {isClosed || isPast
                 ? "Finalizado"
                 : cannotJoin
                   ? "Sin lugares"
@@ -155,7 +157,7 @@ export default function MatchCard({
             </Button>
           )}
 
-          {isPending && (
+          {isPending && !isClosed && (
             <Button
               variant="danger"
               onClick={() => setIsLeaveModalOpen(true)}
@@ -165,7 +167,7 @@ export default function MatchCard({
             </Button>
           )}
 
-          {isConfirmed && (
+          {isConfirmed && !isClosed && (
             <Button
               variant="danger"
               onClick={() => (isOwner ? setIsCancelModalOpen(true) : setIsLeaveModalOpen(true))}

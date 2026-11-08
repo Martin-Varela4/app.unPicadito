@@ -9,6 +9,7 @@ import TacticalBoard from "../components/TacticalBoard";
 import { CancelRoomManager } from "../components/CancelRoomManager";
 import { FinalizeRoomManager } from "../components/FinalizeRoomManager";
 import { LeaveRoomManager } from "../components/LeaveRoomManager";
+import { PostMatchRating } from "../components/PostMatchRating";
 import { useAuthStore } from "../../auth/store/useAuthStore";
 import { useRoomOrganizer } from "../hooks/useRoomOrganizer";
 import { useRoomDetail } from "../hooks/useRoomDetail";
@@ -47,10 +48,12 @@ export const RoomDetail = () => {
     substitutes,
     pendingRequests,
     availableSlots,
-  } = useRoomDetail(roomId);
+    isOrganizer,
+    membership,
+    canRate,
+  } = useRoomDetail(roomId, currentUser?.id);
 
   const organizer = useRoomOrganizer(roomId, loadRoom);
-  const isOrganizer = Boolean(currentUser?.id) && currentUser.id === room?.organizerId;
 
   const roomStatus = room?.status;
   const matchDate = room?.raw?.fechaHoraPartido;
@@ -130,6 +133,9 @@ export const RoomDetail = () => {
         onJoin={handleJoin}
         isJoining={isJoining}
         joinError={joinError}
+        isOrganizer={isOrganizer}
+        membership={membership}
+        canRate={canRate}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -167,6 +173,8 @@ export const RoomDetail = () => {
         onExpelPlayer={organizer.openExpelModal}
         onTransferOrganizer={organizer.openTransferModal}
       />
+
+      {canRate && <PostMatchRating roomId={roomId} />}
 
       {/* Modal de confirmación para Expulsar / Transferir */}
       <ConfirmModal
