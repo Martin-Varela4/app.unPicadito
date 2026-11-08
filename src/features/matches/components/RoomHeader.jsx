@@ -1,22 +1,26 @@
 import { useNavigate } from 'react-router';
 import Button from '../../../components/ui/Button';
 import Badge from '../../../components/ui/Badge';
-import { useAuthStore } from '../../auth/store/useAuthStore';
 import { CLOSED_ROOM_STATUSES, ROOM_STATUS, MEMBERSHIP_STATUS_CONFIG, ROOM_STATUS_CONFIG } from '../constants/matchConstants';
 
-export const RoomHeader = ({ room, roomId, availableSlots, onJoin, isJoining, joinError }) => {
+export const RoomHeader = ({
+    room,
+    roomId,
+    availableSlots,
+    onJoin,
+    isJoining,
+    joinError,
+    isOrganizer = false,
+    membership = null,
+    canRate = false,
+}) => {
     const navigate = useNavigate();
-    const currentUser = useAuthStore((state) => state.user);
 
-    const isOrganizer = Boolean(currentUser?.id) && currentUser.id === room.organizerId;
-    const myParticipation = room.participants?.find((p) => p.userId === currentUser?.id);
     const isClosed = CLOSED_ROOM_STATUSES.includes(room.status);
     const canEdit = isOrganizer && !isClosed;
 
-    const membership = isOrganizer ? 'ORGANIZER' : myParticipation?.status;
     const membershipBadge = MEMBERSHIP_STATUS_CONFIG[membership];
     const isMember = Boolean(membershipBadge);
-    const canRate = room.status === 'FINALIZADA' && ['ORGANIZER', 'CONFIRMED', 'SUBSTITUTE'].includes(membership);
 
     const canJoin =
         !isMember &&
@@ -62,7 +66,12 @@ export const RoomHeader = ({ room, roomId, availableSlots, onJoin, isJoining, jo
                     </Button>
                 )}
                 {canRate && (
-                    <Button id="room-rate-button" disabled title="Disponible próximamente (UP-061)">
+                    <Button
+                        id="room-rate-button"
+                        onClick={() =>
+                            document.getElementById('post-match-rating')?.scrollIntoView({ behavior: 'smooth' })
+                        }
+                    >
                         ⭐ Calificar jugadores
                     </Button>
                 )}

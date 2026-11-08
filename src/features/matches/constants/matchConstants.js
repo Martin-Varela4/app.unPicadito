@@ -32,6 +32,7 @@ export const ORGANIZER_ACTION_TYPES = Object.freeze({
 
 export const CANCEL_REASON_MIN_LENGTH = 10;
 export const CANCEL_REASON_MAX_LENGTH = 500;
+export const REVIEW_COMMENT_MAX_LENGTH = 500;
 export const LOCK_WINDOW_HOURS = 24;
 
 export const INITIAL_ROOM_FORM_VALUES = Object.freeze({

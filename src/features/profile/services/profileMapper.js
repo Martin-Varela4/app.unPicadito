@@ -7,6 +7,22 @@ export const mapUserToProfile = (rawUser) => {
       ? ""
       : rawUser.apellido;
 
+  const reviews = [...(rawUser.resenasRecibidas || [])]
+    .sort((a, b) => new Date(b.creadoEn || 0) - new Date(a.creadoEn || 0))
+    .map((r) => ({
+      id: r.id,
+      estrellas: r.estrellas,
+      comentario: r.comentario,
+      creadoEn: r.creadoEn,
+      calificador: r.calificador ? {
+        id: r.calificador.id,
+        nombre: r.calificador.nombre,
+        apellido: r.calificador.apellido,
+        nombreUsuario: r.calificador.nombreUsuario,
+        avatar: r.calificador.fotoPerfilUrl,
+      } : null,
+    }));
+
   return {
     id: rawUser.id,
     name: `${rawUser.nombre || ''} ${apellidoLimpio}`.trim(),
@@ -19,16 +35,6 @@ export const mapUserToProfile = (rawUser) => {
     age: rawUser.age ?? null,
     location: rawUser.location ?? null,
 
-    reviews: (rawUser.resenasRecibidas || []).map(r => ({
-      id: r.id,
-      estrellas: r.estrellas,
-      comentario: r.comentario,
-      creadoEn: r.creadoEn,
-      calificador: r.calificador ? {
-        nombre: r.calificador.nombre,
-        nombreUsuario: r.calificador.nombreUsuario,
-        avatar: r.calificador.fotoPerfilUrl
-      } : null
-    })),
+    reviews,
   };
 };

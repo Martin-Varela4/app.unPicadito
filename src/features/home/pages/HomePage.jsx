@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { Search, PlusCircle } from 'lucide-react';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { useMatches } from '../../matches/hooks/useMatches';
+import { CLOSED_ROOM_STATUSES, ROOM_STATUS } from '../../matches/constants/matchConstants';
 import MatchCard from '../../matches/components/MatchCard';
 import PageContainer from '../../../components/ui/PageContainer';
 import LoadingState from '../../../components/ui/LoadingState';
@@ -9,11 +11,14 @@ import ErrorAlert from '../../../components/ui/ErrorAlert';
 import EmptyState from '../../../components/ui/EmptyState';
 import heroImage from '../../../assets/cancha-fondo.jpg';
 import { ProfileRanking } from '../../profile/components/ProfileRanking';
+import { getMyProfile } from '../../profile/services/profileService';
 
 const HOME_MATCHES_FILTERS = { misSalas: true, limite: 50 };
 
 const HomePage = () => {
     const user = useAuthStore((state) => state.user);
+    const [myRanking, setMyRanking] = useState(user?.reputacion ?? 0);
+
     const {
         matches,
         isLoadingMatches,
@@ -25,8 +30,32 @@ const HomePage = () => {
         joiningMatchId,
     } = useMatches(HOME_MATCHES_FILTERS);
 
+    useEffect(() => {
+        let active = true;
+        getMyProfile()
+            .then((profile) => {
+                if (active && profile?.reputacion !== undefined) {
+                    setMyRanking(profile.reputacion);
+                }
+            })
+            .catch(() => {
+                // Mantiene el último valor conocido si falla la consulta en segundo plano
+            });
+
+        return () => {
+            active = false;
+        };
+    }, []);
+
     const myMatches = matches.filter(
         (m) => Boolean(m.unidoPorUsuarioActual) || m.creador?.id === user?.id || Boolean(m.solicitudPendiente)
+    );
+
+    const upcomingMatches = myMatches.filter((m) => !CLOSED_ROOM_STATUSES.includes(m.estado));
+    const finishedMatches = myMatches.filter(
+        (m) =>
+            m.estado === ROOM_STATUS.FINALIZADA &&
+            (Boolean(m.unidoPorUsuarioActual) || m.creador?.id === user?.id)
     );
 
     return (
@@ -73,7 +102,7 @@ const HomePage = () => {
                 </div>
             </section>
 
-            <ProfileRanking />
+            <ProfileRanking ranking={myRanking} />
 
             {/* Sección: Mis próximos partidos */}
             <section className="flex flex-col gap-4">
@@ -95,7 +124,7 @@ const HomePage = () => {
                     <ErrorAlert message={matchesError} />
                 )}
 
-                {!isLoadingMatches && !matchesError && myMatches.length === 0 && (
+                {!isLoadingMatches && !matchesError && upcomingMatches.length === 0 && (
                     <EmptyState
                         icon="⚽"
                         title="Todavía no estás anotado en ningún partido."
@@ -112,7 +141,7 @@ const HomePage = () => {
                 )}
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                    {myMatches.map((match) => (
+                    {upcomingMatches.map((match) => (
                         <MatchCard
                             key={match.id}
                             match={match}
@@ -125,6 +154,32 @@ const HomePage = () => {
                     ))}
                 </div>
             </section>
+
+            {/* Sección: Partidos finalizados */}
+            {!isLoadingMatches && !matchesError && finishedMatches.length > 0 && (
+                <section className="flex flex-col gap-4">
+                    <div className="border-b border-[var(--color-border-subtle)] pb-3">
+                        <h2 className="text-xl font-bold text-white">Partidos finalizados</h2>
+                        <p className="text-xs text-slate-400">
+                            Entrá a la sala para calificar a tus compañeros
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                        {finishedMatches.map((match) => (
+                            <MatchCard
+                                key={match.id}
+                                match={match}
+                                leaveMatch={leaveMatch}
+                                isLeaving={isLeaving}
+                                leaveError={leaveError}
+                                joinMatch={joinMatch}
+                                joiningMatchId={joiningMatchId}
+                            />
+                        ))}
+                    </div>
+                </section>
+            )}
         </PageContainer>
     );
 };

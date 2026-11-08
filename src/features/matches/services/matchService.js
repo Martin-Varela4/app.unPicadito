@@ -3,6 +3,7 @@ import { mapRoomFromApi } from './matchMapper';
 
 const ENDPOINT_MATCHES = import.meta.env.VITE_MATCHES_ENDPOINT || '/salas';
 const ENDPOINT_MATCHES_SEARCH = import.meta.env.VITE_MATCHES_SEARCH_ENDPOINT || '/salas/buscar';
+const ENDPOINT_REVIEWS = import.meta.env.VITE_REVIEWS_ENDPOINT || '/reviews';
 
 export const getMatches = async (filters = {}) => {
     const params = {};
@@ -103,4 +104,20 @@ export const acceptJoinRequest = async (roomId, participationId) => {
 export const rejectJoinRequest = async (roomId, participationId) => {
     const response = await api.patch(`${ENDPOINT_MATCHES}/${roomId}/solicitudes/${participationId}/rechazar`);
     return response.data;
+};
+
+export const getPendientesCalificar = async (roomId) => {
+    const response = await api.get(`${ENDPOINT_MATCHES}/${roomId}/pendientes-calificar`);
+    return response.data?.data ?? { pendientes: [] };
+};
+
+export const crearResena = async ({ salaId, calificadoId, estrellas, comentario }) => {
+    const payload = {
+        salaId,
+        calificadoId: Number(calificadoId),
+        estrellas: Number(estrellas),
+    };
+    if (comentario) payload.comentario = comentario;
+    const response = await api.post(ENDPOINT_REVIEWS, payload);
+    return response.data?.data;
 };

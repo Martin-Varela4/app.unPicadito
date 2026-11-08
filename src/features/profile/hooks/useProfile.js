@@ -27,14 +27,10 @@ export const useProfile = () => {
 
       try {
         const rawUser = id ? await getPublicProfileById(id) : await getMyProfile();
-        
-        setProfile(mapUserToProfile(rawUser));
+        const mappedProfile = mapUserToProfile(rawUser);
 
-        const listaReviews = Array.isArray(rawUser?.resenasRecibidas)
-          ? rawUser.resenasRecibidas
-          : [];
-        
-        setReviews(listaReviews);
+        setProfile(mappedProfile);
+        setReviews(mappedProfile?.reviews ?? []);
 
       } catch (err) {
         setError(err.message || "No se pudo cargar el perfil");
